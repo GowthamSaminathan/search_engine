@@ -1,0 +1,71 @@
+https://pythonprogramming.net/basic-flask-website-tutorial/
+
+
+sudo apt-get install apache2 apache2-dev
+pip3 install mod_wsgi
+mod_wsgi-express module-config
+
+LoadModule wsgi_module "/usr/local/lib/python3.5/dist-packages/mod_wsgi/server/mod_wsgi-py35.cpython-35m-x86_64-linux-gnu.so"
+WSGIPythonHome "/usr"
+
+nano /etc/apache2/mods-available/wsgi.load
+Paste those two lines in here. Save and exit (ctrl+x, y, enter). Now let's enable wsgi:
+
+a2enmod wsgi
+
+service apache2 restart
+
+nano /etc/apache2/sites-available/FlaskApp.conf
+Inputting:
+
+<VirtualHost *:80>
+                ServerName 192.168.0.1
+                ServerAdmin youremail@email.com
+                WSGIScriptAlias / /var/www/FlaskApp/FlaskApp.wsgi
+                <Directory /var/www/FlaskApp/FlaskApp/>
+                        Order allow,deny
+                        Allow from all
+                </Directory>
+                ErrorLog ${APACHE_LOG_DIR}/FlaskApp-error.log
+                LogLevel warn
+                CustomLog ${APACHE_LOG_DIR}/FlaskApp-access.log combined
+</VirtualHost>
+Replace the 192.168.0.1 with your server's IP address or your domain name (only if you've set this up to work), save and exit (ctrl+x, y, enter).
+
+sudo a2ensite FlaskApp
+
+service apache2 reload
+
+mkdir /var/www/FlaskApp
+cd /var/www/FlaskApp
+nano FlaskApp.wsgi
+
+Now let's setup WSGI to interface with our application:
+
+In here, put:
+
+#!/usr/bin/python3.6
+import sys
+import logging
+logging.basicConfig(stream=sys.stderr)
+sys.path.insert(0,"/var/www/FlaskApp/")
+
+from FlaskApp import app as application
+
+mkdir FlaskApp cd FlaskApp
+Now let's build our simple Flask Application:
+
+nano __init__.py
+from flask import Flask
+import sys
+
+app = Flask(__name__)
+
+@app.route('/')
+def homepage():
+    return "Hi there, how ya doin?"
+
+if __name__ == "__main__":
+    app.run()
+
+service apache2 reload
