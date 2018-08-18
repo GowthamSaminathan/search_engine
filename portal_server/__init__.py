@@ -7,6 +7,7 @@ import os
 import time
 import json
 from flask_pymongo import PyMongo
+import pymongo
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -193,7 +194,7 @@ def portal_login():
 
 			# Get User information from database
 			pass_hash = hashlib.sha1(user_password.encode()).hexdigest()
-			user_data = mcollection.find_one({"_id":user_id,"PasswordHash":pass_hash},{"_id":1,"account_type":1})
+			user_data = mcollection.find_one({"_id":user_id,"PasswordHash":pass_hash},{"_id":1,"AccountType":1})
 			
 			if user_data == None:
 				# Provided user information in not available in database
@@ -204,12 +205,12 @@ def portal_login():
 				# Gendrating session id for user
 				# Saving session and user information to Redis DB
 				user_id = user_data.get("_id")
-				account_type = user_data.get("account_type")
+				account_type = user_data.get("AccountType")
 				rand_number = str(random.randint(100,999999) + time.time())
 				session_id = "user_"+user_id+"_"+hashlib.sha1(rand_number.encode()).hexdigest()
 				
 				# Setting session data to Redis DB
-				user_session_data = {"_id":user_id,"account_type":account_type}
+				user_session_data = {"_id":user_id,"AccountType":account_type}
 				red.hmset(session_id,user_session_data)
 				red.expire(session_id,600)
 				
@@ -327,7 +328,7 @@ def domain_update():
 			domain_name = result.get("domain_name")
 			domain_update = result.get("domain_update")
 
-			domain_name = json.loads(domain_update)
+			domain_update = json.loads(domain_update)
 			form_schema = dict()
 			form_schema.update({'domain_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
 			form_schema.update({'domain_update': {'required': True,'type': 'string'}})
@@ -340,7 +341,8 @@ def domain_update():
 				error_status.update(form_validate.errors)
 				return jsonify(error_status)
 
-
+			print (user_id)
+			print (domain_name)
 			find_value = mcollection.find_one({"_id":user_id,"Domains.DomainName":{"$eq":domain_name}},{"_id":0,"Domains.$":1})
 			if find_value != None:
 				single_domain = find_value.get("Domains")
@@ -473,6 +475,8 @@ def get_user_info():
 			required_fields.update({"AccountCreatedDate":1})
 			required_fields.update({"AccountStatus":1})
 			required_fields.update({"MaximumDomains":1})
+			required_fields.update({"MaximumEngines":1})
+			required_fields.update({"MaximumDomainsInEngine":1})
 
 			user_data = mcollection.find_one({"_id":user_id},required_fields)
 			
@@ -551,7 +555,7 @@ def create_new_user():
 
 			############## SESSION VALIDATION END #####################
 			
-			account_type = user_data.get("account_type")
+			account_type = user_data.get("AccountType")
 
 			if account_type != 'admin':
 				return jsonify({"result":"failed","message":"Admin privilage required to create new user"})
@@ -561,9 +565,11 @@ def create_new_user():
 			user_id = result.get("user_id")
 			user_email = result.get("user_email")
 			user_password = result.get("user_password")
-			maximum_domains = result.get("maximum_domains")
+			maximum_domains = int(result.get("maximum_domains"))
+			maximum_engines = int(result.get("maximum_engines"))
+			maximum_domains_in_engine = int(result.get("maximum_domains_in_engine"))
 			account_type = result.get("account_type")
-			max_lic_date = result.get("max_lic_date")
+			max_lic_days = int(result.get("max_lic_days"))
 			user_ip = result.get("user_ip")
 
 			form_schema = dict()
@@ -572,9 +578,11 @@ def create_new_user():
 			form_schema.update({'user_id': {'required': True,'type': 'string','maxlength': 64,'minlength': 1}})
 			form_schema.update({'user_email': {'required': True,'type': 'string','maxlength': 64,'minlength': 6}})
 			form_schema.update({'user_password': {'required': True,'type': 'string','maxlength': 64,'minlength': 8}})
-			form_schema.update({'maximum_domains': {'required': True,'type': 'number','max': 100000,'min': -1}})
+			form_schema.update({'maximum_domains': {'required': True}})
+			form_schema.update({'maximum_engines': {'required': True}})
+			form_schema.update({'maximum_domains_in_engine': {'required': True}})
 			form_schema.update({'account_type': {'required': True,'type': 'string','maxlength': 60,'minlength': 1}})
-			form_schema.update({'max_lic_date': {'required': True,'type': 'string','maxlength': 60,'minlength': 1}})
+			form_schema.update({'max_lic_days': {'required': True}})
 			form_schema.update({'user_ip': {'required': True,'type': 'string','maxlength': 200,'minlength': 7}})
 
 
@@ -590,7 +598,7 @@ def create_new_user():
 			account_cdate = datetime.datetime.utcnow()
 			current_date = account_cdate
 
-			lic_end = account_cdate + datetime.timedelta(days=max_lic_date)
+			lic_end = account_cdate + datetime.timedelta(days=max_lic_days)
 			pass_hash = hashlib.sha1(user_password.encode()).hexdigest()
 
 			# Creating New user
@@ -604,16 +612,21 @@ def create_new_user():
 			new_user.update({"AccountCreatedDate":account_cdate})
 			new_user.update({"AccountCreatedIP":user_ip})
 			new_user.update({"MaximumDomains":maximum_domains})
+			new_user.update({"MaximumEngines":1})
+			new_user.update({"MaximumDomainsInEngine":1})
 			new_user.update({"AccountType":account_type}) #user = paid users , demo = demo user
 			new_user.update({"LicenceStart":current_date})
 			new_user.update({"LicenceEnd":lic_end})
 			new_user.update({"Domains":[]})
 
-
 			try:
 				result = mcollection.insert(new_user)
+				if result == user_id:
+					return jsonify({"result":"success","message":"User created"})
+				else:
+					jsonify({"result":"failed","message":"User already exist"})
 			except pymongo.errors.DuplicateKeyError:
-				jsonify({"result":"failed","message":"User already exist"})
+				return jsonify({"result":"failed","message":"User already exist"})
 
 	except Exception:
 		logger.exception("create_new_user")
