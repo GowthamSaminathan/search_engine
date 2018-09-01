@@ -156,9 +156,10 @@ def check_user_session(session_id):
 def portal_logout():
 	# Logout user by deleting session from redis DB
 	try:
-		if request.method == 'POST':
-			result = request.form
-			session_id = result.get("session_id")
+		if request.method == 'GET':
+			# Get session ID from GET argument
+			get_req = request.args.to_dict()
+			session_id = get_req.get("session_id")
 			
 			if session_id == None:
 				# Getting session_id from cookie
@@ -177,6 +178,8 @@ def portal_logout():
 						return jsonify({"result":"success","message":"Already Logged out"})
 			else:
 				return jsonify({"result":"failed","message":"Session information missing"})
+		else:
+			return jsonify({"result":"failed","message":"Invalid API call"})
 			
 	except Exception:
 		logger.exception("portal_logout")
@@ -248,6 +251,7 @@ def create_domain():
 			user_id = user_data.get("_id")
 			form_schema = dict()
 			form_schema.update({'domain_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
 
 			form_validate = cerberus.Validator()
 			form_valid = form_validate.validate(result, form_schema)
@@ -258,6 +262,8 @@ def create_domain():
 				return jsonify(error_status)
 			
 			domain_name = result.get("domain_name")
+			engine_name = result.get("engine_name")
+
 			white_url = []
 			black_url = []
 			white_app = ["application/html"]
@@ -290,7 +296,8 @@ def create_domain():
 			new_domain.update({"CustomResults":custom_results})
 
 			try:
-				results = mcollection.update_one({"_id":user_id,"Domains.DomainName":{"$ne":domain_name}},{"$push":{"Domains":new_domain}})
+				results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name,
+					"Engines.Domains.DomainName":{"$ne":domain_name}},{"$push":{"Engines.$.Domains":new_domain}})
 				if results.modified_count == 1:
 					return jsonify({"result":"success","message":"Domain added"})
 				else:
@@ -302,6 +309,81 @@ def create_domain():
 	except Exception:
 		logger.exception("create_domain")
 		return jsonify({"result":"failed","message":"Domain creation failed"})
+
+@app.route('/portal/create_engine',methods = ['POST', 'GET'])
+def create_engine():
+	try:
+		if request.method == 'POST':
+			result = request.form
+			
+			############## SESSION VALIDATION START ##################
+			session_id = result.get("session_id")
+			if session_id == None:
+				# Getting session_id from cookie
+				session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data == None:
+					return jsonify({"result":"failed","message":"Please login again"})
+			else:
+				return jsonify({"result":"failed","message":"Please login again"})
+
+			############## SESSION VALIDATION END #####################
+			
+			user_id = user_data.get("_id")
+			form_schema = dict()
+			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+
+			form_validate = cerberus.Validator()
+			form_valid = form_validate.validate(result, form_schema)
+			if form_valid == False:
+				# Form not valid
+				error_status = {"results":"failed"}
+				error_status.update(form_validate.errors)
+				return jsonify(error_status)
+			
+			engine_name = result.get("engine_name")
+			
+			new_engine = dict()
+			new_engine.update({"EngineName":engine_name})
+			new_engine.update({"Domains":[]})
+
+			try:
+				# Get MaximumEngine license
+				user_details = mcollection.find_one({"_id":user_id},{"_id":1,"MaximumEngines":1,"LicenceEnd":1,"Engines":1})
+				
+				if user_details != None:
+					max_engine = user_details.get("MaximumEngines")
+					licence_end = user_details.get("LicenceEnd")
+					current_engines = user_details.get("Engines")
+				else:
+					#logger.errot("BUG: MaximumEngines not found in DB for: "+user_id)
+					return jsonify({"result":"failed","message":"No valid license found"})
+				
+
+				lic_count = len(current_engines)
+				if int(max_engine) <= lic_count:
+					return jsonify({"result":"failed","message":"Engine license limit reached,Allowed license count:"+str(lic_count)})
+
+				if licence_end < datetime.datetime.utcnow():
+					return jsonify({"result":"failed","message":"Account license expired"})
+
+
+				results = mcollection.update_one({"_id":user_id,"Engines.EngineName":{"$ne":engine_name}},{"$push":{"Engines":new_engine}})
+				
+				if results.modified_count == 1:
+					return jsonify({"result":"success","message":"Engine created","engine_name":engine_name})
+				else:
+					return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
+			except Exception:
+				logger.exception("create_engine")
+				return jsonify({"result":"failed","message":"Domain creation failed"})
+
+	except Exception:
+		logger.exception("create_engine")
+		return jsonify({"result":"failed","message":"Domain creation failed"})
+
 
 @app.route('/portal/domain_update',methods = ['POST', 'GET'])
 def domain_update():
@@ -326,11 +408,13 @@ def domain_update():
 
 			user_id = user_data.get("_id")
 			domain_name = result.get("domain_name")
+			engine_name = result.get("engine_name")
 			domain_update = result.get("domain_update")
 
 			domain_update = json.loads(domain_update)
 			form_schema = dict()
 			form_schema.update({'domain_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
 			form_schema.update({'domain_update': {'required': True,'type': 'string'}})
 			
 			form_validate = cerberus.Validator()
@@ -341,14 +425,19 @@ def domain_update():
 				error_status.update(form_validate.errors)
 				return jsonify(error_status)
 
-			print (user_id)
-			print (domain_name)
-			find_value = mcollection.find_one({"_id":user_id,"Domains.DomainName":{"$eq":domain_name}},{"_id":0,"Domains.$":1})
+
+			find_value = mcollection.find_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
+				"EngineName":engine_name}}},{"_id":0,"Engines.Domains.$":1})
+			
 			if find_value != None:
+				find_value = find_value.get("Engines")[0]
 				single_domain = find_value.get("Domains")
 				single_domain = single_domain[0]
 				single_domain.update(domain_update)
-				results = mcollection.update_one({"_id":user_id,"Domains.DomainName":{"$eq":domain_name}},{"$set":{"Domains.$":single_domain}})
+				
+				results = mcollection.update_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
+					"EngineName":engine_name}}},{"$set":{"Engines.$.Domains":single_domain}})
+				
 				if results.modified_count == 1:
 					return jsonify({"result":"success","message":"Update Success"})
 				else:
@@ -383,8 +472,10 @@ def domain_delete():
 
 			user_id = user_data.get("_id")
 			domain_name = result.get("domain_name")
+			engine_name = result.get("engine_name")
 
-			deleted_status = mcollection.update_one({"_id":user_id},{ "$pull": { 'Domains': { "DomainName" : domain_name } } })
+			deleted_status = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},
+				{ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
 			if deleted_status.modified_count == 1:
 				return jsonify({"result":"success","message":"domain deleted"})
 			else:
@@ -394,6 +485,40 @@ def domain_delete():
 		logger.exception("domain_delete")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
+@app.route('/portal/engine_delete',methods = ['POST', 'GET'])
+def engine_delete():
+	try:
+		# Delete provided engine for user
+		if request.method == 'POST':
+			result = request.form
+
+			############## SESSION VALIDATION START ##################
+			session_id = result.get("session_id")
+			if session_id == None:
+				# Getting session_id from cookie
+				session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data == None:
+					return jsonify({"result":"failed","message":"Please login again"})
+			else:
+				return jsonify({"result":"failed","message":"Please login again"})
+
+			############## SESSION VALIDATION END #####################
+
+			user_id = user_data.get("_id")
+			engine_name = result.get("engine_name")
+
+			deleted_status = mcollection.update_one({"_id":user_id},{ "$pull": { 'Engines': { "EngineName" : engine_name } } })
+			if deleted_status.modified_count == 1:
+				return jsonify({"result":"success","message":"engine deleted"})
+			else:
+				return jsonify({"result":"failed","message":"engine not deleted"})
+
+	except Exception:
+		logger.exception("engine_delete")
+		return jsonify({"result":"failed","message":"unknown fail"})
 
 @app.route('/portal/get_domain_data',methods = ['POST', 'GET'])
 def get_domain_data():
@@ -419,22 +544,27 @@ def get_domain_data():
 			############## SESSION VALIDATION END #####################
 			user_id = user_data.get("_id")
 			domain_name = result.get("domain_name")
+			engine_name = result.get("engine_name")
 			if domain_name == None:
 				return jsonify({"result":"failed","message":"Please specify domain name or use 'all' to get summary"})
 			else:
+				
 				required_fields = dict()
 				required_fields.update({"_id":0})
-				required_fields.update({"Domains.Pages":1})
-				required_fields.update({"Domains.DomainName":1})
-				required_fields.update({"Domains.LastCrawl":1})
-				required_fields.update({"Domains.CurrentStatus":1})
-				required_fields.update({"Domains.CreatedAt":1})
-				required_fields.update({"Domains.CreatedBy":1})
-				required_fields.update({"Domains.CrawlSchedule":1})
+				required_fields.update({"Engines.Domains.Pages":1})
+				required_fields.update({"Engines.Domains.DomainName":1})
+				required_fields.update({"Engines.Domains.LastCrawl":1})
+				required_fields.update({"Engines.Domains.CurrentStatus":1})
+				required_fields.update({"Engines.Domains.CreatedAt":1})
+				required_fields.update({"Engines.Domains.CreatedBy":1})
+				required_fields.update({"Engines.Domains.CrawlSchedule":1})
+				
 				if domain_name == "all":
 					domain_info = mcollection.find({"_id":user_id},required_fields)
 				else:
-					domain_info = mcollection.find({"_id":user_id,"Domains.DomainName":{"$eq":domain_name}},{"Domains":1})
+					domain_info = mcollection.find({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
+					"EngineName":engine_name}}},{"Engines.Domains":1})
+				
 				if domain_info.count() > 0:
 					return jsonify({"result":"success","data":list(domain_info)[0]})
 				else:
@@ -617,7 +747,7 @@ def create_new_user():
 			new_user.update({"AccountType":account_type}) #user = paid users , demo = demo user
 			new_user.update({"LicenceStart":current_date})
 			new_user.update({"LicenceEnd":lic_end})
-			new_user.update({"Domains":[]})
+			new_user.update({"Engines":[]})
 
 			try:
 				result = mcollection.insert(new_user)
