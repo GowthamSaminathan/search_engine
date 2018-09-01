@@ -385,10 +385,10 @@ def create_engine():
 		return jsonify({"result":"failed","message":"Domain creation failed"})
 
 
-@app.route('/portal/domain_update',methods = ['POST', 'GET'])
+@app.route('/portal/domain_update',methods = ['PUT'])
 def domain_update():
 	try:
-		if request.method == 'POST':
+		if request.method == 'PUT':
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
@@ -431,28 +431,27 @@ def domain_update():
 			
 			if find_value != None:
 				find_value = find_value.get("Engines")[0]
-				single_domain = find_value.get("Domains")
-				single_domain = single_domain[0]
+				single_domain = find_value.get("Domains")[0]
 				single_domain.update(domain_update)
 				
 				results = mcollection.update_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
-					"EngineName":engine_name}}},{"$set":{"Engines.$.Domains":single_domain}})
+					"EngineName":engine_name}}},{"$set":{"Engines.$.Domains.0":single_domain}})
 				
 				if results.modified_count == 1:
 					return jsonify({"result":"success","message":"Update Success"})
 				else:
-					return jsonify({"result":"failed","message":"Not Updated"})
+					return jsonify({"result":"failed","message":"Not Updated."})
 			else:
 				return jsonify({"result":"failed","message":"Domain not found"})
 	except Exception:
 		logger.exception("domain_update")
 		return jsonify({"result":"failed","message":"Not Updated"})
 
-@app.route('/portal/domain_delete',methods = ['POST', 'GET'])
+@app.route('/portal/domain_delete',methods = ['DELETE'])
 def domain_delete():
 	try:
 		# Delete provided domain for user
-		if request.method == 'POST':
+		if request.method == 'DELETE':
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
@@ -473,7 +472,8 @@ def domain_delete():
 			user_id = user_data.get("_id")
 			domain_name = result.get("domain_name")
 			engine_name = result.get("engine_name")
-
+			print({"_id":user_id,"Engines.EngineName":engine_name})
+			print({ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
 			deleted_status = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},
 				{ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
 			if deleted_status.modified_count == 1:
@@ -485,11 +485,11 @@ def domain_delete():
 		logger.exception("domain_delete")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
-@app.route('/portal/engine_delete',methods = ['POST', 'GET'])
+@app.route('/portal/engine_delete',methods = ['DELETE'])
 def engine_delete():
 	try:
 		# Delete provided engine for user
-		if request.method == 'POST':
+		if request.method == 'DELETE':
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
@@ -520,19 +520,17 @@ def engine_delete():
 		logger.exception("engine_delete")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
-@app.route('/portal/get_domain_data',methods = ['POST', 'GET'])
+@app.route('/portal/get_domain_data',methods = ['GET'])
 def get_domain_data():
 	try:
 		# Get domain data from DB
 		# Get summary of all domains or full details for particular domain
-		if request.method == 'POST':
+		if request.method == 'GET':
 			result = request.form
+			result = request.args.to_dict()
 
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.cookies.get('session_id')
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
@@ -574,18 +572,14 @@ def get_domain_data():
 		logger.exception("get_domain_data")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
-@app.route('/portal/get_user_info',methods = ['POST', 'GET'])
+@app.route('/portal/get_user_info',methods = ['GET'])
 def get_user_info():
 	try:
 		# Get user information from Database
-		if request.method == 'POST':
-			result = request.form
-
+		if request.method == 'GET':
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			#session_id = result.get("session_id")
+			session_id = request.cookies.get('session_id')
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
@@ -607,6 +601,7 @@ def get_user_info():
 			required_fields.update({"MaximumDomains":1})
 			required_fields.update({"MaximumEngines":1})
 			required_fields.update({"MaximumDomainsInEngine":1})
+			required_fields.update({"Engines":1})
 
 			user_data = mcollection.find_one({"_id":user_id},required_fields)
 			
@@ -619,11 +614,11 @@ def get_user_info():
 		logger.exception("get_user_info")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
-@app.route('/portal/user_update',methods = ['POST', 'GET'])
+@app.route('/portal/user_update',methods = ['PUT'])
 def portal_user_info_update():
 	# Update portal user informations ( ex:password,email)
 	try:
-		if request.method == 'POST':
+		if request.method == 'PUT':
 			result = request.form
 			user_email = result.get("user_email")
 			user_password = result.get("user_password")
