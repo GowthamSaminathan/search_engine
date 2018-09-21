@@ -192,6 +192,19 @@ def portal_login():
 	try:
 		if request.method == 'POST':
 			result = request.form
+			
+			############## SESSION VALIDATION START ##################
+			session_id = result.get("session_id")
+			if session_id == None:
+				# Getting session_id from cookie
+				session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data != None:
+					return jsonify({"result":"success","message":"Already logged In"})
+			############## SESSION VALIDATION END #####################
+
 			user_id = result.get("user_name")
 			user_password = result.get("user_password")
 

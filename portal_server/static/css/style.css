@@ -1,0 +1,640 @@
+@charset "utf-8";
+/* CSS Document */
+
+@import url('https://fonts.googleapis.com/css?family=Muli:300,400,600,700,800');
+body {
+	font-family: 'Muli', sans-serif;
+	font-weight:400;
+	width:100%;
+	height:100%;
+}
+img {
+	max-width:100%;
+	height:auto;
+}
+.header-cont {
+	width:100%;
+	float:left;
+	background:#12203f;
+	padding:15px 0px;
+}
+.change-domain-btn {
+	background:#ffffff;
+}
+.user-right {
+	width:auto;
+	float:right;
+}
+.btn1 {
+	color: #FFFFFF;
+	font-family: Muli;
+	font-size: 14px;
+	font-weight: 400;
+	letter-spacing: 0.1px;
+	line-height: 16px;
+	border-radius: 4px !important;
+	background-color: #55AAFF;
+	height:44px;
+}
+.btn1 i {
+	font-size:24px;
+}
+.btn1 span {
+	line-height:10px;
+}
+.top-btn {
+	width:auto;
+	float:left;
+}
+.notification {
+	width:34px;
+	float:left;
+	margin-left:20px;
+	margin-right:20px;
+}
+.user-profile {
+	width:auto;
+	float:left;
+}
+.user-profile .dropdown-toggle img {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+}
+.user-profile .dropdown-toggle {
+	color: #ffffff;
+	padding:5px;
+}
+.header-row2 {
+	width: 100%;
+	float: left;
+	background: #ffffff;
+	padding: 0px 0px;
+	-webkit-box-shadow: 0px 1px 5px 0px rgba(119, 119, 119, 0.1);
+	-moz-box-shadow:    0px 1px 5px 0px rgba(119, 119, 119, 0.1);
+	box-shadow:         0px 1px 5px 0px rgba(119, 119, 119, 0.1);
+}
+.header-row2 .navbar-nav .nav-link {
+	padding-right: 0rem;
+	padding-left: 0rem;
+	border-bottom: #ffffff solid 3px;
+	padding-bottom: 15px;
+	font-size:14px;
+	font-weight:600
+}
+.header-row2 .navbar-nav .nav-link:hover {
+	border-bottom: #55AAFF solid 3px;
+}
+.header-row2 .navbar {
+	padding-bottom: 0px;
+	margin-top:10px;
+}
+a {
+ -o-transition: .5s;
+ -ms-transition: .5s;
+ -moz-transition: .5s;
+ -webkit-transition: .5s;
+ transition: .5s;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin-bottom:0px;
+}
+.navbar-brand {
+	display: none;
+}
+.header-row2 a {
+	font-size: 16px;
+	font-weight: 400;
+	color: #91919C !important;
+}
+.nav-link.active {
+	border-bottom:#55AAFF solid 3px !important;
+	color:#24233A !important;
+}
+.header-row2 h1 {
+	font-size: 26px;
+	font-weight: 700;
+	letter-spacing: 0.2px;
+	line-height: 33px;
+	margin-bottom:0px;
+	margin-top:25px;
+}
+.body-cont {
+	width:100%;
+	float:left;
+	padding:50px 0px;
+	background-color: #F1F4F6;
+	min-height:500px;
+}
+.panel {
+	width:100%;
+	float:left;
+	padding:15px;
+	-webkit-box-shadow: 0px 1px 4px 0px rgba(238, 238, 238, 1);
+	-moz-box-shadow:    0px 1px 4px 0px rgba(238, 238, 238, 1);
+	box-shadow:         0px 1px 4px 0px rgba(238, 238, 238, 1);
+	background:#ffffff;
+	margin-bottom:50px;
+	padding-bottom:0px;
+}
+.panel-heading {
+	width:100%;
+	float:left;
+}
+.panel-heading h2 {
+	font-size: 19px;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	line-height: 24px;
+}
+.panel-heading span {
+	color: #91919C;
+	font-size: 12px;
+	line-height: 15px;
+}
+.panel .dropdown-toggle {
+	padding:0px;
+	background:none;
+}
+ .panel .dropdown-toggle::after {
+ display:none;
+}
+.more-options {
+	text-align:right;
+}
+.panel-details {
+	width:100%;
+	float:left;
+	margin-top:25px;
+	padding:15px;
+}
+.over-view {
+	width:100%;
+	float:left;
+	border-bottom:#f6f8f9 solid 2px;
+	padding:25px 20px;
+}
+.over-view:last-child {
+	border-bottom:none;
+}
+.over-view1 {
+	width:20%;
+	float:left;
+}
+.over-view-txt {
+	width:80%;
+	float:left;
+	font-size: 22px;
+	font-weight: 700;
+	letter-spacing: 0.2px;
+	line-height: 28px;
+}
+.over-view-txt span {
+	color:#91919C;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.1px;
+}
+.table-heading1 {
+	background:#f5f9ff;
+	color:#91919C;
+}
+.table-heading1 th {
+	font-size: 12px;
+	letter-spacing: 0.3px;
+	line-height: 15px;
+	font-weight:400;
+}
+.table td, .table th {
+	border-top: 1px solid #f5f9ff;
+}
+.table td {
+	color:#24233A;
+	font-size:14px;
+}
+.table thead th {
+	border-bottom:1px solid #f6f8f9;
+}
+.navbar {
+ padding: .5rem 0px;
+}
+.header-row2 .nav-item {
+	margin-right:2rem
+}
+.notifi-btn {
+	padding:0px;
+}
+.notification-txt {
+	width:320px;
+	max-width:320px;
+}
+.notification-txt ul {
+	margin:0px;
+	padding:0px;
+}
+.notification-txt ul li {
+	list-style:none;
+	border-bottom:#eeeeee solid 1px;
+	font-size:13px;
+	padding:0px 15px 10px 15px;
+	color:#444444;
+}
+.notification-txt ul li a {
+	display:block;
+}
+.notification-txt ul li a:hover {
+	text-decoration:none;
+}
+.notification-txt ul li:hover {
+	background:#eeeeee;
+}
+.notification-txt ul li:last-child {
+	border:none;
+	padding-bottom:5px;
+}
+.notification-txt ul li a {
+	color:#444444;
+}
+.notification-txt {
+	position: relative;
+	background: #ffffff;
+}
+.notification-txt:after {
+	bottom: 100%;
+	left: 95%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+	border-color: rgba(255, 255, 255, 0);
+	border-bottom-color: #ffffff;
+	border-width: 7px;
+	margin-left: -7px;
+}
+/**
+ * Inspiration for this project found at:
+ * https://markus.oberlehner.net/blog/pure-css-animated-svg-circle-chart
+ * 1. The `reverse` animation direction plays the animation backwards
+ *    which makes it start at the stroke offset 100 which means displaying
+ *    no stroke at all and animating it to the value defined in the SVG
+ *    via the inline `stroke-dashoffset` attribute.
+ * 2. Rotate by -90 degree to make the starting point of the
+ *    stroke the top of the circle.
+ * 3. Using CSS transforms on SVG elements is not supported by Internet Explorer
+ *    and Edge, use the transform attribute directly on the SVG element as a
+ * .  workaround.
+ */
+
+.circle-chart {
+	width: 60px;
+	height: 60px;
+}
+.circle-chart__circle {
+	stroke: #00acc1;
+	stroke-width: 2;
+	stroke-linecap: square;
+	fill: none;
+	animation: circle-chart-fill 2s reverse; /* 1 */
+	transform: rotate(-90deg); /* 2, 3 */
+	transform-origin: center; /* 4 */
+}
+/**
+ * 1. Rotate by -90 degree to make the starting point of the
+ *    stroke the top of the circle.
+ * 2. Scaling mirrors the circle to make the stroke move right
+ *    to mark a positive chart value.
+ * 3. Using CSS transforms on SVG elements is not supported by Internet Explorer
+ *    and Edge, use the transform attribute directly on the SVG element as a
+ * .  workaround.
+ */
+
+.circle-chart__circle--negative {
+	transform: rotate(-90deg) scale(1, -1); /* 1, 2, 3 */
+}
+.circle-chart__background {
+	stroke: #efefef;
+	stroke-width: 2;
+	fill: none;
+}
+.circle-chart__info {
+	width:100%;
+	float:left;
+}
+.circle-chart__percent {
+	alignment-baseline: central;
+	text-anchor: middle;
+	font-size: 6px;
+}
+.circle-chart__subline {
+	alignment-baseline: central;
+	text-anchor: middle;
+	font-size: 3px;
+	display:none;
+}
+.success-stroke {
+	stroke: #32d478;
+}
+.warning-stroke {
+	stroke: #55aaff;
+}
+.danger-stroke {
+	stroke: #eaae4c;
+}
+ @keyframes circle-chart-fill {
+ to {
+stroke-dasharray: 0 100;
+}
+}
+ @keyframes circle-chart-appear {
+ to {
+ opacity: 1;
+ transform: translateY(0);
+}
+}
+.manage-domain-txt {
+	font-family: Muli;
+	font-size: 14px;
+	letter-spacing: 0.1px;
+	line-height: 20px;
+	width: 563px;
+	color: #91919C;
+	margin-bottom:40px;
+}
+.manage-domain-txt h2 {
+	color: #24233A;
+	font-size: 19px;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	line-height: 24px;
+	margin-bottom:5px;
+}
+.btn {
+	border:none;
+}
+.panel-heading2 h2 {
+	font-size: 26px;
+	font-weight: 800;
+	letter-spacing: 0.2px;
+	line-height: 33px;
+}
+.input-group-text {
+	background:none;
+	border-right:none;
+}
+.search-filed1 {
+	border-left:none;
+}
+.user-img {
+	width: 25px;
+	height: 25px;
+	border-radius: 50%;
+}
+.domain-table table a {
+	font-weight:600;
+	color: #55AAFF;
+}
+.recent-msg {
+	width:100%;
+	float:left;
+	background:#ffffff;
+	padding:10px;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	line-height: 18px;
+	border: 1px dashed #D3D3D8;
+}
+/* The Overlay (background) */
+.overlay {
+	/* Height & width depends on how you want to reveal the overlay (see JS below) */   
+    height: 100%;
+	width: 0;
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	left: 0;
+	top: 0;
+	background-color: rgb(0,0,0); /* Black fallback color */
+	background-color: rgba(18, 32, 63, 0.95); /* Black w/opacity */
+	overflow-x: hidden; /* Disable horizontal scroll */
+	transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
+}
+/* Position the content inside the overlay */
+.overlay-content {
+	position: relative;
+	top: 25%; /* 25% from the top */
+	width: 100%; /* 100% width */
+	margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
+}
+/* The navigation links inside the overlay */
+.overlay a {
+	padding: 8px;
+	text-decoration: none;
+	font-size: 36px;
+	color: #818181;
+	display: block; /* Display block instead of inline */
+	transition: 0.3s; /* Transition effects on hover (color) */
+}
+/* When you mouse over the navigation links, change their color */
+.overlay a:hover, .overlay a:focus {
+	color: #f1f1f1;
+}
+/* Position the close button (top right corner) */
+.overlay .closebtn {
+	position: absolute;
+	top: 20px;
+	right: 45px;
+	font-size: 60px;
+}
+
+/* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
+@media screen and (max-height: 450px) {
+ .overlay a {
+font-size: 20px
+}
+ .overlay .closebtn {
+ font-size: 40px;
+ top: 15px;
+ right: 35px;
+}
+}
+.overlay-content {
+	color:#ffffff;
+}
+.add-domin-heading {
+	text-align:center;
+	color: #D3D3D8;
+	font-size: 14px;
+	letter-spacing: 0.2px;
+	line-height: 18px;
+	margin-bottom:40px;
+}
+.add-domin-heading h2 {
+	font-size: 30px;
+	font-weight: 800;
+	letter-spacing: 0.2px;
+	line-height: 38px;
+	color:#ffffff;
+}
+.btn2 {
+	height: 58px;
+	padding-left:28px;
+	padding-right:28px;
+	font-size:16px;
+}
+.add-domin {
+	width:100%;
+	float:left;
+}
+.add-domin-filed {
+	border:none;
+	background:none;
+	border-radius:0px;
+	border-bottom:#55AAFF solid 2px;
+	font-size:38px;
+	font-weight:600;
+	padding-left:0px;
+	color:#ffffff !important;
+	padding-bottom:5px;
+	height:55px;
+	padding-right:37px;
+}
+.add-domin-filed:focus {
+	background:none;
+	box-shadow:none;
+}
+.loader {
+	position:absolute;
+	bottom:5px;
+	right:0px;
+}
+svg path, svg rect {
+	fill: #aaaaaa;
+}
+.add-domin-filed {
+	position:relative;
+}
+.setting-left {
+	width:100%;
+	height:100%;
+	background:#E8EEF2;
+	padding-top:25px;
+}
+.p-0 {
+	padding:0px;
+}
+.left-heading {
+	color: #91919C;
+	font-size: 12px;
+	font-weight: bold;
+	letter-spacing: 0.3px;
+	line-height: 15px;
+	padding-left:25px;
+	margin-bottom:15px;
+}
+.setting-left ul {
+	margin:15px 0px 0px 0px;
+	padding:0px;
+}
+.setting-left ul li {
+	list-style:none;
+}
+.setting-left ul li a {
+	color: #24233A;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 18px;
+	padding:15px 15px;
+	display:block;
+	border-left:#E8EEF2 solid 3px;
+}
+.setting-left ul li a:hover {
+	background:#ffffff;
+	border-left:#55AAFF solid 3px;
+	text-decoration:none
+}
+.active2 {
+	background:#ffffff;
+	border-left:#55AAFF solid 3px !important;
+}
+.rules-table {
+	font-weight:600;
+}
+.searchpreview-cont .custom-select-lg {
+	color: #24233A;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 18px;
+}
+.searchpreview-cont .form-control-lg {
+	font-size:14px;
+	font-weight:600;
+}
+.btn-primary {
+	background:#55AAFF;
+}
+.btn, .form-control-lg {
+ border-radius: .2rem;
+}
+.searchpreview-cont {
+	color: #91919C;
+	font-size: 14px;
+	letter-spacing: 0.1px;
+	line-height: 20px;
+}
+.searchpreview-cont h4 {
+	font-size: 19px;
+	color: #24233A;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+	line-height: 24px;
+	margin-bottom:5px;
+}
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+	color: #fff;
+	background-color: #ffffff;
+	border-radius: 0px;
+}
+.nav-pills .nav-link {
+	border-left: #E8EEF2 solid 3px !important;
+	color:#24233A;
+}
+.nav-pills .nav-link.active {
+	border-left: #55AAFF solid 3px !important;
+	color: #24233A !important;
+	border-bottom:none !important;
+}
+
+.tab-pane
+{
+	padding-top:20px;
+	padding-bottom:20px;
+	min-height:500px;
+}
+
+
+.dataTables_info
+{
+	display:none;
+}
+
+table.dataTable.no-footer, table.dataTable thead th, table.dataTable thead td {
+	border-bottom: 1px solid #eeeeee;
+}
+
+.filters
+{
+	color: #24233A;
+font-size: 14px;
+font-weight: bold;
+line-height: 18px;
+padding: .375rem .75rem;
+font-size: 1rem;
+line-height:32px;
+color: #495057;
+background-color: #fff;
+border: 1px solid #ced4da;
+border-radius:0px;
+
+}

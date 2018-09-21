@@ -1,288 +1,139 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+form {border: 3px solid #f1f1f1;}
 
-    <meta http-equiv="Access-Control-Allow-Origin" content="*">
-    <header name = "Access-Control-Allow-Origin" value = "*" />
-
-
-  <title>jQuery UI Autocomplete - Remote datasource</title>
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-  <style>
-  .ui-autocomplete-loading {
-    /*background: white url("images/ui-anim_basic_16x16.gif") right center no-repeat;*/
-  }
-  .st-result {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 20px;
-    margin-bottom: 10px;
-}
-  </style>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script>
-  $( function() {
-    $( "#tabs" ).tabs({
-      beforeLoad: function( event, ui ) {
-        ui.jqXHR.fail(function() {
-          ui.panel.html(
-            "Couldn't load this tab. We'll try to fix this as soon as possible. " +
-            "If this wouldn't be a demo." );
-        });
-      }
-    });
-  } );
-  </script>
-
-  <script>
-
-// ================================================================================= //
-
-
-
-// Calling searching API based on user query and return to full_search_result
-function full_search(){
-   
-   $("#tabs").tabs({ active: 0 });
-    user_query = $('#searchengine').val();
-    gen_url  = 'http://13.232.131.155/search?domain=news-delaware&fl=url,title,og_description&q='+user_query+'&rows=22&start=10';
-    $.ajax({type: 'GET',url:gen_url,success:full_search_result,error:function (xhr, ajaxOptions, thrownError){console.log("Post Error");}})
-
-    $('#pno').val(1);
-    document.getElementById("page-start").innerHTML = parseInt(1);
-    document.getElementById("page-end").innerHTML = parseInt(10);
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
-function getpaginationresult(pno){
-    user_query = $('#searchengine').val();
-    pno_start = pno+0;
-    pno_end = 10;
-    
-    gen_url  = 'http://13.232.131.155/search?domain=news-delaware&fl=url,title,og_description&q='+user_query+'&rows='+pno_end+'&start='+pno_start+'';
-
-    document.getElementById('pno').value = pno;
-    $.ajax({type: 'GET',url:gen_url,success:full_search_result,error:function (xhr, ajaxOptions, thrownError){console.log("Post Error");}})
-
-    document.getElementById("page-start").innerHTML = parseInt(pno_start)+1;
-    document.getElementById("page-end").innerHTML = parseInt(pno_start)+10;
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
 }
 
-function full_search_result(search_response){
-try{
-
-if (typeof(search_response) == "object" ){
-
-if (search_response.result == "success")
-{
-
-// search result success
-total_result_count = search_response.response.numFound
-search_responce = search_response.response.docs
-/*console.log(total_result_count);
-console.log(search_response);*/
-document.getElementById("total-results").innerHTML = total_result_count;
-document.getElementById("search-trem").innerHTML = user_query;
-
-
-itemsPerPage =10;
-pages = Math.ceil(total_result_count / itemsPerPage);
-
-if (search_responce[0]) {
-  if (search_responce[0].title) {
-    $('#st-result-summary').css('display', 'block');
-  }
-}else{
-  $('#st-result-summary').css('display', 'none');
+button:hover {
+    opacity: 0.8;
 }
 
+.cancelbtn {
+    width: auto;
+    padding: 10px 18px;
+    background-color: #f44336;
+}
 
-var result_set = '';
-$.each(search_responce, function(index, search_data){
+.imgcontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+}
 
-    if (search_data.og_description) {
-      desc = search_data.og_description;
-    }else{
-      desc = '';
+img.avatar {
+    width: 40%;
+    border-radius: 50%;
+}
+
+.container {
+    padding: 16px;
+}
+
+span.psw {
+    float: right;
+    padding-top: 16px;
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+    span.psw {
+       display: block;
+       float: none;
     }
-                  result_set += '<div class="st-result"><h3 class="title"><a href="'+search_data.url[0]+'" class="st-search-result-link">'+search_data.title[0]+' </a></h3><div class="st-metadata"><span class="st-snippet">'+desc+'</span></div></div><br>';
-
-})
-
-document.getElementById("total-results-set").innerHTML = result_set;
-
-itemsPerPage =10;
-pages = Math.ceil(total_result_count / itemsPerPage);
-
-cpno = document.getElementById("pno").value;
-
-
-var pagination = '';
-var count = 0;
-for (var i = 0; i < pages; i++) {
-  pno = i+1;
-
- if (cpno) {
-  
-    if (cpno<4 || cpno==4) {
-
-      if (pno == cpno ) {
-          pagination +='<li class="page-item"><input class="page-link" type="button" value="' + pno + '" onClick="getpaginationresult(\'' + pno + '\')" style="background: #0056b3;color: #fff;"/> </li>'; 
-          count = parseInt(count)+1;
-       }else{
-          pagination +='<li class="page-item"><input class="page-link" type="button" value="' + pno + '" onClick="getpaginationresult(\'' + pno + '\')" /></li>'; 
-          count = parseInt(count)+1;
-       }
-
-    }else if(cpno>4){
-      minpage = parseInt(cpno)-3;
-      maxpage = parseInt(cpno)+3
-
-      if (minpage<pno && maxpage>pno) {
-      
-        if (pno == cpno ) {
-          pagination +='<li class="page-item"><input class="page-link" type="button" value="' + pno + '" onClick="getpaginationresult(\'' + pno + '\')" style="background: #0056b3;color: #fff;"/> </li>'; 
-          count = parseInt(count)+1;
-       }else{
-          pagination +='<li class="page-item"><input class="page-link" type="button" value="' + pno + '" onClick="getpaginationresult(\'' + pno + '\')" /></li>'; 
-          count = parseInt(count)+1;
-       }
-
-      }
-
+    .cancelbtn {
+       width: 100%;
     }
-
- }
-  
-  if (count == 6) { break; }
-};
-document.getElementById("cpagination").innerHTML = pagination;
-
 }
-else{
-// search result failed
-console.log("search result failed")
-}
-}else{console.log("search failed > not received json")}
-//console.log(search_response)
-}
-catch(err){console.log("full_search_result> Error>"+err);}
-}
-
-
-
-// =============================================================================== //
-  $( function() {
-
-    $("#searchengine").autocomplete({
-        source: function (request, response) {
-            var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-           user_query = $('#searchengine').val();
-            $.ajax({
-                url: "http://13.232.131.155/suggest?domain=news-delaware&q="+user_query,
-                dataType: "json",
-                success: function (data) { 
-
-                    var docs = JSON.stringify(data.suggest.mySuggester);
- 
-                     var jsonData = JSON.parse(docs);
-                     if (jsonData[user_query] != undefined) {
-                        var sug_list = jsonData[user_query]['suggestions'];
-                     }else{
-                        var sug_list = '';
-                     }
-                     
-                     response($.map(sug_list, function(value, key) {
-   
-                     return {
-
-                      label : value.term,
-                      value : value.term
-
-                     }
-
-                     }));                     
-
-                }
-            });
-        },
-       /* select: function( event, ui ) {
-                      window.location.href = ui.item.value;
-                    }*/
-    });
-
-
-  });
-  </script>
-
-
+</style>
 </head>
 <body>
+
+<h2>Login Form</h2>
+
+  <div class="imgcontainer">
+    <img src="img_avatar2.png" alt="Avatar" class="avatar">
+  </div>
+
   <div class="container">
+    <label for="uname"><b>Username</b></label>
+    <input type="text" placeholder="Enter Username" id="uname" name="uname" required>
 
-      <br>
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" id="psw" name="psw" required>
+        
+    <button type="button" onclick="login()">Login</button>
+    <label>
+      <input type="checkbox" checked="checked" name="remember"> Remember me
+    </label>
+  </div>
 
-        <div class="input-group mb-3">
-          <input  id="searchengine" name="query" type="text" class="form-control" placeholder="Search Here" aria-label="Recipient's username" aria-describedby="basic-addon2">
-          <div class="input-group-append">
-            <input type="submit" onclick="full_search()" class="btn btn-outline-secondary" type="button" placeholder="Search">
-            
-          </div>
-        </div>
-
-
-      <div class="row">
-          <div class="col-md-12">
-
-            <div id="tabs">
-              <ul>
-                <li><a href="#tabs-1">All results</a></li>
-                <li><a href="pdfsearch.html">PDF</a></li>
-                <li><a href="globalsearch.html">Global Search</a></li>
-              </ul>
-              <div id="tabs-1">
-
-                <div id="results-container">
-                       <br>
-                       <div style="display: none" id="st-result-summary" class="alert alert-info">Showing <strong id="page-start">1</strong> - <strong id="page-end">10</strong> of <strong id="total-results">0</strong> results for "<strong id="search-trem">351</strong>"</div>
-                       <br>
-                       <div id="total-results-set">
-
-                       </div>
-                      
+  <div class="container" style="background-color:#f1f1f1">
+    <button type="button" class="cancelbtn">Cancel</button>
+    <span class="psw">Forgot <a href="#">password?</a></span>
+  </div>
 
 
-                       <br/> <br/>
-                      
-                       <!-- pagination -->
-                      <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-center" id="cpagination">
-                          
-                        </ul>
-                      </nav>
-                      <input type="hidden" value="1" id="pno"> 
+<script src="js/jquery-3.3.1.js"></script> 
+<script>
+// Login function
+function login(){
+var form = new FormData();
+uname = $("#uname").val();
+psw = $("#psw").val();
+form.append("user_name", uname);
+form.append("user_password", psw);
 
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "/portal/login",
+  "dataType": "json",
+  "method": "POST",
+  "headers": {
+    "Cache-Control": "no-cache",
+  },
+  "processData": false,
+  "contentType": false,
+  "mimeType": "multipart/form-data",
+  "data": form
+}
 
-                    </div>
+$.ajax(settings).done(function (response) {
 
+  //response = $.parseJSON(response);
+  console.log(response)
 
-              </div>
-            </div>
+  if (response.result == "success" ){
 
+    $(location).attr('href', 'domain.html')
+  }
+  else{
 
+    alert(response.message)
+  }
 
-
-          </div>
-      </div>
-
-
-</div>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
+});
+}
+</script>
 </body>
 </html>
