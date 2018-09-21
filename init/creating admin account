@@ -1,0 +1,4 @@
+# Creating mongodb admin account ( set ISODate date before run )
+use accounts
+db.createCollection("users")
+db.users.insert({"FirstName":"admin","LastName":"admin","_id":"admin","Email":"admin@localhost.com","PasswordHash":"23d42f5f3f66498b2c8ff4c20b8c5ac826e47146","AccountStatus":"Active","AccountCreatedDate":ISODate("2018-09-20T01:11:18.965Z"),"AccountCreatedIP":"127.0.0.1","MaximumDomains":1000000,"MaximumEngines":1000000,"MaximumDomainsInEngine":1000000,"AccountType":"admin","LicenceStart":ISODate("2018-09-20T01:11:18.965Z"),"LicenceEnd":ISODate("2100-10-02T01:11:18.965Z"),"Engines":[]})
