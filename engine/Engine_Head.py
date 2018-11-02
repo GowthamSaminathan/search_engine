@@ -82,7 +82,7 @@ class run_crawler():
 			starting_url = self.DomainName
 			ename = self.task_details.get("engine_name")
 
-			results = self.mdb_collect.update_one({"EngineName":ename,"_id":starting_url},
+			results = self.mdb_collect.update_one({"_id":starting_url},
 				{"$set":{"status":"pending","version":self.crawl_version}},upsert=True)
 			
 			if results.modified_count != None:
@@ -108,7 +108,6 @@ class run_crawler():
 			self.ManualUrls = self.user_default_settings.get("ManualUrls")
 			self.DomainName = self.user_default_settings.get("DomainName")
 			self.free_workers = advanced_settings.get("ParallelCrawler")
-			self.free_workers = 25
 			max_workers = self.free_workers
 			ename = self.task_details.get("engine_name")
 			dname = self.task_details.get("domain_name")
@@ -121,14 +120,14 @@ class run_crawler():
 					await asyncio.sleep(2)
 					if self.free_workers < 1:
 						continue;
-					url_info = self.mdb_collect.find({"status":"pending","EngineName":ename}).limit(self.free_workers)
+					url_info = self.mdb_collect.find({"status":"pending"}).limit(self.free_workers)
 					url_info = list(url_info)
 					print(url_info)
 					if len(url_info) < 1:
 						#Check if any running URL
 						await asyncio.sleep(2)
 						#print("No Pending URL found, Checking for running URL")
-						run_status = self.mdb_collect.find_one({"status":"running","EngineName":ename})
+						run_status = self.mdb_collect.find_one({"status":"running"})
 						#print("Current Running>"+str(len(url_info)))
 						if run_status == None:
 							print("Crawl completed for > Engine > "+ename+" Domain > "+dname)
@@ -149,6 +148,7 @@ class run_crawler():
 							loop.create_task(self.page_crawl(url_data.get("_id")))
 			print("page crawller completed...")
 		except Exception:
+			self.crawl_message = "Error found"
 			logger.exception("page_crawl_init")
 	
 	async def page_crawl(self,url):
@@ -193,19 +193,20 @@ class run_crawler():
 
 			# Make current URL as completed state
 			#print("Completed> "+url)
-			self.mdb_collect.update_one({"EngineName":ename,"_id":url},
+			self.mdb_collect.update_one({"_id":url},
 					{"$set":{"status":"completed"}})
 			
 			for new_url in new_urls:
 				# If "new_url" not in database then insert
-				results = self.mdb_collect.update_one({"EngineName":ename,"_id":new_url},{"$setOnInsert": {"status":"pending","version":
+				results = self.mdb_collect.update_one({"_id":new_url},{"$setOnInsert": {"status":"pending","version":
 					self.crawl_version,"_id":new_url}},upsert=True)
 
 				if results.modified_count != None:
 					# If "new_url" in database and version not matched with current then update the current version and with pending as status
-					self.mdb_collect.update_one({"EngineName":ename,"_id":new_url,"version":{"$ne":self.crawl_version}},
+					self.mdb_collect.update_one({"_id":new_url,"version":{"$ne":self.crawl_version}},
 						{"$set":{"status":"pending","version":self.crawl_version}})
 		except Exception:
+			self.crawl_message = "Error found"
 			logger.exception("page_crawl")
 		
 		finally:
@@ -223,6 +224,8 @@ class run_crawler():
 			self.crawl_info = dict()
 			self.crawl_settings = dict()
 			self.crawl_version = datetime.datetime.utcnow()
+			self.crawl_message = "Good"
+			self.page_info = dict()
 			
 			#print(self.task_details)
 			#self.red_db.hgetall()
@@ -245,7 +248,13 @@ class run_crawler():
 			
 			self.mdb_db = self.mdb_client["Crawl_DB"]
 			user_id = self.task_details.get("user_id")
-			self.mdb_collect = self.mdb_db[user_id]
+			self.mdb_collect = self.mdb_db[user_id+"_"+ename+"_history"]
+
+			# Insert the initial crawling starting status to DB
+			self.mdb_collect.update_one({"version":self.crawl_version},{"$set":{"crawl_start":self.crawl_version,
+				"crawl_end":0,"current_status":"running"}},upsert=True)
+			
+			self.mdb_collect = self.mdb_db[user_id+"_"+ename]
 
 			self.loop = asyncio.new_event_loop()
 			asyncio.set_event_loop(self.loop)
@@ -256,7 +265,23 @@ class run_crawler():
 
 			# Starting loop
 			self.loop.run_until_complete(asyncio.wait(self.tasks))
+			end_time = datetime.datetime.utcnow()
+			crawling_time = end_time - self.crawl_version
+			crawling_time = crawling_time.seconds
 			print("Task Completed > Engine > "+ename+" Domain > "+dname)
+			
+			# Update the final crawling starting status to DB
+			self.mdb_collect = self.mdb_db[user_id+"_"+ename+"_history"]
+			self.mdb_collect.update_one({"version":self.crawl_version},{"$set":{"crawl_start":self.crawl_version,"crawling_sec":
+				crawling_time,"domain":dname,"crawl_end":end_time,"current_status":"completed",
+				"message":self.crawl_message,"page_info":self.page_info}})
+			
+			# Update completed status in Redius server
+			red_ser = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
+			task_key = self.task_details.get("task_key")
+			red_ser.delete(task_key)
+			
+			#Exit the process
 			self.loop.close()
 		except Exception:
 			logger.exception("check_new_crawl_job")
@@ -282,6 +307,8 @@ class start_main():
 					if task_status == "not started":
 						self.red.hset(task,"status","started")
 						task_details = self.red.hgetall(task)
+						# Add task key name to task details 
+						task_details.update({"task_key":task})
 						print("New Task found>"+str(task_details))
 						p = multiprocessing.Process(target=crawler.init_crawl,args=(task_details,))
 						p.start()
