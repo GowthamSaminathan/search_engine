@@ -49,7 +49,6 @@ class run_crawler():
 
 	async def main_flow(self,loop):
 		try:
-
 			print("Main flow initialized...")
 			advanced_settings = self.user_default_settings.get("AdvancedSettings")
 			#print(advanced_settings)
@@ -71,6 +70,7 @@ class run_crawler():
 				robot_url = urllib.parse.urljoin(self.DomainName,"robots.txt")
 				logger.info("Allow Robot.txt : yes")
 				res = await self.http_req(robot_url,retry=1,timeout=10)
+
 				if res == None:
 					print("Domain reachability failed :"+self.DomainName)
 				if res.status == 200:
@@ -99,12 +99,15 @@ class run_crawler():
 	async def page_crawl_init(self,loop):
 		try:
 			print("page crawller initialized...")
+			self.visted_urls_count = 0
+			self.http_status_code = dict()
+			self.app_types = dict()
 			advanced_settings = self.user_default_settings.get("AdvancedSettings")
 			self.BlackListUrls = self.user_default_settings.get("BlackListUrls")
 			self.WhiteListUrls = self.user_default_settings.get("WhiteListUrls")
 			self.ManualUrlsOnly = self.user_default_settings.get("ManualUrlsOnly")
 			self.BlackListApp = self.user_default_settings.get("BlackListApp")
-			self.BlackListApp = self.user_default_settings.get("WhiteListApp")
+			self.WhiteListApp = self.user_default_settings.get("WhiteListApp")
 			self.ManualUrls = self.user_default_settings.get("ManualUrls")
 			self.DomainName = self.user_default_settings.get("DomainName")
 			self.free_workers = advanced_settings.get("ParallelCrawler")
@@ -122,7 +125,6 @@ class run_crawler():
 						continue;
 					url_info = self.mdb_collect.find({"status":"pending"}).limit(self.free_workers)
 					url_info = list(url_info)
-					print(url_info)
 					if len(url_info) < 1:
 						#Check if any running URL
 						await asyncio.sleep(2)
@@ -146,11 +148,40 @@ class run_crawler():
 							#print("Creating Task....")
 							self.free_workers = self.free_workers - 1
 							loop.create_task(self.page_crawl(url_data.get("_id")))
+			
+			self.page_info.update({"visted":self.visted_urls_count,"http_status":self.http_status_code,
+				"application_count":self.app_types})
 			print("page crawller completed...")
 		except Exception:
 			self.crawl_message = "Error found"
 			logger.exception("page_crawl_init")
 	
+	def count_application_types(self,application_type):
+		try:
+			# Count the application types
+			if application_type != None:
+				if self.app_types.get(str(application_type)) == None:
+					self.app_types.update({str(application_type):1})
+				else:
+					a = self.app_types.get(str(application_type))
+					self.app_types.update({str(application_type):a+1})
+		except Exception:
+			logger.exception("count_application_types")
+
+
+	def count_http_code(self,resp_status):
+		try:
+			# Count the responce code
+			if(type(resp_status) == int):
+				if self.http_status_code.get(str(resp_status)) == None:
+					self.http_status_code.update({str(resp_status):1})
+				else:
+					a = self.http_status_code.get(str(resp_status))
+					self.http_status_code.update({str(resp_status):a+1})
+		except Exception:
+			logger.exception("count_http_code")
+
+
 	async def page_crawl(self,url):
 		# Create a http connection to given url
 		# Extract the URL from page content
@@ -162,10 +193,14 @@ class run_crawler():
 			timeout = aiohttp.ClientTimeout(sock_connect=500)
 			async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
 				async with session.get(url) as resp:
+					# Count the responce code
 					if resp != None:
+						self.count_http_code(resp.status)
+						self.visted_urls_count = self.visted_urls_count + 1
 						content_typ = resp.headers.get('content-type')
-						application_type = guess_extension(content_typ.split(";")[0])
 						if resp.status == 200:
+							application_type = guess_extension(content_typ.split(";")[0])
+							self.count_application_types(application_type)
 							payload = await resp.content.read()
 							if application_type == ".html" or application_type == ".htm":
 								html_data = payload
@@ -207,6 +242,7 @@ class run_crawler():
 						{"$set":{"status":"pending","version":self.crawl_version}})
 		except Exception:
 			self.crawl_message = "Error found"
+			self.craw_fin = True
 			logger.exception("page_crawl")
 		
 		finally:
