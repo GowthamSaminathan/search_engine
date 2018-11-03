@@ -36,12 +36,13 @@ class run_crawler():
 
 	async def http_req(self,url,retry,timeout):
 		try:
+			headers = {"User-Agent":"superman"}
 			for x in range(retry):
 				print("Crawling>"+url)
 				conn = aiohttp.TCPConnector()
 				timeout = aiohttp.ClientTimeout(sock_connect=500)
 				async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
-					async with session.get(url) as resp:
+					async with session.get(url,headers=headers) as resp:
 						return resp
 				print("Retry:"+str(x))
 		except Exception as e:
@@ -282,8 +283,9 @@ class run_crawler():
 			new_urls = []
 			conn = aiohttp.TCPConnector()
 			timeout = aiohttp.ClientTimeout(sock_connect=500)
+			headers = {"User-Agent":"superman"}
 			async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
-				async with session.get(url) as resp:
+				async with session.get(url,headers=headers) as resp:
 					# Count the responce code
 					if resp != None:
 						self.count_http_code(resp.status)
@@ -293,23 +295,36 @@ class run_crawler():
 							application_type = guess_extension(content_typ.split(";")[0])
 							self.count_application_types(application_type)
 							payload = await resp.content.read()
-							if application_type == ".html" or application_type == ".htm":
-								html_data = payload
-								beauty_data = BeautifulSoup(html_data,"html.parser")
-								all_href = beauty_data.find_all('a',href=True)
-								for href in all_href:
-									href = href['href']
-									extraced_url = urllib.parse.urljoin(str(resp.url),href)
-									for domain_patten in self.WhiteListUrls:
-										if urlmatch(domain_patten,extraced_url) == True:
-											#print("URL Matched:"+extraced_url+", Patten:"+domain_patten)
-											new_urls.append(extraced_url)
-											#logger.info(extraced_url)
-										else:
-											pass
-											#print("URL Not Matched:"+extraced_url+", Patten:"+domain_patten)
+							if application_type in self.WhiteListApp:
+								if application_type == ".html" or application_type == ".htm":
+									html_data = payload
+									beauty_data = BeautifulSoup(html_data,"html.parser")
+									all_href = beauty_data.find_all('a',href=True)
+									for href in all_href:
+										black_list = False
+										href = href['href']
+										extraced_url = urllib.parse.urljoin(str(resp.url),href)
+										if len(self.BlackListUrls) > 0:
+											# Check if given url is blacklisted
+											for domain_patten in self.BlackListUrls:
+												if urlmatch(domain_patten,extraced_url) == True:
+													print("Url Black listed >"+extraced_url+" >Patten >"+domain_patten)
+													black_list = True
+													break
+										if black_list == True:
+											continue
+										for domain_patten in self.WhiteListUrls:
+											if urlmatch(domain_patten,extraced_url) == True:
+												#print("URL Matched:"+extraced_url+", Patten:"+domain_patten)
+												new_urls.append(extraced_url)
+												#logger.info(extraced_url)
+											else:
+												pass
+												#print("URL Not Matched:"+extraced_url+", Patten:"+domain_patten)
+								else:
+									print("New application >"+str(application_type)+str(" >")+url)
 							else:
-								print("New application>"+str(application_type))
+								print("Application not white listed >"+str(application_type)+str(" >")+url)
 						else:
 							print("Response code:"+str(resp.status))
 			#print(new_urls)
