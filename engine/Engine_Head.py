@@ -18,6 +18,8 @@ import aiohttp
 from mimetypes import guess_extension
 from bs4 import BeautifulSoup
 from urlmatch import urlmatch
+from support import *
+
 
 logger =  logging.getLogger("Rotating Log websnap")
 logger.setLevel(logging.DEBUG)
@@ -41,9 +43,12 @@ class run_crawler():
 				print("Crawling>"+url)
 				conn = aiohttp.TCPConnector()
 				timeout = aiohttp.ClientTimeout(sock_connect=500)
+				
 				async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
 					async with session.get(url,headers=headers) as resp:
-						return resp
+						# Read as Text
+						payload = await resp.text()
+						return {"payload":payload,"status":resp.status}
 				print("Retry:"+str(x))
 		except Exception as e:
 			print(e)
@@ -160,8 +165,9 @@ class run_crawler():
 			self.BlackListApp = self.user_default_settings.get("WhiteListApp")
 			self.ManualUrls = self.user_default_settings.get("ManualUrls")
 			self.DomainName = self.user_default_settings.get("DomainName")
-			self.robots_txt = None
-			self.sitemap = None
+			self.robot_disallowed = []
+			self.robot_allowed = []
+			self.site_map_files = []
 
 			#print(self.user_default_settings)
 			# Check Robot.txt is allowed
@@ -173,8 +179,15 @@ class run_crawler():
 
 				if res == None:
 					print("Domain reachability failed :"+self.DomainName)
-				if res.status == 200:
+				elif res.get("status") == 200:
 					print("Got robots.txt file")
+					robo_status = robot_txt_reader(res.get("payload"),"spiderman",logger)
+					if robo_status != None:
+						self.site_map_files = robo_status.get("site_map")
+						self.robot_disallowed = robo_status.get("disallowed")
+						self.robot_allowed = robo_status.get("allowed")
+					else:
+						print("Robottxt error")
 				else:
 					print("robots.txt failed > http.status="+str(res.status))
 
@@ -291,24 +304,44 @@ class run_crawler():
 						self.count_http_code(resp.status)
 						self.visted_urls_count = self.visted_urls_count + 1
 						content_typ = resp.headers.get('content-type')
+						
 						if resp.status == 200:
+							
 							application_type = guess_extension(content_typ.split(";")[0])
 							self.count_application_types(application_type)
 							payload = await resp.content.read()
+							
+							# Check for user whitelist application
 							if application_type in self.WhiteListApp:
 								if application_type == ".html" or application_type == ".htm":
 									html_data = payload
 									beauty_data = BeautifulSoup(html_data,"html.parser")
 									all_href = beauty_data.find_all('a',href=True)
+									
+									# Get all href in page
 									for href in all_href:
 										black_list = False
+										robot_black_list = False
 										href = href['href']
 										extraced_url = urllib.parse.urljoin(str(resp.url),href)
+
+
+										# Check if url is allowed or blocked in robots.txt
+										for domain_patten in self.robot_disallowed:
+											domain_patten = urllib.parse.urljoin(str(resp.url),domain_patten)
+											if urlmatch(domain_patten,extraced_url) == True:
+												print("Url Black listed by robots.txt>"+extraced_url+" >Patten >"+domain_patten)
+												robot_black_list = True
+												break
+										if robot_black_list == True:
+											continue
+
+										# Check for user blacklist and whitelist url's
 										if len(self.BlackListUrls) > 0:
 											# Check if given url is blacklisted
 											for domain_patten in self.BlackListUrls:
 												if urlmatch(domain_patten,extraced_url) == True:
-													print("Url Black listed >"+extraced_url+" >Patten >"+domain_patten)
+													print("Url Black listed by user>"+extraced_url+" >Patten >"+domain_patten)
 													black_list = True
 													break
 										if black_list == True:
@@ -321,10 +354,11 @@ class run_crawler():
 											else:
 												pass
 												#print("URL Not Matched:"+extraced_url+", Patten:"+domain_patten)
+								
 								else:
 									print("New application >"+str(application_type)+str(" >")+url)
 							else:
-								print("Application not white listed >"+str(application_type)+str(" >")+url)
+								print("Application not white listed by user>"+str(application_type)+str(" >")+url)
 						else:
 							print("Response code:"+str(resp.status))
 			#print(new_urls)
