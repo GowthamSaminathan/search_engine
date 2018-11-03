@@ -47,115 +47,6 @@ class run_crawler():
 		except Exception as e:
 			print(e)
 
-	async def main_flow(self,loop):
-		try:
-			print("Main flow initialized...")
-			advanced_settings = self.user_default_settings.get("AdvancedSettings")
-			#print(advanced_settings)
-			self.allow_robot = advanced_settings.get("Allow Robot.txt")
-			self.BlackListUrls = self.user_default_settings.get("BlackListUrls")
-			self.WhiteListUrls = self.user_default_settings.get("WhiteListUrls")
-			self.ManualUrlsOnly = self.user_default_settings.get("ManualUrlsOnly")
-			self.BlackListApp = self.user_default_settings.get("BlackListApp")
-			self.BlackListApp = self.user_default_settings.get("WhiteListApp")
-			self.ManualUrls = self.user_default_settings.get("ManualUrls")
-			self.DomainName = self.user_default_settings.get("DomainName")
-			self.robots_txt = None
-			self.sitemap = None
-
-			#print(self.user_default_settings)
-			# Check Robot.txt is allowed
-			if self.allow_robot == "yes":
-				# Read robot.txt
-				robot_url = urllib.parse.urljoin(self.DomainName,"robots.txt")
-				logger.info("Allow Robot.txt : yes")
-				res = await self.http_req(robot_url,retry=1,timeout=10)
-
-				if res == None:
-					print("Domain reachability failed :"+self.DomainName)
-				if res.status == 200:
-					print("Got robots.txt file")
-				else:
-					print("robots.txt failed > http.status="+str(res.status))
-
-			# Add starting Point of the crawl
-			starting_url = self.DomainName
-			ename = self.task_details.get("engine_name")
-
-			results = self.mdb_collect.update_one({"_id":starting_url},
-				{"$set":{"status":"pending","version":self.crawl_version}},upsert=True)
-			
-			if results.modified_count != None:
-				# Triger crawller to start check the pending crawl
-				self.craw_fin = False
-			else:
-				# Failed to add starting point url
-				print("Failed to add stating point to crawl")
-				self.craw_fin = True
-
-		except Exception:
-			logger.exception("main_flow")
-
-	async def page_crawl_init(self,loop):
-		try:
-			print("page crawller initialized...")
-			self.visted_urls_count = 0
-			self.http_status_code = dict()
-			self.app_types = dict()
-			advanced_settings = self.user_default_settings.get("AdvancedSettings")
-			self.BlackListUrls = self.user_default_settings.get("BlackListUrls")
-			self.WhiteListUrls = self.user_default_settings.get("WhiteListUrls")
-			self.ManualUrlsOnly = self.user_default_settings.get("ManualUrlsOnly")
-			self.BlackListApp = self.user_default_settings.get("BlackListApp")
-			self.WhiteListApp = self.user_default_settings.get("WhiteListApp")
-			self.ManualUrls = self.user_default_settings.get("ManualUrls")
-			self.DomainName = self.user_default_settings.get("DomainName")
-			self.free_workers = advanced_settings.get("ParallelCrawler")
-			max_workers = self.free_workers
-			ename = self.task_details.get("engine_name")
-			dname = self.task_details.get("domain_name")
-			while self.craw_fin != True:
-				#print("Free Workers:"+str(self.free_workers)+"/"+str(max_workers))
-				if self.craw_fin == None:
-					await asyncio.sleep(0.5)
-					continue;
-				else:
-					await asyncio.sleep(2)
-					if self.free_workers < 1:
-						continue;
-					url_info = self.mdb_collect.find({"status":"pending"}).limit(self.free_workers)
-					url_info = list(url_info)
-					if len(url_info) < 1:
-						#Check if any running URL
-						await asyncio.sleep(2)
-						#print("No Pending URL found, Checking for running URL")
-						run_status = self.mdb_collect.find_one({"status":"running"})
-						#print("Current Running>"+str(len(url_info)))
-						if run_status == None:
-							print("Crawl completed for > Engine > "+ename+" Domain > "+dname)
-							self.craw_fin = True
-					else:
-						print("Pending>"+str(url_info[0].get("_id")))
-						# Pending URL found in DB
-						# Convert mongodb cursor to list
-						url_info = list(url_info)
-						pending_id = []
-						for url_data in url_info:
-							pending_id.append(url_data.get("_id"))
-						self.mdb_collect.update_many({"_id":{"$in":pending_id}},{"$set":
-							{"status":"running","version":self.crawl_version}})
-						for url_data in url_info:
-							#print("Creating Task....")
-							self.free_workers = self.free_workers - 1
-							loop.create_task(self.page_crawl(url_data.get("_id")))
-			
-			self.page_info.update({"visted":self.visted_urls_count,"http_status":self.http_status_code,
-				"application_count":self.app_types})
-			print("page crawller completed...")
-		except Exception:
-			self.crawl_message = "Error found"
-			logger.exception("page_crawl_init")
-	
 	def count_application_types(self,application_type):
 		try:
 			# Count the application types
@@ -180,73 +71,6 @@ class run_crawler():
 					self.http_status_code.update({str(resp_status):a+1})
 		except Exception:
 			logger.exception("count_http_code")
-
-
-	async def page_crawl(self,url):
-		# Create a http connection to given url
-		# Extract the URL from page content
-		# Add extracted URL to DB for crawl
-		try:
-			print("Running> "+url)
-			new_urls = []
-			conn = aiohttp.TCPConnector()
-			timeout = aiohttp.ClientTimeout(sock_connect=500)
-			async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
-				async with session.get(url) as resp:
-					# Count the responce code
-					if resp != None:
-						self.count_http_code(resp.status)
-						self.visted_urls_count = self.visted_urls_count + 1
-						content_typ = resp.headers.get('content-type')
-						if resp.status == 200:
-							application_type = guess_extension(content_typ.split(";")[0])
-							self.count_application_types(application_type)
-							payload = await resp.content.read()
-							if application_type == ".html" or application_type == ".htm":
-								html_data = payload
-								beauty_data = BeautifulSoup(html_data,"html.parser")
-								all_href = beauty_data.find_all('a',href=True)
-								for href in all_href:
-									href = href['href']
-									extraced_url = urllib.parse.urljoin(str(resp.url),href)
-									for domain_patten in self.WhiteListUrls:
-										if urlmatch(domain_patten,extraced_url) == True:
-											#print("URL Matched:"+extraced_url+", Patten:"+domain_patten)
-											new_urls.append(extraced_url)
-											#logger.info(extraced_url)
-										else:
-											pass
-											#print("URL Not Matched:"+extraced_url+", Patten:"+domain_patten)
-							else:
-								print("New application>"+str(application_type))
-						else:
-							print("Response code:"+str(resp.status))
-			#print(new_urls)
-
-			ename = self.task_details.get("engine_name")
-			dname = self.task_details.get("domain_name")
-
-			# Make current URL as completed state
-			#print("Completed> "+url)
-			self.mdb_collect.update_one({"_id":url},
-					{"$set":{"status":"completed"}})
-			
-			for new_url in new_urls:
-				# If "new_url" not in database then insert
-				results = self.mdb_collect.update_one({"_id":new_url},{"$setOnInsert": {"status":"pending","version":
-					self.crawl_version,"_id":new_url}},upsert=True)
-
-				if results.modified_count != None:
-					# If "new_url" in database and version not matched with current then update the current version and with pending as status
-					self.mdb_collect.update_one({"_id":new_url,"version":{"$ne":self.crawl_version}},
-						{"$set":{"status":"pending","version":self.crawl_version}})
-		except Exception:
-			self.crawl_message = "Error found"
-			self.craw_fin = True
-			logger.exception("page_crawl")
-		
-		finally:
-			self.free_workers = self.free_workers + 1
 
 	def init_crawl(self,task_details):
 		try:
@@ -295,8 +119,8 @@ class run_crawler():
 			self.loop = asyncio.new_event_loop()
 			asyncio.set_event_loop(self.loop)
 
-			self.tasks.append(asyncio.ensure_future(self.main_flow(self.loop)))
-			self.tasks.append(asyncio.ensure_future(self.page_crawl_init(self.loop)))
+			self.tasks.append(asyncio.ensure_future(self.main_flow()))
+			self.tasks.append(asyncio.ensure_future(self.page_crawl_init()))
 			#tasks.append(asyncio.ensure_future(start_task(loop))
 
 			# Starting loop
@@ -321,6 +145,202 @@ class run_crawler():
 			self.loop.close()
 		except Exception:
 			logger.exception("check_new_crawl_job")
+
+	async def main_flow(self):
+		try:
+			print("Main flow initialized...")
+			advanced_settings = self.user_default_settings.get("AdvancedSettings")
+			#print(advanced_settings)
+			self.allow_robot = advanced_settings.get("Allow Robot.txt")
+			self.BlackListUrls = self.user_default_settings.get("BlackListUrls")
+			self.WhiteListUrls = self.user_default_settings.get("WhiteListUrls")
+			self.ManualUrlsOnly = self.user_default_settings.get("ManualUrlsOnly")
+			self.BlackListApp = self.user_default_settings.get("BlackListApp")
+			self.BlackListApp = self.user_default_settings.get("WhiteListApp")
+			self.ManualUrls = self.user_default_settings.get("ManualUrls")
+			self.DomainName = self.user_default_settings.get("DomainName")
+			self.robots_txt = None
+			self.sitemap = None
+
+			#print(self.user_default_settings)
+			# Check Robot.txt is allowed
+			if self.allow_robot == "yes":
+				# Read robot.txt
+				robot_url = urllib.parse.urljoin(self.DomainName,"robots.txt")
+				logger.info("Allow Robot.txt : yes")
+				res = await self.http_req(robot_url,retry=1,timeout=10)
+
+				if res == None:
+					print("Domain reachability failed :"+self.DomainName)
+				if res.status == 200:
+					print("Got robots.txt file")
+				else:
+					print("robots.txt failed > http.status="+str(res.status))
+
+			# Add starting Point of the crawl
+			starting_url = self.DomainName
+			ename = self.task_details.get("engine_name")
+
+			# Reset all status , To prevent If anything failed in previous crawl 
+			self.mdb_collect.update_many({},{"$set":{"status":"init"}})
+			
+			# Set initial URL to scrole
+			results = self.mdb_collect.update_one({"_id":starting_url},
+				{"$set":{"status":"pending","version":self.crawl_version}},upsert=True)
+			
+			if results.modified_count != None:
+				# Triger crawller to start check the pending crawl
+				self.craw_fin = False
+			else:
+				# Failed to add starting point url
+				print("Failed to add stating point to crawl")
+				self.craw_fin = True
+
+		except Exception:
+			logger.exception("main_flow")
+
+	async def page_crawl_init(self):
+		try:
+			print("page crawller initialized...")
+			self.visted_urls_count = 0
+			self.http_status_code = dict()
+			self.app_types = dict()
+			advanced_settings = self.user_default_settings.get("AdvancedSettings")
+			self.BlackListUrls = self.user_default_settings.get("BlackListUrls")
+			self.WhiteListUrls = self.user_default_settings.get("WhiteListUrls")
+			self.ManualUrlsOnly = self.user_default_settings.get("ManualUrlsOnly")
+			self.BlackListApp = self.user_default_settings.get("BlackListApp")
+			self.WhiteListApp = self.user_default_settings.get("WhiteListApp")
+			self.ManualUrls = self.user_default_settings.get("ManualUrls")
+			self.DomainName = self.user_default_settings.get("DomainName")
+			self.free_workers = advanced_settings.get("ParallelCrawler")
+			max_workers = self.free_workers
+			ename = self.task_details.get("engine_name")
+			dname = self.task_details.get("domain_name")
+			
+			# Connect redis server to check any termination request is present
+
+			red_ser = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
+			task_key = self.task_details.get("task_key")
+
+			while self.craw_fin != True:
+				#print("Free Workers:"+str(self.free_workers)+"/"+str(max_workers))
+				# Check if terminate is ser to"force" in redis DB
+				# If force then close the loop
+				terminate =red_ser.hget(task_key,"terminate")
+				if terminate == "force":
+					print("Force termination")
+					self.crawl_message = "terminated"
+					self.craw_fin = True
+				
+				if self.craw_fin == None:
+					await asyncio.sleep(1)
+					continue;
+				else:
+					#print("Free Workers:"+str(self.free_workers))
+					if self.free_workers < 1:
+						await asyncio.sleep(0.5)
+						continue;
+					
+					# Pass the loop to crate task
+					await asyncio.sleep(0.1) # If await not in this then it will not pass control to crate_task
+					url_info = self.mdb_collect.find({"status":"pending"}).limit(self.free_workers)
+					url_info = list(url_info)
+					#print("Pending URL count:"+str(len(url_info)))
+					if len(url_info) < 1:
+						#Check if any running URL
+						#print("No Pending URL found, Checking for running URL")
+						run_status = self.mdb_collect.find_one({"status":"running"})
+						#print("Current Running>"+str(len(url_info)))
+						if run_status == None:
+							print("Crawl completed for > Engine > "+ename+" Domain > "+dname)
+							self.craw_fin = True
+					else:
+						# Pending URL found in DB
+						# Convert mongodb cursor to list
+						pending_id = []
+						for url_data in url_info:
+							pending_id.append(url_data.get("_id"))
+							self.mdb_collect.update_many({"_id":{"$in":pending_id}},{"$set":{"status":"running","version":self.crawl_version}})
+							self.free_workers = self.free_workers - 1
+							self.loop.create_task(self.one_page_crawl(url_data.get("_id")))
+							
+			
+			self.page_info.update({"visted":self.visted_urls_count,"http_status":self.http_status_code,
+				"application_count":self.app_types})
+			print("page crawller completed...")
+		except Exception:
+			self.crawl_message = "Error found"
+			logger.exception("page_crawl_init")
+
+	async def one_page_crawl(self,url):
+		# Create a http connection to given url
+		# Extract the URL from page content
+		# Add extracted URL to DB for crawl
+		try:
+			print("Trying to Crawl> "+url)
+			new_urls = []
+			conn = aiohttp.TCPConnector()
+			timeout = aiohttp.ClientTimeout(sock_connect=500)
+			async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
+				async with session.get(url) as resp:
+					# Count the responce code
+					if resp != None:
+						self.count_http_code(resp.status)
+						self.visted_urls_count = self.visted_urls_count + 1
+						content_typ = resp.headers.get('content-type')
+						if resp.status == 200:
+							application_type = guess_extension(content_typ.split(";")[0])
+							self.count_application_types(application_type)
+							payload = await resp.content.read()
+							if application_type == ".html" or application_type == ".htm":
+								html_data = payload
+								beauty_data = BeautifulSoup(html_data,"html.parser")
+								all_href = beauty_data.find_all('a',href=True)
+								for href in all_href:
+									href = href['href']
+									extraced_url = urllib.parse.urljoin(str(resp.url),href)
+									for domain_patten in self.WhiteListUrls:
+										if urlmatch(domain_patten,extraced_url) == True:
+											#print("URL Matched:"+extraced_url+", Patten:"+domain_patten)
+											new_urls.append(extraced_url)
+											#logger.info(extraced_url)
+										else:
+											pass
+											#print("URL Not Matched:"+extraced_url+", Patten:"+domain_patten)
+							else:
+								print("New application>"+str(application_type))
+						else:
+							print("Response code:"+str(resp.status))
+			#print(new_urls)
+
+			ename = self.task_details.get("engine_name")
+			dname = self.task_details.get("domain_name")
+
+			# Make current URL as completed state
+			#print("Completed> "+url)
+			self.mdb_collect.update_one({"_id":url},
+					{"$set":{"status":"completed"}})
+			
+			print("Url:"+url+" >"+" Having > "+str(len(new_urls))+" Link(s)")
+			for new_url in new_urls:
+				# If "new_url" not in database then insert
+				results = self.mdb_collect.update_one({"_id":new_url},{"$setOnInsert": {"status":"pending","version":
+					self.crawl_version,"_id":new_url}},upsert=True)
+
+				if results.modified_count != None:
+					# If "new_url" in database and version not matched with current then update the current version and with pending as status
+					self.mdb_collect.update_one({"_id":new_url,"version":{"$ne":self.crawl_version}},
+						{"$set":{"status":"pending","version":self.crawl_version}})
+		except Exception:
+			self.crawl_message = "Error found"
+			self.craw_fin = True
+			logger.exception("one_page_crawl")
+		
+		finally:
+			self.free_workers = self.free_workers + 1
+
+	
 
 class start_main():
 	
