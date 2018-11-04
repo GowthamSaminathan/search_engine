@@ -1,11 +1,11 @@
-def robot_txt_reader(data,bot,p_logger):
+def robot_txt_reader(data,bot):
 	try:
 		data_list = []
 		allowed_url = []
 		disallowed_url = []
 		site_maps = []
 		crawl_delay = ""
-
+		
 		for line in data.split("\n"):
 			line = line.replace("\r","")
 			data_list.append(line)
@@ -33,8 +33,6 @@ def robot_txt_reader(data,bot,p_logger):
 					if len(url) > 1:
 						url = url[1].strip()
 						if url != "":
-							if url == "/":
-								url = url + "*"
 							disallowed_url.append(url)
 				
 				if line.find("Allowed:") != -1:
@@ -57,6 +55,6 @@ def robot_txt_reader(data,bot,p_logger):
 		#print(disallowed_url)
 		#print(allowed_url)
 		#print(site_maps)
-		return {"site_map":site_maps,"disallowed":disallowed_url,"allowed":allowed_url,"agent_found":agent_found}
-	except Exception:
-		p_logger.exception("check_new_crawl_job")
+		return {"site_map":site_maps,"disallowed":disallowed_url,"allowed_url":allowed_url,"agent_found":agent_found}
+	except Exception as e:
+		print("robot_txt_reader error")

@@ -1,0 +1,27 @@
+# Syslog configuration
+
+1)File: /etc/rsyslog.d/50-default.conf
+
+$template pser-template,"%syslogtag%%msg%\n"
+:syslogtag, isequal, "pser-engine:"  /var/log/pser-enginen.log; pser-template
+:syslogtag, isequal, "pser-portal:"  /var/log/pser-portal.log; pser-template
+
+2)File: /etc/rsyslog.conf
+
+# Not required
+#$RepeatedMsgReduction on
+
+3) Create File -> /etc/logrotate.d/pser-logs
+/var/log/pser-* {
+    su root adm
+    maxsize 25M
+    hourly
+    rotate 25
+    compress
+}
+
+
+# sudo service rsyslog restart
+# sudo logrotate /etc/logrotate.d/pser-logs
+
+# Verify rotate : /var/lib/logrotate/status (or /var/lib/logrotate.status)
