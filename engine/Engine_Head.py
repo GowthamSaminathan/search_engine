@@ -85,6 +85,45 @@ class run_crawler():
 		except Exception:
 			self.logger.exception("count_http_code")
 
+	def http_response_extractor(self,data,var):
+		try:
+			res = dict()
+			content = dict()
+			all_href = []
+			if var.get("application") == "html":
+				
+				beauty_data = BeautifulSoup(data,"html.parser")
+				content.update({"title":beauty_data.title.string})
+				
+				if var.get("url_extract") == True:
+					# Extract all "a" tag in html page
+					all_href = beauty_data.find_all('a',href=True)
+
+				content.update({"text":beauty_data.get_text()})
+			
+			res.update({"content":content})
+			res.update({"extracted_url":all_href})
+			return res
+		except Exception:
+			self.logger.exception("http_response_extractor")
+	
+	async def solr_doc_add(self,solr_con,solr_timeout,solr_doc,solr_db_url):
+		# Add extracted data to solr collection
+		try:
+			error_code = "error"
+			solr_db_url = solr_db_url+"update?commitWithin=1000"
+			solr_add = {"add": {"doc": solr_doc }}
+			async with aiohttp.ClientSession(connector=solr_con,timeout=solr_timeout) as session:
+				async with session.post(solr_db_url,json=solr_add) as resp:
+					#status = {"http_status_code":resp.status}
+					solr_res = await resp.text()
+					self.logger.debug("SOLR UPDATE RESPONSE >"+str(solr_res))
+			return {error_code:"no error"}
+		except Exception:
+			self.logger.exception("http_response_extractor")
+			return {"error_code":error_code}
+			
+	
 	def init_crawl(self,task_details):
 		# Getting basic task_details from main process
 		# Getting user default settings for the domain from 'users' collection in 'accounts' DB.
@@ -327,8 +366,21 @@ class run_crawler():
 		# Extract the URL from page content
 		# Add extracted URL to DB for next crawl
 		try:
+			# Make engine name and user_id as solr collection name
+			# Create temp collection for full recrawll , and then swap it later
+			solr_coll_name = self.task_details.get("engine_name")
+			user_id = self.task_details.get("user_id")
+			solr_coll_name = user_id+"_"+solr_coll_name
+			tmp_solr_coll_name = solr_coll_name+"_temp"
+			solr_db_url = "http://127.0.0.1:8983/solr/"+solr_coll_name+"/"
+
+			# Create connection for Solr DB
+			solr_conn = aiohttp.TCPConnector()
+			solr_timeout = aiohttp.ClientTimeout(sock_connect=5)
+
 			self.logger.debug("Trying to Crawl> "+url)
 			new_urls = []
+			error = "no"
 			conn = aiohttp.TCPConnector()
 			timeout = aiohttp.ClientTimeout(sock_connect=500)
 			headers = {"User-Agent":"superman"}
@@ -347,25 +399,37 @@ class run_crawler():
 							payload = await resp.content.read()
 							
 							# Check for user whitelist application
+							extract_var = dict()
 							if application_type in self.WhiteListApp:
+								
 								if application_type == ".html" or application_type == ".htm":
-									html_data = payload
-									beauty_data = BeautifulSoup(html_data,"html.parser")
-									all_href = beauty_data.find_all('a',href=True)
-									
+									extract_var.update({"url_extract":True,"application":"html"})
+								else:
+									extract_var.update({"url_extract":False})
+									self.logger.debug("New application >"+str(application_type)+str(" >")+url)
+								
+
+								extract_res = self.http_response_extractor(payload,extract_var)
+								
+								if type(extract_res) == dict:									
+									all_href = extract_res.get("extracted_url")
+									extract_content = extract_res.get("content")
+									# Add Extracted data to solr Database
 									# Get all href in page
+									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
+									self.logger.info("SOLR UPDATE STATUS:"+solr_res.get("error")+ " >for URL:"+url)
 									for href in all_href:
 										black_list = False
 										robot_black_list = False
 										href = href['href']
-										extraced_url = urllib.parse.urljoin(str(resp.url),href)
+										extracted_url = urllib.parse.urljoin(str(resp.url),href)
 
 
 										# Check if url is allowed or blocked in robots.txt
 										for domain_patten in self.robot_disallowed:
 											domain_patten = urllib.parse.urljoin(str(resp.url),domain_patten)
-											if urlmatch(domain_patten,extraced_url) == True:
-												self.logger.debug("Url Black listed by robots.txt>"+extraced_url+" >Patten >"+domain_patten)
+											if urlmatch(domain_patten,extracted_url) == True:
+												self.logger.debug("Url Black listed by robots.txt>"+extracted_url+" >Patten >"+domain_patten)
 												robot_black_list = True
 												break
 										if robot_black_list == True:
@@ -375,23 +439,22 @@ class run_crawler():
 										if len(self.BlackListUrls) > 0:
 											# Check if given url is blacklisted
 											for domain_patten in self.BlackListUrls:
-												if urlmatch(domain_patten,extraced_url) == True:
-													self.logger.debug("Url Black listed by user>"+extraced_url+" >Patten >"+domain_patten)
+												if urlmatch(domain_patten,extracted_url) == True:
+													self.logger.debug("Url Black listed by user>"+extracted_url+" >Patten >"+domain_patten)
 													black_list = True
 													break
 										if black_list == True:
 											continue
 										for domain_patten in self.WhiteListUrls:
-											if urlmatch(domain_patten,extraced_url) == True:
-												#print("URL Matched:"+extraced_url+", Patten:"+domain_patten)
-												new_urls.append(extraced_url)
-												#logger.info(extraced_url)
+											if urlmatch(domain_patten,extracted_url) == True:
+												#print("URL Matched:"+extracted_url+", Patten:"+domain_patten)
+												new_urls.append(extracted_url)
+												#logger.info(extracted_url)
 											else:
-												self.logger.debug("URL Not Matched with WhiteListUrls:"+extraced_url+
+												self.logger.debug("URL Not Matched with WhiteListUrls:"+extracted_url+
 													", Patten:"+domain_patten)
-								
 								else:
-									self.logger.debug("New application >"+str(application_type)+str(" >")+url)
+									self.crawl_message = "data extracting error"
 							else:
 								self.logger.debug("Application not white listed by user>"+str(application_type)+str(" >")+url)
 						else:

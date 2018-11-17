@@ -1,7 +1,9 @@
 import asyncio
 import aiohttp
+from bs4 import BeautifulSoup
 
-url = "https://google.co.in"
+
+url = "https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text"
 
 
 async def test(loop,url,retry,timeout):
@@ -11,14 +13,15 @@ async def test(loop,url,retry,timeout):
 			timeout = aiohttp.ClientTimeout(sock_connect=5)
 			async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
 				async with session.get(url) as resp:
-					return resp
+					return await resp.text()
 			print("Retry:"+str(x))
 	except Exception as e:
 		print(e)
 
 async def test2(loop,url,retry,timeout):
 	data = await test(loop,url,retry,timeout)
-	print(data.status)
+	soup = BeautifulSoup(data, 'html.parser')
+	print(soup.get_text())
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
