@@ -99,7 +99,7 @@ class run_crawler():
 					# Extract all "a" tag in html page
 					all_href = beauty_data.find_all('a',href=True)
 
-				content.update({"text":beauty_data.get_text()})
+				content.update({"body":beauty_data.get_text()})
 			
 			res.update({"content":content})
 			res.update({"extracted_url":all_href})
@@ -396,7 +396,7 @@ class run_crawler():
 						
 						if resp.status == 200:
 							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
-							application_type = guess_extension(content_typ.split(";")[0])
+							application_type = content_typ.split(";")[0]
 							self.count_application_types(application_type)
 							payload = await resp.content.read()
 							

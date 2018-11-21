@@ -44,8 +44,7 @@ mcollection = mdb['users']
 red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
 
 
-SOLR_CLOUD_BIN = "/home/ubuntu/solr-7.4.0/bin/"
-
+SOLR_ADMIN_URL = "http://127.0.0.1:8983/solr/admin/"
 
 
 @app.route('/')
@@ -387,10 +386,26 @@ def create_engine():
 				if licence_end < datetime.datetime.utcnow():
 					return jsonify({"result":"failed","message":"Account license expired"})
 
-				collection_name = user_id+"_"+engine_name
-				create_status = os.popen(SOLR_CLOUD_BIN+"solr create_core -c "+collection_name+" -d template_1").read()
+				c_name = user_id+"_"+engine_name
+				create_status = False
+				url = SOLR_ADMIN_URL+"cores?action=CREATE&name="+c_name+"&instanceDir="+c_name+"&dataDir=data&configSet=template_ok"
 				
-				if create_status.find("Created new core") != -1:
+				try:
+					# Create core using admin API
+					res = requests.get(url)
+					if res.status_code == 200:
+						data = res.json()
+						if data.get("responseHeader").get("status") == 0:
+							create_status = True
+						else:
+							return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
+					else:
+						return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
+				except Exception:
+					logger.exception("solr admin api failed")
+					return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
+				
+				if create_status == True:
 					# Core Creation success
 					results = mcollection.update_one({"_id":user_id,"Engines.EngineName":{"$ne":engine_name}},{"$push":{"Engines":new_engine}})
 				else:
@@ -536,13 +551,27 @@ def engine_delete():
 			user_id = user_data.get("_id")
 			engine_name = result.get("engine_name")
 
+			try:
+				# Delete core using admin API
+				c_name = user_id+"_"+engine_name
+				url = SOLR_ADMIN_URL+"cores?action=UNLOAD&core="+c_name+"&deleteIndex=true&deleteDataDir=true&deleteInstanceDir=true"
+				res = requests.get(url)
+				if res.status_code == 200:
+					data = res.json()
+					if data.get("responseHeader").get("status") == 0:
+						pass;
+					else:
+						return jsonify({"result":"failed","message":"engine already deleted"})
+				else:
+					return jsonify({"result":"failed","message":"engine already deleted"})
+			except Exception:
+				logger.exception("solr admin api failed")
+				return jsonify({"result":"failed","message":"engine not deleted"})
+
 			deleted_status = mcollection.update_one({"_id":user_id},{ "$pull": { 'Engines': { "EngineName" : engine_name } } })
 			
 			if deleted_status.modified_count == 1:
 				# Deleting core
-				collection_name = user_id+"_"+engine_name
-				create_status = os.popen(SOLR_CLOUD_BIN+"solr delete -c "+collection_name).read()
-				
 				return jsonify({"result":"success","message":"engine deleted"})
 			else:
 				return jsonify({"result":"failed","message":"engine not deleted"})
