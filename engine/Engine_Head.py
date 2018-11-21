@@ -123,7 +123,7 @@ class run_crawler():
 			self.logger.exception("http_response_extractor")
 			return {"error_code":error_code}
 			
-	
+
 	def init_crawl(self,task_details):
 		# Getting basic task_details from main process
 		# Getting user default settings for the domain from 'users' collection in 'accounts' DB.
@@ -252,7 +252,7 @@ class run_crawler():
 					else:
 						self.logger.error("Robots.txt error found")
 				else:
-					self.logger.warning("robots.txt failed > http.status="+str(res.status))
+					self.logger.warning("robots.txt failed > http.status="+str(res.get("status")))
 
 			# Add starting Point of the crawl
 			starting_url = self.DomainName
@@ -278,6 +278,8 @@ class run_crawler():
 
 		except Exception:
 			self.logger.exception("main_flow")
+			self.crawl_message = "Error found:main_flow"
+			self.craw_fin = True
 
 	async def page_crawl_init(self):
 		try:
@@ -414,6 +416,7 @@ class run_crawler():
 								if type(extract_res) == dict:									
 									all_href = extract_res.get("extracted_url")
 									extract_content = extract_res.get("content")
+									extract_content.update({"url":url})
 									# Add Extracted data to solr Database
 									# Get all href in page
 									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
@@ -513,7 +516,7 @@ class start_main():
 				# Subprocess will create ASYNCIO webcraweller
 				for task in new_crawl_task:
 					task_status = self.red.hget(task,"status")
-					logger.debug(task+">"+str(task_status))
+					#logger.debug(task+">"+str(task_status))
 					if task_status == "not started":
 						logger.info("New task found ,Setting task to 'started' state>"+str(task))
 						self.red.hset(task,"status","started")

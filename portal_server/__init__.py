@@ -43,6 +43,11 @@ mcollection = mdb['users']
 
 red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
 
+
+SOLR_CLOUD_BIN = "/home/ubuntu/solr-7.4.0/bin/"
+
+
+
 @app.route('/')
 def main():
 	 return "API call only......."
@@ -382,10 +387,18 @@ def create_engine():
 				if licence_end < datetime.datetime.utcnow():
 					return jsonify({"result":"failed","message":"Account license expired"})
 
-
-				results = mcollection.update_one({"_id":user_id,"Engines.EngineName":{"$ne":engine_name}},{"$push":{"Engines":new_engine}})
+				collection_name = user_id+"_"+engine_name
+				create_status = os.popen(SOLR_CLOUD_BIN+"solr create_core -c "+collection_name+" -d template_1").read()
+				
+				if create_status.find("Created new core") != -1:
+					# Core Creation success
+					results = mcollection.update_one({"_id":user_id,"Engines.EngineName":{"$ne":engine_name}},{"$push":{"Engines":new_engine}})
+				else:
+					return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
 				
 				if results.modified_count == 1:
+					# Create Solar collection with "name_engine_name" as collection name
+					
 					return jsonify({"result":"success","message":"Engine created","engine_name":engine_name})
 				else:
 					return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
@@ -524,7 +537,12 @@ def engine_delete():
 			engine_name = result.get("engine_name")
 
 			deleted_status = mcollection.update_one({"_id":user_id},{ "$pull": { 'Engines': { "EngineName" : engine_name } } })
+			
 			if deleted_status.modified_count == 1:
+				# Deleting core
+				collection_name = user_id+"_"+engine_name
+				create_status = os.popen(SOLR_CLOUD_BIN+"solr delete -c "+collection_name).read()
+				
 				return jsonify({"result":"success","message":"engine deleted"})
 			else:
 				return jsonify({"result":"failed","message":"engine not deleted"})
