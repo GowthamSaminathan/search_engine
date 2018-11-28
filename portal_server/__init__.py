@@ -586,7 +586,6 @@ def get_domain_data():
 		# Get domain data from DB
 		# Get summary of all domains or full details for particular domain
 		if request.method == 'GET':
-			result = request.form
 			result = request.args.to_dict()
 
 			############## SESSION VALIDATION START ##################
@@ -889,6 +888,94 @@ def create_new_user():
 	except Exception:
 		logger.exception("create_new_user")
 		return jsonify({"result":"failed","message":"create_new_user failed"})
+
+@app.route('/portal/manage_api_key',methods = ['POST', 'GET'])
+def manage_api_key():
+	try:
+		if request.method == 'GET' or request.method == 'POST':
+			if request.method == 'GET':
+				result = request.args.to_dict()
+			else:
+				result = request.form
+
+			############## SESSION VALIDATION START ##################
+			session_id = result.get("session_id")
+			if session_id == None:
+				# Getting session_id from cookie
+				session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data == None:
+					return jsonify({"result":"failed","message":"Please login again"})
+			else:
+				return jsonify({"result":"failed","message":"Please login again"})
+
+			############## SESSION VALIDATION END #####################
+			engine_name = result.get("engine_name")
+			domain_name = result.get("domain_name")
+			
+			user_id = user_data.get("_id")
+			form_schema = dict()
+			if request.method == 'GET':
+				db_results = mcollection.find({"_id":"gowtham"},{"Engines.engine_write_key":1,"Engines.EngineName":1,
+					"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
+					"Engines.Domains.domain_write_key":1,"_id":0})
+				
+				return jsonify({"result":"success","data":db_results[0]})
+
+			else:
+				form_schema.update({'refresh': {'required': True,'type': 'string','allowed':
+					['domain_read_key','domain_write_key','engine_read_key','engine_write_key']}})
+				
+				form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+				
+				if result.get('refresh') == 'domain_read_key' or result.get('refresh') == "domain_write_key":
+					form_schema.update({'domain_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+				else:
+					form_schema.update({'domain_name': {'required': False}})
+				
+				form_validate = cerberus.Validator()
+				form_valid = form_validate.validate(result, form_schema)
+				if form_valid == False:
+					# Form not valid
+					error_status = {"results":"failed"}
+					error_status.update(form_validate.errors)
+					return jsonify(error_status)
+				
+				rand_number = str(random.randint(100,999999) + time.time())
+				rand_number = rand_number + user_id
+				api_key = hashlib.sha1(rand_number.encode()).hexdigest()
+
+				if result.get("refresh") == "engine_read_key" or result.get("refresh") == "engine_write_key":
+					if result.get("refresh") == "engine_read_key":
+						key_type = {"Engines.$.engine_read_key":api_key}
+					else:
+						key_type = {"Engines.$.engine_write_key":api_key}
+					
+					print({"_id":user_id,"Engines.EngineName":engine_name},{'$set':key_type})
+					db_results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},{'$set':key_type})
+					
+				elif result.get("refresh") == "domain_read_key" or result.get("refresh") == "domain_write_key":
+					if result.get("refresh") == "domain_read_key":
+						key_type = {"Engines.$.Domains.0.domain_read_key":api_key}
+					else:
+						key_type = {"Engines.$.Domains.0.domain_write_key":api_key}
+					db_results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name,
+						'Engines.Domains.DomainName':domain_name},{'$set':key_type})
+
+				else:
+					return jsonify({"result":"failed","message":"key referesh failed"})
+
+				if db_results.modified_count == 1:
+						return jsonify({"result":"success","message":"key refresh success"})
+				else:
+					return jsonify({"result":"failed","message":"unable to refresh specified engine or domain key"})
+	except Exception:
+		logger.exception("manage_api_key")
+		return jsonify({"result":"failed","message":"Referesh API key failed"})
+
+
 
 # if __name__ == '__main__':
 # 	app.run()

@@ -404,7 +404,7 @@ class run_crawler():
 							extract_var = dict()
 							if application_type in self.WhiteListApp:
 								
-								if application_type == ".html" or application_type == ".htm":
+								if application_type == "text/html" or application_type == "application/html":
 									extract_var.update({"url_extract":True,"application":"html"})
 								else:
 									extract_var.update({"url_extract":False})
