@@ -889,6 +889,59 @@ def create_new_user():
 		logger.exception("create_new_user")
 		return jsonify({"result":"failed","message":"create_new_user failed"})
 
+def update_key_to_redis_server(user_id,all_users=False):
+	try:
+		if all_users == True:
+			users = {}
+		else:
+			users = {"_id":user_id}
+		
+		db_results = mcollection.find(users,{"Engines.engine_write_key":1,"Engines.EngineName":1,
+				"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
+				"Engines.Domains.domain_write_key":1,"_id":1})
+		
+		all_keys = []
+		for data in db_results:
+			try:
+				user_id = data.get("_id")
+				# Delete all previous keys
+				key_append = "key_"+user_id+"_"
+				old_keys = red.keys(key_append+"*")
+				for old in old_keys:
+					red.delete(old)
+				for engine in data.get("Engines"):
+					engine_name = engine.get("EngineName")
+					engine_r_key = engine.get("engine_read_key")
+					engine_w_key = engine.get("engine_write_key")
+					if engine_r_key != None:
+						all_keys.append({key_append+engine_r_key:{"engine_name":engine_name,"type":"engine_read"}})
+					if engine_w_key != None:
+						all_keys.append({key_append+engine_w_key:{"engine_name":engine_name,"type":"engine_write"}})
+					
+					domains = engine.get("Domains")
+					if domains != None:
+						for domain in domains:
+							domain_name = domain.get("DomainName")
+							domain_w_key = domain.get("domain_write_key")
+							domain_r_key = domain.get("domain_read_key")
+							if domain_r_key != None:
+								all_keys.append({key_append+domain_r_key:{"engine_name":engine_name,
+									"domain_name":domain_name,"type":"domain_read"}})
+							if domain_w_key != None:
+								all_keys.append({key_append+domain_w_key:{"engine_name":engine_name,
+									"domain_name":domain_name,"type":"domain_write"}})
+				for key in all_keys:
+					key_value = list(key.keys())[0]
+					key_data = key.get(key_value)
+					red.hmset(key_value,key_data)
+
+			except Exception:
+				logger.exception("update key to redis server failed:")
+
+	except Exception:
+		logger.exception("update_key_to_redis_server")
+		return jsonify({"result":"failed","message":"error updating key to redis server"})
+
 @app.route('/portal/manage_api_key',methods = ['POST', 'GET'])
 def manage_api_key():
 	try:
@@ -918,7 +971,7 @@ def manage_api_key():
 			user_id = user_data.get("_id")
 			form_schema = dict()
 			if request.method == 'GET':
-				db_results = mcollection.find({"_id":"gowtham"},{"Engines.engine_write_key":1,"Engines.EngineName":1,
+				db_results = mcollection.find({"_id":user_id},{"Engines.engine_write_key":1,"Engines.EngineName":1,
 					"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
 					"Engines.Domains.domain_write_key":1,"_id":0})
 				
@@ -953,7 +1006,6 @@ def manage_api_key():
 					else:
 						key_type = {"Engines.$.engine_write_key":api_key}
 					
-					print({"_id":user_id,"Engines.EngineName":engine_name},{'$set':key_type})
 					db_results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},{'$set':key_type})
 					
 				elif result.get("refresh") == "domain_read_key" or result.get("refresh") == "domain_write_key":
@@ -961,6 +1013,7 @@ def manage_api_key():
 						key_type = {"Engines.$.Domains.0.domain_read_key":api_key}
 					else:
 						key_type = {"Engines.$.Domains.0.domain_write_key":api_key}
+					
 					db_results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name,
 						'Engines.Domains.DomainName':domain_name},{'$set':key_type})
 
@@ -968,7 +1021,8 @@ def manage_api_key():
 					return jsonify({"result":"failed","message":"key referesh failed"})
 
 				if db_results.modified_count == 1:
-						return jsonify({"result":"success","message":"key refresh success"})
+					update_key_to_redis_server(user_id,False)
+					return jsonify({"result":"success","message":"key refresh success"})
 				else:
 					return jsonify({"result":"failed","message":"unable to refresh specified engine or domain key"})
 	except Exception:
