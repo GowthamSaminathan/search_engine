@@ -889,9 +889,9 @@ def create_new_user():
 		logger.exception("create_new_user")
 		return jsonify({"result":"failed","message":"create_new_user failed"})
 
-def update_key_to_redis_server(user_id,all_users=False):
+def update_key_to_redis_server(user_id=None):
 	try:
-		if all_users == True:
+		if user_id == None:
 			users = {}
 		else:
 			users = {"_id":user_id}

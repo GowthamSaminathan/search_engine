@@ -5,6 +5,7 @@
 $template pser-template,"%syslogtag%%msg%\n"
 :syslogtag, isequal, "pser-engine:"  /var/log/pser-enginen.log; pser-template
 :syslogtag, isequal, "pser-portal:"  /var/log/pser-portal.log; pser-template
+:syslogtag, isequal, "pser-startup:"  /var/log/pser-startup; pser-template
 
 2)File: /etc/rsyslog.conf
 
