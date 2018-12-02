@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 from logging.handlers import SysLogHandler
 import click
 import datetime
+import binascii
 
 sysl = SysLogHandler(address='/dev/log')
 sysl.setFormatter(logging.Formatter('pser-startup: %(levelname)s > %(asctime)s > %(message)s'))
@@ -50,8 +51,8 @@ class startup_check():
 			for data in db_results:
 				try:
 					user_id = data.get("_id")
-					# Delete all previous keys
-					key_append = "key_"+user_id+"_"
+					# Get match key based on user
+					key_append = user_id.encode("utf-8").hex()
 					old_keys = self.red.keys(key_append+"*")
 					for old in old_keys:
 						self.red.delete(old)
@@ -60,9 +61,9 @@ class startup_check():
 						engine_r_key = engine.get("engine_read_key")
 						engine_w_key = engine.get("engine_write_key")
 						if engine_r_key != None:
-							all_keys.append({key_append+engine_r_key:{"engine_name":engine_name,"type":"engine_read"}})
+							all_keys.append({engine_r_key:{"engine_name":engine_name,"type":"engine_read","user_id":user_id}})
 						if engine_w_key != None:
-							all_keys.append({key_append+engine_w_key:{"engine_name":engine_name,"type":"engine_write"}})
+							all_keys.append({engine_w_key:{"engine_name":engine_name,"type":"engine_write","user_id":user_id}})
 						
 						domains = engine.get("Domains")
 						if domains != None:
@@ -71,11 +72,11 @@ class startup_check():
 								domain_w_key = domain.get("domain_write_key")
 								domain_r_key = domain.get("domain_read_key")
 								if domain_r_key != None:
-									all_keys.append({key_append+domain_r_key:{"engine_name":engine_name,
-										"domain_name":domain_name,"type":"domain_read"}})
+									all_keys.append({domain_r_key:{"engine_name":engine_name,
+										"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
 								if domain_w_key != None:
-									all_keys.append({key_append+domain_w_key:{"engine_name":engine_name,
-										"domain_name":domain_name,"type":"domain_write"}})
+									all_keys.append({domain_w_key:{"engine_name":engine_name,
+										"domain_name":domain_name,"type":"domain_write","user_id":user_id}})
 					for key in all_keys:
 						key_value = list(key.keys())[0]
 						key_data = key.get(key_value)

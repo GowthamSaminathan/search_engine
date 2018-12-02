@@ -20,7 +20,7 @@ import hashlib
 import redis
 import random
 import cerberus
-
+import binascii
 
 logger =  logging.getLogger("Rotating Log websnap")
 logger.setLevel(logging.DEBUG)
@@ -51,9 +51,45 @@ SOLR_ADMIN_URL = "http://127.0.0.1:8983/solr/admin/"
 def main():
 	 return "API call only......."
 
-
 @app.route('/search',methods = ['POST', 'GET'])
 def search_query():
+	if request.method == 'GET':
+		try:
+			user_query_dic = request.args.to_dict()
+			key = user_query_dic.get("key")
+			
+			if key == None:
+				return jsonify({"result":"error","message":"key not specified"})
+
+			settings = red.hgetall(key)
+			if settings != None:
+				engine_name = settings.get("engine_name")
+				domain_name = settings.get("domain_name")
+				user_id = settings.get("user_id")
+				c_name = user_id+"_"+engine_name
+			else:
+				return jsonify({"result":"error","message":"invalid user"})
+			
+
+			user_default_setting = "&fl=title,url,body"
+			user_query = request.query_string.decode("utf-8")
+			query = user_query + user_default_setting
+			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+query
+			print(solr_url)
+			solr_res = requests.get(solr_url)
+			
+			if solr_res.status_code == 200:
+				solr_res = solr_res.json()
+				solr_res.update({"result":"success"})
+				return jsonify(solr_res)
+			
+			return jsonify({"results":"error","message":"query failed"})
+		except Exception as e:
+			print(e)
+			return jsonify({"results":"error","message":"query failed"})
+
+@app.route('/search_old',methods = ['POST', 'GET'])
+def search_query_old():
 	if request.method == 'GET':
 		try:
 			get_req = request.args.to_dict()
@@ -905,7 +941,8 @@ def update_key_to_redis_server(user_id=None):
 			try:
 				user_id = data.get("_id")
 				# Delete all previous keys
-				key_append = "key_"+user_id+"_"
+				# Get match key based on user
+				key_append = user_id.encode("utf-8").hex()
 				old_keys = red.keys(key_append+"*")
 				for old in old_keys:
 					red.delete(old)
@@ -914,9 +951,9 @@ def update_key_to_redis_server(user_id=None):
 					engine_r_key = engine.get("engine_read_key")
 					engine_w_key = engine.get("engine_write_key")
 					if engine_r_key != None:
-						all_keys.append({key_append+engine_r_key:{"engine_name":engine_name,"type":"engine_read"}})
+						all_keys.append({engine_r_key:{"engine_name":engine_name,"type":"engine_read","user_id":user_id}})
 					if engine_w_key != None:
-						all_keys.append({key_append+engine_w_key:{"engine_name":engine_name,"type":"engine_write"}})
+						all_keys.append({engine_w_key:{"engine_name":engine_name,"type":"engine_write","user_id":user_id}})
 					
 					domains = engine.get("Domains")
 					if domains != None:
@@ -925,11 +962,11 @@ def update_key_to_redis_server(user_id=None):
 							domain_w_key = domain.get("domain_write_key")
 							domain_r_key = domain.get("domain_read_key")
 							if domain_r_key != None:
-								all_keys.append({key_append+domain_r_key:{"engine_name":engine_name,
-									"domain_name":domain_name,"type":"domain_read"}})
+								all_keys.append({domain_r_key:{"engine_name":engine_name,
+									"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
 							if domain_w_key != None:
-								all_keys.append({key_append+domain_w_key:{"engine_name":engine_name,
-									"domain_name":domain_name,"type":"domain_write"}})
+								all_keys.append({domain_w_key:{"engine_name":engine_name,
+									"domain_name":domain_name,"type":"domain_write","user_id":user_id}})
 				for key in all_keys:
 					key_value = list(key.keys())[0]
 					key_data = key.get(key_value)
@@ -1000,6 +1037,9 @@ def manage_api_key():
 				rand_number = rand_number + user_id
 				api_key = hashlib.sha1(rand_number.encode()).hexdigest()
 
+				hex_usr = user_id.encode("utf-8").hex()
+				api_key = hex_usr+api_key
+
 				if result.get("refresh") == "engine_read_key" or result.get("refresh") == "engine_write_key":
 					if result.get("refresh") == "engine_read_key":
 						key_type = {"Engines.$.engine_read_key":api_key}
@@ -1021,7 +1061,7 @@ def manage_api_key():
 					return jsonify({"result":"failed","message":"key referesh failed"})
 
 				if db_results.modified_count == 1:
-					update_key_to_redis_server(user_id,False)
+					update_key_to_redis_server(user_id)
 					return jsonify({"result":"success","message":"key refresh success"})
 				else:
 					return jsonify({"result":"failed","message":"unable to refresh specified engine or domain key"})
