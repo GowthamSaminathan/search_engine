@@ -7,3 +7,6 @@ db.users.insert({"FirstName":"admin","LastName":"admin","_id":"admin","Email":"a
 
 # Create Crawl_DB database to save crawling information
 use Crawl_DB
+
+# Create search history database
+use Search_history

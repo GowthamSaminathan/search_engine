@@ -34,12 +34,16 @@ logger.info("Starting Webserver")
 
 app = Flask(__name__,static_url_path='/static')
 CORS(app)
-app.config['MONGO_DBNAME'] = 'accounts'
-app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/accounts'
+#app.config['MONGO_DBNAME'] = 'accounts'
+#app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/'
 
-mongoc = PyMongo(app)
+mongoc = PyMongo(app,uri='mongodb://127.0.0.1:27017/accounts')
 mdb = mongoc.db
 mcollection = mdb['users']
+
+mongoc2 = PyMongo(app,uri='mongodb://127.0.0.1:27017/Search_history')
+mdb2 = mongoc2.db
+#search_collection = mdb2['users']
 
 red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
 
@@ -57,11 +61,15 @@ def search_query():
 		try:
 			user_query_dic = request.args.to_dict()
 			key = user_query_dic.get("key")
-			
+			query_str = user_query_dic.get("q")
+			url_ip = user_query_dic.get("url_ip")
+
+
 			if key == None:
 				return jsonify({"result":"error","message":"key not specified"})
 
 			settings = red.hgetall(key)
+			
 			if settings != None:
 				engine_name = settings.get("engine_name")
 				domain_name = settings.get("domain_name")
@@ -70,6 +78,11 @@ def search_query():
 			else:
 				return jsonify({"result":"error","message":"invalid user"})
 			
+			# Insert the search query to DB
+			search_col = mdb2[user_id]
+			tim = datetime.datetime.utcnow()
+			search_col.insert({"EngineName":engine_name,"DomainName":domain_name,"query":str(query_str),
+				"url_ip":str(url_ip),"source_ip":request.remote_addr,"time":tim})
 
 			user_default_setting = "&fl=title,url,body"
 			user_query = request.query_string.decode("utf-8")
@@ -82,11 +95,70 @@ def search_query():
 				solr_res = solr_res.json()
 				solr_res.update({"result":"success"})
 				return jsonify(solr_res)
-			
+			else:
+				print(solr_res.text)
+
 			return jsonify({"results":"error","message":"query failed"})
 		except Exception as e:
 			print(e)
 			return jsonify({"results":"error","message":"query failed"})
+
+@app.route('/search_history',methods = ['POST', 'GET'])
+def search_history():
+	try:
+		if request.method == 'GET':
+			user_query_dic = request.args.to_dict()
+			key = user_query_dic.get("key")
+			from_time = user_query_dic.get("from_time")
+			to_time = user_query_dic.get("to_time")
+			qtype = user_query_dic.get("qtype")
+			limit = user_query_dic.get("limit")
+			query = dict()
+
+			if key == None:
+				return jsonify({"result":"error","message":"key not specified"})
+
+			settings = red.hgetall(key)
+			
+			if settings != None:
+				
+				engine_name = settings.get("engine_name")
+				domain_name = settings.get("domain_name")
+				key_type = settings.get("type")
+				user_id = settings.get("user_id")
+				c_name = user_id+"_"+engine_name
+				#query = {"time":{$gte:from_time,$lte:from_time}}
+				
+				if key_type == "engine_write":
+					query.update({"EngineName":engine_name})
+				elif key_type == "domain_write":
+					query.update({"EngineName":engine_name,"DomainName":domain_name})
+				else:
+					return jsonify({"result":"error","message":"write key required"})
+				
+				search_col = mdb2[user_id]
+				if qtype == "top_searches":
+					if limit == None:
+						limit = 10
+					else:
+						limit = int(limit)
+					
+					data = search_col.aggregate([{"$match":query},{"$group":{"_id":"$query",
+						"count":{"$sum" :1}}},{"$sort":{"count":-1}},{"$limit":limit}])
+					
+					data = list(data)
+					if len(data) > 0:
+						return jsonify({"result":"success","data":data})
+					else:
+						return jsonify({"result":"success","data":[]})
+				else:
+					return jsonify({"result":"error","message":"not a valid option"})
+
+			else:
+				return jsonify({"result":"error","message":"invalid user"})
+	except Exception as e:
+			print(e)
+			return jsonify({"results":"error","message":"failed"})
 
 @app.route('/search_old',methods = ['POST', 'GET'])
 def search_query_old():
