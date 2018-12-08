@@ -44,8 +44,9 @@ class startup_check():
 			self.mcollection = self.mdb_db["users"]
 
 			db_results = self.mcollection.find(users,{"Engines.engine_write_key":1,"Engines.EngineName":1,
-					"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
-					"Engines.Domains.domain_write_key":1,"_id":1})
+				"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
+				"Engines.Domains.domain_write_key":1,"Engines.Domains.Weight":1,"Engines.Domains.Synonums":1,
+				"Engines.Domains.CustomResults":1,"_id":1})
 			
 			all_keys = []
 			for data in db_results:
@@ -69,14 +70,17 @@ class startup_check():
 						if domains != None:
 							for domain in domains:
 								domain_name = domain.get("DomainName")
+								weight = domain.get("Weight")
+								synonums = domain.get("Synonums")
+								custom_results = domain.get("CustomResults")
 								domain_w_key = domain.get("domain_write_key")
 								domain_r_key = domain.get("domain_read_key")
 								if domain_r_key != None:
-									all_keys.append({domain_r_key:{"engine_name":engine_name,
-										"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
+									all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+										"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
 								if domain_w_key != None:
-									all_keys.append({domain_w_key:{"engine_name":engine_name,
-										"domain_name":domain_name,"type":"domain_write","user_id":user_id}})
+									all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+										"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
 					for key in all_keys:
 						key_value = list(key.keys())[0]
 						key_data = key.get(key_value)

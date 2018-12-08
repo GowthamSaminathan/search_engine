@@ -21,6 +21,8 @@ import redis
 import random
 import cerberus
 import binascii
+import ast
+
 
 logger =  logging.getLogger("Rotating Log websnap")
 logger.setLevel(logging.DEBUG)
@@ -69,38 +71,63 @@ def search_query():
 				return jsonify({"result":"error","message":"key not specified"})
 
 			settings = red.hgetall(key)
-			
-			if settings != None:
+			if settings != None and settings != {}:
 				engine_name = settings.get("engine_name")
 				domain_name = settings.get("domain_name")
 				user_id = settings.get("user_id")
+				weight = ast.literal_eval(settings.get("weight"))
+				synonums = ast.literal_eval(settings.get("synonums"))
+				custom_results = ast.literal_eval(settings.get("custom_results"))
 				c_name = user_id+"_"+engine_name
 			else:
 				return jsonify({"result":"error","message":"invalid user"})
 			
-			# Insert the search query to DB
-			search_col = mdb2[user_id]
-			tim = datetime.datetime.utcnow()
-			search_col.insert({"EngineName":engine_name,"DomainName":domain_name,"query":str(query_str),
-				"url_ip":str(url_ip),"source_ip":request.remote_addr,"time":tim})
+			query_fields = []
+			boost_field = []
+			for w in weight:
+				field = w.get("field")
+				field_weight = w.get("weight")
+				query_fields.append("qf="+field)
+				boost_field.append(field+"^"+str(field_weight))
+			
+			qf = "&".join(query_fields)
+			bf = ",".join(boost_field)
+			bf = "bq="+bf
 
-			user_default_setting = "&fl=title,url,body"
+
+
+			# Insert the search query to DB
+			try:
+				search_col = mdb2[user_id]
+				tim = datetime.datetime.utcnow()
+				search_col.insert({"EngineName":engine_name,"DomainName":domain_name,"query":str(query_str),
+					"url_ip":str(url_ip),"source_ip":request.remote_addr,"time":tim})
+			except Exception:
+				logger.exception("inserting search history to DB failed:")
+				
+
+			user_default_setting = "&fl=title,url,id"+"&"+qf+"&"+bf+"&defType=dismax"
 			user_query = request.query_string.decode("utf-8")
 			query = user_query + user_default_setting
+			
+			# Removeing user key in request
+			query = query.replace("&key="+key,"")
+
 			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+query
-			print(solr_url)
 			solr_res = requests.get(solr_url)
 			
 			if solr_res.status_code == 200:
 				solr_res = solr_res.json()
+				# Removing response header
+				solr_res.pop("responseHeader")
 				solr_res.update({"result":"success"})
 				return jsonify(solr_res)
 			else:
-				print(solr_res.text)
+				logger.exception("solr select error for request:"+solr_url)
 
 			return jsonify({"results":"error","message":"query failed"})
-		except Exception as e:
-			print(e)
+		except Exception:
+			logger.exception("search_query")
 			return jsonify({"results":"error","message":"query failed"})
 
 @app.route('/search_history',methods = ['POST', 'GET'])
@@ -195,6 +222,62 @@ def search_query_old():
 		except Exception:
 			logger.exception("search_query")
 			return jsonify({"result":"failed error"})
+
+@app.route('/correct_me',methods = ['GET'])
+def correct_me():
+	if request.method == 'GET':
+		try:
+			user_query_dic = request.args.to_dict()
+			key = user_query_dic.get("key")
+			query_str = user_query_dic.get("q")
+			#url_ip = user_query_dic.get("url_ip")
+
+			query_type = user_query_dic.get("type")
+			
+			if key == None:
+				return jsonify({"result":"error","message":"key not specified"})
+			elif query_type == None:
+				return jsonify({"result":"error","message":"type not specified"})
+			
+			settings = red.hgetall(key)
+			if settings != None and settings != {}:
+				engine_name = settings.get("engine_name")
+				domain_name = settings.get("domain_name")
+				user_id = settings.get("user_id")
+				c_name = user_id+"_"+engine_name
+			else:
+				return jsonify({"result":"error","message":"invalid user"})
+			
+			# Removeing user key and type in request
+			query = request.query_string.decode("utf-8")
+			query = query.replace("&key="+key,"")
+			query = query.replace("&type="+query_type,"")
+			
+			if query_type == "spell":
+				#query = query.replace("correct_me?q=","spell?q=")
+				solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/spell?"+query
+			elif query_type == "suggest":
+				solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/suggest?"+query
+
+			else:
+				jsonify({"result":"error","message":"type not specified"})
+			
+			print(solr_url)
+			solr_res = requests.get(solr_url)
+			
+			if solr_res.status_code == 200:
+				solr_res = solr_res.json()
+				# Removing response header
+				solr_res.pop("responseHeader")
+				solr_res.update({"result":"success"})
+				return jsonify(solr_res)
+			else:
+				logger.exception("solr select error for request:"+solr_url)
+
+			return jsonify({"results":"error","message":"query failed"})
+		except Exception:
+			logger.exception("correct_me")
+			return jsonify({"results":"error","message":"query failed"})
 
 @app.route('/suggest',methods = ['POST', 'GET'])
 def suggest():
@@ -621,8 +704,8 @@ def domain_delete():
 			user_id = user_data.get("_id")
 			domain_name = result.get("domain_name")
 			engine_name = result.get("engine_name")
-			print({"_id":user_id,"Engines.EngineName":engine_name})
-			print({ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
+			#print({"_id":user_id,"Engines.EngineName":engine_name})
+			#print({ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
 			deleted_status = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},
 				{ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
 			if deleted_status.modified_count == 1:
@@ -1006,7 +1089,8 @@ def update_key_to_redis_server(user_id=None):
 		
 		db_results = mcollection.find(users,{"Engines.engine_write_key":1,"Engines.EngineName":1,
 				"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
-				"Engines.Domains.domain_write_key":1,"_id":1})
+				"Engines.Domains.domain_write_key":1,"Engines.Domains.Weight":1,"Engines.Domains.Synonums":1,
+				"Engines.Domains.CustomResults":1,"_id":1})
 		
 		all_keys = []
 		for data in db_results:
@@ -1031,14 +1115,17 @@ def update_key_to_redis_server(user_id=None):
 					if domains != None:
 						for domain in domains:
 							domain_name = domain.get("DomainName")
+							weight = domain.get("Weight")
+							synonums = domain.get("Synonums")
+							custom_results = domain.get("CustomResults")
 							domain_w_key = domain.get("domain_write_key")
 							domain_r_key = domain.get("domain_read_key")
 							if domain_r_key != None:
-								all_keys.append({domain_r_key:{"engine_name":engine_name,
-									"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
+								all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+									"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
 							if domain_w_key != None:
-								all_keys.append({domain_w_key:{"engine_name":engine_name,
-									"domain_name":domain_name,"type":"domain_write","user_id":user_id}})
+								all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+									"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
 				for key in all_keys:
 					key_value = list(key.keys())[0]
 					key_data = key.get(key_value)
