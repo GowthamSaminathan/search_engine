@@ -20,7 +20,8 @@ from mimetypes import guess_extension
 from bs4 import BeautifulSoup
 from urlmatch import urlmatch
 from support import *
-
+import re
+import tempfile
 
 sysl = SysLogHandler(address='/dev/log')
 sysl.setFormatter(logging.Formatter('pser-engine: %(levelname)s > %(asctime)s > %(message)s'))
@@ -30,6 +31,8 @@ logger.addHandler(sysl)
 logger.setLevel(logging.DEBUG)
 
 logger.warning("Restarted>Engine_Head")
+
+TIKA_URL = "http://127.0.0.1:9998"
 
 class run_crawler():
 	
@@ -85,22 +88,42 @@ class run_crawler():
 		except Exception:
 			self.logger.exception("count_http_code")
 
-	def http_response_extractor(self,data,var):
+	async def http_response_extractor(self,data,var):
 		try:
+			tag_names = ["p","h[1-6]","b","i","u","tt","strong","blockquote","small","tr","th","td","dd","title"]
 			res = dict()
 			content = dict()
 			all_href = []
+			body = ""
+			
 			if var.get("application") == "html":
 				
 				beauty_data = BeautifulSoup(data,"html.parser")
 				content.update({"title":beauty_data.title.string})
-				
+				print(beauty_data)
 				if var.get("url_extract") == True:
 					# Extract all "a" tag in html page
 					all_href = beauty_data.find_all('a',href=True)
 
-				content.update({"body":beauty_data.get_text()})
+				#content.update({"body":beauty_data.get_text()})
 			
+				for tag in beauty_data.find_all(True):
+					for tag_patten in tag_names:
+						if re.match(tag.name,tag_patten) != None:
+							if tag.string != None:
+								body = body + "\n" +tag.string.strip()
+						continue
+			else:
+				try:
+					async with aiohttp.ClientSession() as session:
+						async with session.put("http://127.0.0.1:9998/tika",data=data) as resp:
+							body = await resp.text()
+				except Exception as e:
+					self.logger.exception("tika extract failed : status code:"+str(resp.status)+"url:"+var.get(url))
+				finally:
+					data.close()
+
+			content.update({"body":body})
 			res.update({"content":content})
 			res.update({"extracted_url":all_href})
 			return res
@@ -144,7 +167,7 @@ class run_crawler():
 			dname = self.task_details.get("domain_name")
 
 			self.logger.info("Creating mongodb connection")
-			self.mdb_client = pymongo.MongoClient('localhost', 27017)
+			self.mdb_client = pymongo.MongoClient('127.0.0.1', 27017)
 			self.mdb_db = self.mdb_client["accounts"]
 			self.mdb_collect = self.mdb_db["users"]
 
@@ -203,7 +226,7 @@ class run_crawler():
 				"message":self.crawl_message,"page_info":self.page_info}})
 			
 			# Update completed status in Redius server
-			red_ser = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
+			red_ser = redis.Redis(host='127.0.0.1', port=6379, db=0,decode_responses=True)
 			task_key = self.task_details.get("task_key")
 			red_ser.delete(task_key)
 			self.logger.info("Task details deleted> "+task_key+" from redis DB")
@@ -303,7 +326,7 @@ class run_crawler():
 			
 			# Connect redis server to check any termination request is present
 			self.logger.info("Creating redis DB connection to check terminate process status")
-			red_ser = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
+			red_ser = redis.Redis(host='127.0.0.1', port=6379, db=0,decode_responses=True)
 			task_key = self.task_details.get("task_key")
 
 			while self.craw_fin != True:
@@ -398,20 +421,42 @@ class run_crawler():
 							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
 							application_type = content_typ.split(";")[0]
 							self.count_application_types(application_type)
-							payload = await resp.content.read()
 							
 							# Check for user whitelist application
 							extract_var = dict()
+							extract_var.update({"url":url})
+							
 							if application_type in self.WhiteListApp:
 								
 								if application_type == "text/html" or application_type == "application/html":
-									extract_var.update({"url_extract":True,"application":"html"})
+									# If file type is "html" then read the full payload
+									payload = await resp.content.read(2000000)
+									extract_var.update({"url_extract":True,"application":"html","payload_type":"data"})
+									extract_res = await self.http_response_extractor(payload,extract_var)
 								else:
-									extract_var.update({"url_extract":False})
+									# If file type is not an html then chunk the file and read
+									extract_var.update({"url_extract":False,"application":application_type,"payload_type":"file"})
 									self.logger.debug("New application >"+str(application_type)+str(" >")+url)
-								
+									
+									temp_fp = tempfile.TemporaryFile()
+									max_download_size = 20000000
+									print(resp.headers.get("Content-Length"))
+									chunk = None
+									while chunk != b'':
+										chunk = await resp.content.read(max_download_size)
+										#async for data in response.content.iter_chunked(max_download_size):
+										max_download_size = max_download_size - chunk.__len__()
 
-								extract_res = self.http_response_extractor(payload,extract_var)
+										if not chunk or max_download_size <= 0:
+											print("Bracked>"+str(resp.headers.get("Content-Length")))
+											break
+										else:
+											temp_fp.write(chunk)
+									
+									temp_fp.seek(0)
+									
+									extract_res = await self.http_response_extractor(temp_fp,extract_var)
+								
 								
 								if type(extract_res) == dict:									
 									all_href = extract_res.get("extracted_url")
@@ -421,6 +466,7 @@ class run_crawler():
 									# Get all href in page
 									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
 									self.logger.info("SOLR UPDATE STATUS:"+solr_res.get("error")+ " >for URL:"+url)
+									print(all_href)
 									for href in all_href:
 										black_list = False
 										robot_black_list = False
@@ -537,7 +583,7 @@ class start_main():
 		try:
 			logger.debug("initial_tasks")
 			logger.info("Trying to connect redis server")
-			self.red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
+			self.red = redis.Redis(host='127.0.0.1', port=6379, db=0,decode_responses=True)
 			logger.info("Redis connection create...")
 			t1 = loop.create_task(self.check_new_crawl_job(loop))
 			#t2 = loop.create_task(self.check(loop))

@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 from bs4 import BeautifulSoup
+import re
 
 
 url = "https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text"
@@ -19,9 +20,16 @@ async def test(loop,url,retry,timeout):
 		print(e)
 
 async def test2(loop,url,retry,timeout):
+	tag_names = ["p","h[1-6]","a","b","i","u","tt","strong","blockquote","small","tr","th","td","dd","title"]
 	data = await test(loop,url,retry,timeout)
 	soup = BeautifulSoup(data, 'html.parser')
-	print(soup.get_text())
+	for tag in soup.find_all(True):
+		for tag_patten in tag_names:
+			if re.match(tag.name,tag_patten) != None:
+				if tag.string != None:
+					print(tag.string.strip())
+					print("================")
+				continue
 
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)

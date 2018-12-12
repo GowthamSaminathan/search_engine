@@ -472,13 +472,15 @@ def create_domain():
 			domain_name = result.get("domain_name")
 			engine_name = result.get("engine_name")
 
-			white_url = []
+
+			white_url = [urllib.parse.urljoin(domain_name,"/*")]
 			black_url = []
-			white_app = ["application/html"]
+			white_app = ["text/html"]
 			black_app = ["application/exe"]
 			crawl_schedule = {"week":["Su","Mo","Tu","We","Th","Fr","Sa"],"day":[],"time":"00 AM"}
 			manual_url = []
-			adv_settings = {"Allow Robot.txt":"yes","ParallelCrawler":5}
+			adv_settings = {"Allow Robot.txt":"yes","ParallelCrawler":10}
+			html_tags = ["p","h[1-6]","b","i","u","tt","strong","blockquote","small","tr","th","td","dd","title"]
 			weight = [{"field":"title","weight":1},{"field":"body","weight":2},{"field":"url","weight":3}]
 			synonums = []
 			custom_results = []
@@ -502,6 +504,7 @@ def create_domain():
 			new_domain.update({"Weight":weight})
 			new_domain.update({"Synonums":synonums})
 			new_domain.update({"CustomResults":custom_results})
+			new_domain.update({"HtmlTags":html_tags})
 
 			try:
 				results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name,
