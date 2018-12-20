@@ -868,6 +868,78 @@ def get_user_info():
 		return jsonify({"result":"failed","message":"unknown fail"})
 
 
+@app.route('/portal/get_crawl_info',methods = ['GET'])
+def get_crawl_history():
+	try:
+		# Get crawl information from Database
+		if request.method == 'GET':
+			############## SESSION VALIDATION START ##################
+			#session_id = result.get("session_id")
+			result = request.args.to_dict()
+			session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data == None:
+					return jsonify({"result":"failed","message":"Please login again"})
+			else:
+				return jsonify({"result":"failed","message":"Please login again"})
+
+			############## SESSION VALIDATION END #####################
+			user_id = user_data.get("_id")
+			domain_name = result.get("domain_name")
+			engine_name = result.get("engine_name")
+			skip = result.get("skip")
+			current_status = result.get("current_status")
+
+			form_schema = dict()
+			form_schema.update({'domain_name': {'required': False,'type': 'string','maxlength': 512,'minlength': 1}})
+			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+			form_schema.update({'skip': {'required': False}})
+			form_schema.update({'current_status': {'required': False}})
+
+			form_validate = cerberus.Validator()
+			form_valid = form_validate.validate(result, form_schema)
+
+			if form_valid == False:
+				# Form not valid
+				error_status = {"results":"failed"}
+				error_status.update(form_validate.errors)
+				return jsonify(error_status)
+
+			search_field =dict()
+
+			
+			if domain_name != None:
+				search_field.update({"domain_name":domain_name})
+
+			if skip == None:
+				skip = 0
+			else:
+				skip = int(skip)
+
+			if current_status != None:
+				search_field.update({"current_status":current_status})
+			
+			crawl_history = PyMongo(app,uri='mongodb://127.0.0.1:27017/Crawl_DB')
+			crawl_history_db = crawl_history.db
+			crawl_history_col = crawl_history_db[user_id+"_"+engine_name+"_history"]
+
+
+			user_data = crawl_history_col.find(search_field,{"_id":0}).sort('version',pymongo.DESCENDING).limit(20).skip(skip)
+			data = list(user_data)
+
+			if(len(data)) == 0:
+				return jsonify({"result":"failed","message":"History Information not found"})
+			else:
+				#print(list(user_data)[0])
+				return jsonify({"result":"success","data":data})
+
+	except Exception:
+		logger.exception("get_crawl_info")
+		return jsonify({"result":"failed","message":"unknown fail"})
+
+
 @app.route('/portal/start_crawl',methods = ['POST'])
 def start_crawler():
 	try:

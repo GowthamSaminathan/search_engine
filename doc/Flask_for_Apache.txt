@@ -2,7 +2,8 @@ https://pythonprogramming.net/basic-flask-website-tutorial/
 
 
 sudo apt-get install apache2 apache2-dev
-pip3 install mod_wsgi
+sudo pip3 install mod_wsgi
+sudo apt-get install libapache2-mod-wsgi-py3
 mod_wsgi-express module-config
 
 LoadModule wsgi_module "/usr/local/lib/python3.5/dist-packages/mod_wsgi/server/mod_wsgi-py35.cpython-35m-x86_64-linux-gnu.so"
@@ -13,9 +14,9 @@ Paste those two lines in here. Save and exit (ctrl+x, y, enter). Now let's enabl
 
 a2enmod wsgi
 
-service apache2 restart
+sudo service apache2 restart
 
-nano /etc/apache2/sites-available/FlaskApp.conf
+sudo nano /etc/apache2/sites-available/FlaskApp.conf
 Inputting:
 
 <VirtualHost *:80>
@@ -34,7 +35,7 @@ Replace the 192.168.0.1 with your server's IP address or your domain name (only 
 
 sudo a2ensite FlaskApp
 
-service apache2 reload
+sudo service apache2 reload
 
 mkdir /var/www/FlaskApp
 cd /var/www/FlaskApp
@@ -52,7 +53,8 @@ sys.path.insert(0,"/var/www/FlaskApp/")
 
 from FlaskApp import app as application
 
-mkdir FlaskApp cd FlaskApp
+mkdir FlaskApp 
+cd FlaskApp
 Now let's build our simple Flask Application:
 
 nano __init__.py

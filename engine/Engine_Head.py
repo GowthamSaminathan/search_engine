@@ -98,13 +98,12 @@ class run_crawler():
 			
 			if var.get("application") == "html":
 				
-				beauty_data = BeautifulSoup(data,"html.parser")
+				beauty_data = BeautifulSoup(data,"html5lib")
 				content.update({"title":beauty_data.title.string})
-				print(beauty_data)
+				#print(beauty_data)
 				if var.get("url_extract") == True:
 					# Extract all "a" tag in html page
 					all_href = beauty_data.find_all('a',href=True)
-
 				#content.update({"body":beauty_data.get_text()})
 			
 				for tag in beauty_data.find_all(True):
@@ -114,6 +113,7 @@ class run_crawler():
 								body = body + "\n" +tag.string.strip()
 						continue
 			else:
+				return None
 				try:
 					async with aiohttp.ClientSession() as session:
 						async with session.put("http://127.0.0.1:9998/tika",data=data) as resp:
@@ -196,7 +196,8 @@ class run_crawler():
 
 			# Insert the initial crawling starting status to DB
 			self.mdb_collect.update_one({"version":self.crawl_version},{"$set":{"crawl_start":self.crawl_version,
-				"crawl_end":0,"current_status":"running"}},upsert=True)
+				"crawl_end":0,"current_status":"running","domain_name":
+				self.task_details.get("domain_name"),"engine_name":self.task_details.get("engine_name")}},upsert=True)
 			
 			self.logger.info("New version history created in DB with 'running' as current_status")
 			self.mdb_collect = self.mdb_db[user_id+"_"+ename]
@@ -222,7 +223,7 @@ class run_crawler():
 			self.logger.info("Updating completed status to DB")
 			self.mdb_collect = self.mdb_db[user_id+"_"+ename+"_history"]
 			self.mdb_collect.update_one({"version":self.crawl_version},{"$set":{"crawl_start":self.crawl_version,"crawling_sec":
-				crawling_time,"domain":dname,"crawl_end":end_time,"current_status":"completed",
+				crawling_time,"crawl_end":end_time,"current_status":"completed",
 				"message":self.crawl_message,"page_info":self.page_info}})
 			
 			# Update completed status in Redius server
@@ -440,7 +441,7 @@ class run_crawler():
 									
 									temp_fp = tempfile.TemporaryFile()
 									max_download_size = 20000000
-									print(resp.headers.get("Content-Length"))
+									#print(resp.headers.get("Content-Length"))
 									chunk = None
 									while chunk != b'':
 										chunk = await resp.content.read(max_download_size)
@@ -448,7 +449,7 @@ class run_crawler():
 										max_download_size = max_download_size - chunk.__len__()
 
 										if not chunk or max_download_size <= 0:
-											print("Bracked>"+str(resp.headers.get("Content-Length")))
+											#print("Bracked>"+str(resp.headers.get("Content-Length")))
 											break
 										else:
 											temp_fp.write(chunk)
@@ -466,7 +467,6 @@ class run_crawler():
 									# Get all href in page
 									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
 									self.logger.info("SOLR UPDATE STATUS:"+solr_res.get("error")+ " >for URL:"+url)
-									print(all_href)
 									for href in all_href:
 										black_list = False
 										robot_black_list = False
