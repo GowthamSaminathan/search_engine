@@ -480,13 +480,18 @@ def create_domain():
 			crawl_schedule = {"week":["Su","Mo","Tu","We","Th","Fr","Sa"],"day":[],"time":"00 AM"}
 			manual_url = []
 			adv_settings = {"Allow Robot.txt":"yes","ParallelCrawler":10}
+			adv_settings.update({"Use Sitemaps":"yes"})
+			adv_settings.update({"Use Only Sitemaps":"no"})
 			html_tags = ["p","h[1-6]","b","i","u","tt","strong","blockquote","small","tr","th","td","dd","title"]
 			weight = [{"field":"title","weight":1},{"field":"body","weight":2},{"field":"url","weight":3}]
 			synonums = []
 			custom_results = []
 
 			new_domain = dict()
+			new_domain.update({"user_id":user_id})
 			new_domain.update({"DomainName":domain_name})
+			new_domain.update({"EngineName":engine_name})
+			new_domain.update({"type":"domain"})
 			new_domain.update({"Pages":0})
 			new_domain.update({"LastCrawl":"no"})
 			new_domain.update({"CreatedAt":datetime.datetime.utcnow()})
@@ -507,12 +512,18 @@ def create_domain():
 			new_domain.update({"HtmlTags":html_tags})
 
 			try:
-				results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name,
-					"Engines.Domains.DomainName":{"$ne":domain_name}},{"$push":{"Engines.$.Domains":new_domain}})
-				if results.modified_count == 1:
-					return jsonify({"result":"success","message":"Domain added"})
-				else:
-					return jsonify({"result":"failed","message":"Domain already exist"})
+				engine_collection = mdb['Engines']
+				check_engine = engine_collection.find_one({"user_id":user_id,"EngineName":engine_name,"type":"engine"})
+				
+				if check_engine != None:
+
+					results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"type":"domain",
+						"DomainName":domain_name},{"$setOnInsert":new_domain},upsert=True)
+					
+					if results.upserted_id != None:
+						return jsonify({"result":"success","message":"Domain added"})
+					else:
+						return jsonify({"result":"failed","message":"Domain already exist"})
 			except Exception:
 				logger.exception("create_domain")
 				return jsonify({"result":"failed","message":"Domain creation failed"})
@@ -562,20 +573,21 @@ def create_engine():
 
 			try:
 				# Get MaximumEngine license
-				user_details = mcollection.find_one({"_id":user_id},{"_id":1,"MaximumEngines":1,"LicenceEnd":1,"Engines":1})
+				user_details = mcollection.find_one({"_id":user_id},{"_id":1,"MaximumEngines":1,"LicenceEnd":1})
 				
 				if user_details != None:
 					max_engine = user_details.get("MaximumEngines")
 					licence_end = user_details.get("LicenceEnd")
-					current_engines = user_details.get("Engines")
 				else:
 					#logger.errot("BUG: MaximumEngines not found in DB for: "+user_id)
 					return jsonify({"result":"failed","message":"No valid license found"})
 				
+				engine_collection = mdb['Engines']
+				current_engines = engine_collection.distinct("Engines.EngineName",{"user_id":user_id,"type":"engine"})
 
-				lic_count = len(current_engines)
-				if int(max_engine) <= lic_count:
-					return jsonify({"result":"failed","message":"Engine license limit reached,Allowed license count:"+str(lic_count)})
+				current_engines = len(current_engines)
+				if int(max_engine) <= current_engines:
+					return jsonify({"result":"failed","message":"Engine license limit reached,Allowed license count:"+str(current_engines)})
 
 				if licence_end < datetime.datetime.utcnow():
 					return jsonify({"result":"failed","message":"Account license expired"})
@@ -601,16 +613,26 @@ def create_engine():
 				
 				if create_status == True:
 					# Core Creation success
-					results = mcollection.update_one({"_id":user_id,"Engines.EngineName":{"$ne":engine_name}},{"$push":{"Engines":new_engine}})
-				else:
-					return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
-				
-				if results.modified_count == 1:
-					# Create Solar collection with "name_engine_name" as collection name
+					check_engine = engine_collection.find_one({"user_id":user_id,"EngineName":engine_name,"type":"engine"})
 					
-					return jsonify({"result":"success","message":"Engine created","engine_name":engine_name})
+					if check_engine == None:
+						# Engine not exist , creating new engine
+						results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"type":"engine"},
+							{"$setOnInsert":{"user_id":user_id,"EngineName":engine_name,"type":"engine"}},upsert=True)
+						
+						if results.upserted_id != None:
+							# Create Solar collection with "name_engine_name" as collection name
+							return jsonify({"result":"success","message":"Engine created","engine_name":engine_name})
+						else:
+							return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
+					
+					else:
+						return jsonify({"result":"failed","message":"Engine already exist (in account)","engine_name":engine_name})
+				
+
 				else:
-					return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
+					return jsonify({"result":"failed","message":"Engine already exist (in index)","engine_name":engine_name})
+				
 			except Exception:
 				logger.exception("create_engine")
 				return jsonify({"result":"failed","message":"Domain creation failed"})
@@ -645,12 +667,30 @@ def domain_update():
 			domain_name = result.get("domain_name")
 			engine_name = result.get("engine_name")
 			domain_update = result.get("domain_update")
+			req_action = result.get("action")
+			req_element = result.get("element")
+			req_value = result.get("value")
 
-			domain_update = json.loads(domain_update)
+			#domain_update = json.loads(domain_update)
+			allowed_elements = ["AdvancedSettings"]
+			allowed_elements.append("BlackListApp")
+			allowed_elements.append("BlackListUrls")
+			allowed_elements.append("CrawlSchedule")
+			allowed_elements.append("CustomResults")
+			allowed_elements.append("HtmlTags")
+			allowed_elements.append("ManualUrls")
+			allowed_elements.append("Synonums")
+			allowed_elements.append("Weight")
+			allowed_elements.append("WhiteListApp")
+			allowed_elements.append("WhiteListUrls")
+
+
 			form_schema = dict()
 			form_schema.update({'domain_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
 			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
-			form_schema.update({'domain_update': {'required': True,'type': 'string'}})
+			form_schema.update({'action': {'required': True,'type': 'string','allowed':['add','delete','update']}})
+			form_schema.update({'element': {'required': True,'type': 'string','allowed':allowed_elements}})
+			form_schema.update({'value': {'required': True}})
 			
 			form_validate = cerberus.Validator()
 			form_valid = form_validate.validate(result, form_schema)
@@ -660,24 +700,83 @@ def domain_update():
 				error_status.update(form_validate.errors)
 				return jsonify(error_status)
 
-
-			find_value = mcollection.find_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
-				"EngineName":engine_name}}},{"_id":0,"Engines.Domains.$":1})
+			req_validate = dict()
 			
-			if find_value != None:
-				find_value = find_value.get("Engines")[0]
-				single_domain = find_value.get("Domains")[0]
-				single_domain.update(domain_update)
-				
-				results = mcollection.update_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
-					"EngineName":engine_name}}},{"$set":{"Engines.$.Domains.0":single_domain}})
-				
+			query_sntx = None
+			
+			if req_element == "AdvancedSettings":
+				req_validate.update({'ParallelCrawler': {'required': True,'type': 'number','anyof':[{'min': 1, 'max': 25}]}})
+				req_validate.update({'Allow Robot.txt': {'required': True,'type': 'string','allowed':["yes","no"]}})
+				req_validate.update({'Use Sitemaps': {'required': True,'type': 'string','allowed':["yes","no"]}})
+				req_validate.update({'Use Only Sitemaps': {'required': True,'type': 'string','allowed':["yes","no"]}})
+
+				req_data_validate = cerberus.Validator()
+				form_valid = req_data_validate.validate(req_value, req_validate)
+				if form_valid == False:
+					# Form not valid
+					error_status = {"results":"failed"}
+					error_status.update(req_validate.errors)
+					return jsonify(error_status)
+
+				query_sntx = {"$set":{"AdvancedSettings": json.loads(req_value)}}
+
+			elif req_element == "BlackListApp":
+				query_sntx = {"$set":{"BlackListApp": json.loads(req_value)}}
+
+			elif req_element == "BlackListUrls":
+				query_sntx = {"$set":{"BlackListUrls": json.loads(req_value)}}
+
+			elif req_element == "CrawlSchedule":
+				query_sntx = {"$set":{"CrawlSchedule": json.loads(req_value)}}
+
+			elif req_element == "CustomResults":
+				query_sntx = {"$set":{"CustomResults": json.loads(req_value)}}
+
+			elif req_element == "HtmlTags":
+				query_sntx = {"$set":{"HtmlTags": json.loads(req_value)}}
+
+			elif req_element == "ManualUrls":
+				query_sntx = {"$set":{"ManualUrls": json.loads(req_value)}}
+
+			elif req_element == "Synonums":
+				query_sntx = {"$set":{"Synonums": json.loads(req_value)}}
+
+			elif req_element == "Weight":
+				query_sntx = {"$set":{"Weight": json.loads(req_value)}}
+
+			elif req_element == "WhiteListApp":
+				query_sntx = {"$set":{"WhiteListApp": json.loads(req_value)}}
+
+			elif req_element == "WhiteListUrls":
+				query_sntx = {"$set":{"WhiteListUrls": json.loads(req_value)}}
+
+
+
+			# '''find_value = mcollection.find_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
+			# 	"EngineName":engine_name}}},{"_id":0,"Engines.Domains.$":1})
+			
+			# if find_value != None:
+			# 	find_value = find_value.get("Engines")[0]
+			# 	single_domain = find_value.get("Domains")[0]
+			# 	single_domain.update(domain_update)'''
+			
+			# single_domain = mcollection.aggregate([{"$match":{"_id":user_id}},{"$unwind":"$Engines"},
+			# 	{"$match":{"Engines.EngineName":engine_name}},
+			# 	{"$replaceRoot":{"newRoot":"$Engines"}},
+			# 	{"$unwind":"$Domains"},{"$match":{"Domains.DomainName":domain_name}},
+			# 	{"$replaceRoot":{"newRoot":"$Domains"}},{"$addFields":domain_update}])
+			
+			if query_sntx != None:
+				engine_collection = mdb['Engines']
+				results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},query_sntx)
 				if results.modified_count == 1:
 					return jsonify({"result":"success","message":"Update Success"})
 				else:
-					return jsonify({"result":"failed","message":"Not Updated."})
+					return jsonify({"result":"failed","message":"Not Updated / Already updated one"})
 			else:
-				return jsonify({"result":"failed","message":"Domain not found"})
+				return jsonify({"result":"failed","message":"Not valid request"})
+		else:
+			return jsonify({"result":"failed","message":"request not allowed"})
 	except Exception:
 		logger.exception("domain_update")
 		return jsonify({"result":"failed","message":"Not Updated"})
@@ -711,7 +810,11 @@ def domain_delete():
 			#print({ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
 			deleted_status = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},
 				{ "$pull": { 'Engines.$.Domains': { "DomainName" : domain_name } } })
-			if deleted_status.modified_count == 1:
+			
+			engine_collection = mdb['Engines']
+			result = engine_collection.delete_many({"user_id":user_id,"EngineName":engine_name,"DomainName" : domain_name})
+
+			if result.deleted_count > 0:
 				return jsonify({"result":"success","message":"domain deleted"})
 			else:
 				return jsonify({"result":"failed","message":"domain not deleted"})
@@ -762,9 +865,10 @@ def engine_delete():
 				logger.exception("solr admin api failed")
 				return jsonify({"result":"failed","message":"engine not deleted"})
 
-			deleted_status = mcollection.update_one({"_id":user_id},{ "$pull": { 'Engines': { "EngineName" : engine_name } } })
+			engine_collection = mdb['Engines']
+			result = engine_collection.delete_many({"user_id":user_id,"EngineName":engine_name})
 			
-			if deleted_status.modified_count == 1:
+			if result.deleted_count > 0:
 				# Deleting core
 				return jsonify({"result":"success","message":"engine deleted"})
 			else:
@@ -796,30 +900,22 @@ def get_domain_data():
 			user_id = user_data.get("_id")
 			domain_name = result.get("domain_name")
 			engine_name = result.get("engine_name")
-			if domain_name == None:
-				return jsonify({"result":"failed","message":"Please specify domain name or use 'all' to get summary"})
+			engine_collection = mdb['Engines']
+			
+			query = {"user_id":user_id,"type":"domain"}
+
+			if engine_name != None:
+				query.update({"EngineName":engine_name})
+			
+			if domain_name != None:
+				query.update({"DomainName":domain_name})
+			
+			domain_info = engine_collection.find(query,{"_id":0})
+			
+			if domain_info.count() > 0:
+				return jsonify({"result":"success","data":list(domain_info)[0]})
 			else:
-				
-				required_fields = dict()
-				required_fields.update({"_id":0})
-				required_fields.update({"Engines.Domains.Pages":1})
-				required_fields.update({"Engines.Domains.DomainName":1})
-				required_fields.update({"Engines.Domains.LastCrawl":1})
-				required_fields.update({"Engines.Domains.CurrentStatus":1})
-				required_fields.update({"Engines.Domains.CreatedAt":1})
-				required_fields.update({"Engines.Domains.CreatedBy":1})
-				required_fields.update({"Engines.Domains.CrawlSchedule":1})
-				
-				if domain_name == "all":
-					domain_info = mcollection.find({"_id":user_id},required_fields)
-				else:
-					domain_info = mcollection.find({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
-					"EngineName":engine_name}}},{"Engines.Domains":1})
-				
-				if domain_info.count() > 0:
-					return jsonify({"result":"success","data":list(domain_info)[0]})
-				else:
-					return jsonify({"result":"success","data":{}})
+				return jsonify({"result":"success","data":{}})
 
 	except Exception:
 		logger.exception("get_domain_data")
@@ -992,7 +1088,8 @@ def start_crawler():
 				# If account type is admin the use user_id
 				user_id = result.get("user_id")
 			# Check if user having valid Engine name and domain name
-			result_data = mcollection.find_one({"_id":user_id,"Engines.EngineName":engine_name,"Engines.Domains.DomainName":domain_name})
+			engine_collection = mdb['Engines']
+			result_data = engine_collection.find_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name})
 			if result_data == None:
 				return jsonify({"result":"failed","message":"Invalid Engine or domain name provided"})
 			
@@ -1162,15 +1259,15 @@ def update_key_to_redis_server(user_id=None):
 		else:
 			users = {"_id":user_id}
 		
-		db_results = mcollection.find(users,{"Engines.engine_write_key":1,"Engines.EngineName":1,
-				"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
-				"Engines.Domains.domain_write_key":1,"Engines.Domains.Weight":1,"Engines.Domains.Synonums":1,
-				"Engines.Domains.CustomResults":1,"_id":1})
+		engine_collection = mdb['Engines']
+		db_results = engine_collection.find(users,{"engine_write_key":1,"EngineName":1,
+				"engine_read_key":1,"DomainName":1,"domain_read_key":1,"domain_write_key":1,"Weight":1,"Synonums":1,
+				"CustomResults":1,"user_id":1})
 		
 		all_keys = []
 		for data in db_results:
 			try:
-				user_id = data.get("_id")
+				user_id = data.get("user_id")
 				# Delete all previous keys
 				# Get match key based on user
 				key_append = user_id.encode("utf-8").hex()
@@ -1242,11 +1339,20 @@ def manage_api_key():
 			user_id = user_data.get("_id")
 			form_schema = dict()
 			if request.method == 'GET':
-				db_results = mcollection.find({"_id":user_id},{"Engines.engine_write_key":1,"Engines.EngineName":1,
-					"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
-					"Engines.Domains.domain_write_key":1,"_id":0})
+				query = {"user_id":user_id}
+				if domain_name != None:
+					query.update({"DomainName":domain_name})
+				if engine_name != None:
+					query.update({"EngineName":engine_name})
+				else:
+					jsonify({"result":"failed","message":"engine name required"})
+
 				
-				return jsonify({"result":"success","data":db_results[0]})
+				engine_collection = mdb['Engines']
+				db_results = engine_collection.find(query,{"engine_write_key":1,
+					"engine_read_key":1,"_id":0,"type":1,"EngineName":1,"DomainName":1,"domain_read_key":1,"domain_write_key":1})
+				
+				return jsonify({"result":"success","data":list(db_results)})
 
 			else:
 				form_schema.update({'refresh': {'required': True,'type': 'string','allowed':
@@ -1274,22 +1380,24 @@ def manage_api_key():
 				hex_usr = user_id.encode("utf-8").hex()
 				api_key = hex_usr+api_key
 
+				engine_collection = mdb['Engines']
 				if result.get("refresh") == "engine_read_key" or result.get("refresh") == "engine_write_key":
 					if result.get("refresh") == "engine_read_key":
-						key_type = {"Engines.$.engine_read_key":api_key}
+						key_type = {"engine_read_key":api_key}
 					else:
-						key_type = {"Engines.$.engine_write_key":api_key}
+						key_type = {"engine_write_key":api_key}
 					
-					db_results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name},{'$set':key_type})
+					db_results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"type":"engine"},
+						{'$set':key_type})
 					
 				elif result.get("refresh") == "domain_read_key" or result.get("refresh") == "domain_write_key":
 					if result.get("refresh") == "domain_read_key":
-						key_type = {"Engines.$.Domains.0.domain_read_key":api_key}
+						key_type = {"domain_read_key":api_key}
 					else:
-						key_type = {"Engines.$.Domains.0.domain_write_key":api_key}
+						key_type = {"domain_write_key":api_key}
 					
-					db_results = mcollection.update_one({"_id":user_id,"Engines.EngineName":engine_name,
-						'Engines.Domains.DomainName':domain_name},{'$set':key_type})
+					db_results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,
+						'DomainName':domain_name},{'$set':key_type})
 
 				else:
 					return jsonify({"result":"failed","message":"key referesh failed"})

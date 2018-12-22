@@ -169,18 +169,16 @@ class run_crawler():
 			self.logger.info("Creating mongodb connection")
 			self.mdb_client = pymongo.MongoClient('127.0.0.1', 27017)
 			self.mdb_db = self.mdb_client["accounts"]
-			self.mdb_collect = self.mdb_db["users"]
+			self.mdb_collect = self.mdb_db["Engines"]
 
 			self.logger.info("Mongodb connection created")
 
-			self.user_default_settings = self.mdb_collect.find_one({"_id":self.task_details.get("user_id"),
-				"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":self.task_details.get("domain_name")},
-				"EngineName":self.task_details.get("engine_name")}}},{"_id":0,"Engines.Domains.$":1})			
-			
+			self.user_default_settings = self.mdb_collect.find_one({"user_id":self.task_details.get("user_id"),
+				"DomainName":self.task_details.get("domain_name"),"EngineName":self.task_details.get("engine_name")},
+				{"_id":0,"engine_read_key":0,"engine_write_key":0})			
 
 			if self.user_default_settings != None:
 				self.logger.info("User default setting found")
-				self.user_default_settings = self.user_default_settings.get("Engines")[0].get("Domains")[0]
 				self.logger.debug("User default setting >"+str(self.user_default_settings))
 				#print(self.user_default_settings)
 			else:
