@@ -32,55 +32,63 @@ class startup_check():
 		except Exception:
 			self.logger.exception(http_req)
 
-	def update_key_to_redis_server(self,user_id=None):
+	def update_key_to_redis_server(self,user_id=None,engine_name=None,domain_name=None):
 		try:
 			logger.info("Start updating key to redis server")
 			if user_id == None:
 				users = {}
 			else:
-				users = {"_id":user_id}
-			
-			self.mdb_db = self.mdb_client["accounts"]
-			self.mcollection = self.mdb_db["users"]
+				users = {"user_id":user_id}
+				if domain_name != None:
+					# Update paticular domain key (need engine_name also)
+					users.append({"EngineName":engine_name,"DomainName":domain_name})
+				elif engine_name != None:
+					# Update all the key in particular engine
+					users.append({"EngineName":engine_name})
 
-			db_results = self.mcollection.find(users,{"Engines.engine_write_key":1,"Engines.EngineName":1,
-				"Engines.engine_read_key":1,"Engines.Domains.DomainName":1,"Engines.Domains.domain_read_key":1,
-				"Engines.Domains.domain_write_key":1,"Engines.Domains.Weight":1,"Engines.Domains.Synonums":1,
-				"Engines.Domains.CustomResults":1,"_id":1})
+			self.mdb_db = self.mdb_client["accounts"]
+			self.mcollection = self.mdb_db["Engines"]
+
+			db_results = self.mcollection.find(users,{"engine_write_key":1,"EngineName":1,
+					"engine_read_key":1,"DomainName":1,"domain_read_key":1,"domain_write_key":1,"Weight":1,"Synonums":1,
+					"CustomResults":1,"user_id":1,"user_id":1,"type":1})
 			
 			all_keys = []
 			for data in db_results:
 				try:
-					user_id = data.get("_id")
+					user_id = data.get("user_id")
+					# Delete all previous keys
 					# Get match key based on user
 					key_append = user_id.encode("utf-8").hex()
 					old_keys = self.red.keys(key_append+"*")
 					for old in old_keys:
 						self.red.delete(old)
-					for engine in data.get("Engines"):
-						engine_name = engine.get("EngineName")
-						engine_r_key = engine.get("engine_read_key")
-						engine_w_key = engine.get("engine_write_key")
+					
+					if data.get("type") == "engine":
+						engine_name = data.get("EngineName")
+						engine_r_key = data.get("engine_read_key")
+						engine_w_key = data.get("engine_write_key")
 						if engine_r_key != None:
 							all_keys.append({engine_r_key:{"engine_name":engine_name,"type":"engine_read","user_id":user_id}})
 						if engine_w_key != None:
 							all_keys.append({engine_w_key:{"engine_name":engine_name,"type":"engine_write","user_id":user_id}})
-						
-						domains = engine.get("Domains")
-						if domains != None:
-							for domain in domains:
-								domain_name = domain.get("DomainName")
-								weight = domain.get("Weight")
-								synonums = domain.get("Synonums")
-								custom_results = domain.get("CustomResults")
-								domain_w_key = domain.get("domain_write_key")
-								domain_r_key = domain.get("domain_read_key")
-								if domain_r_key != None:
-									all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-										"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
-								if domain_w_key != None:
-									all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-										"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+					
+					elif data.get("type") == "domain":
+						domain_name = data.get("DomainName")
+						engine_name = data.get("EngineName")
+						weight = data.get("Weight")
+						synonums = data.get("Synonums")
+						custom_results = data.get("CustomResults")
+						domain_w_key = data.get("domain_write_key")
+						domain_r_key = data.get("domain_read_key")
+						if domain_r_key != None:
+							all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+								"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+						if domain_w_key != None:
+							all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+								"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+					else:
+						logger.error("BUG Found> Type not found in 'Engine' collection> "+str(data))
 					for key in all_keys:
 						key_value = list(key.keys())[0]
 						key_data = key.get(key_value)
@@ -89,7 +97,6 @@ class startup_check():
 				except Exception:
 					logger.exception("update key to redis server failed:")
 
-			logger.info("Key Update to redis completed....")
 		except Exception:
 			logger.exception("update_key_to_redis_server")
 			return False

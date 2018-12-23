@@ -184,7 +184,7 @@ def search_history():
 			else:
 				return jsonify({"result":"error","message":"invalid user"})
 	except Exception as e:
-			print(e)
+			#print(e)
 			return jsonify({"results":"error","message":"failed"})
 
 @app.route('/search_old',methods = ['POST', 'GET'])
@@ -262,7 +262,7 @@ def correct_me():
 			else:
 				jsonify({"result":"error","message":"type not specified"})
 			
-			print(solr_url)
+			
 			solr_res = requests.get(solr_url)
 			
 			if solr_res.status_code == 200:
@@ -435,7 +435,7 @@ def portal_login():
 		logger.exception("portal_login")
 		return jsonify({"result":"failed","message":"login failed"})
 
-@app.route('/portal/create_domain',methods = ['POST', 'GET'])
+@app.route('/portal/create_domain',methods = ['POST'])
 def create_domain():
 	try:
 		if request.method == 'POST':
@@ -510,6 +510,7 @@ def create_domain():
 			new_domain.update({"Synonums":synonums})
 			new_domain.update({"CustomResults":custom_results})
 			new_domain.update({"HtmlTags":html_tags})
+			new_domain.update({"creater_ip":str(request.remote_addr)})
 
 			try:
 				engine_collection = mdb['Engines']
@@ -524,6 +525,8 @@ def create_domain():
 						return jsonify({"result":"success","message":"Domain added"})
 					else:
 						return jsonify({"result":"failed","message":"Domain already exist"})
+				else:
+					return jsonify({"result":"failed","message":"engine not found"})
 			except Exception:
 				logger.exception("create_domain")
 				return jsonify({"result":"failed","message":"Domain creation failed"})
@@ -583,9 +586,9 @@ def create_engine():
 					return jsonify({"result":"failed","message":"No valid license found"})
 				
 				engine_collection = mdb['Engines']
-				current_engines = engine_collection.distinct("Engines.EngineName",{"user_id":user_id,"type":"engine"})
-
+				current_engines = engine_collection.distinct("EngineName",{"user_id":user_id,"type":"engine"})
 				current_engines = len(current_engines)
+
 				if int(max_engine) <= current_engines:
 					return jsonify({"result":"failed","message":"Engine license limit reached,Allowed license count:"+str(current_engines)})
 
@@ -618,7 +621,8 @@ def create_engine():
 					if check_engine == None:
 						# Engine not exist , creating new engine
 						results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"type":"engine"},
-							{"$setOnInsert":{"user_id":user_id,"EngineName":engine_name,"type":"engine"}},upsert=True)
+							{"$setOnInsert":{"user_id":user_id,"EngineName":engine_name,"type":"engine",
+							"CreatedAt":datetime.datetime.utcnow(),"creater_ip":str(request.remote_addr)}},upsert=True)
 						
 						if results.upserted_id != None:
 							# Create Solar collection with "name_engine_name" as collection name
@@ -703,7 +707,7 @@ def domain_update():
 			req_validate = dict()
 			
 			query_sntx = None
-			
+
 			if req_element == "AdvancedSettings":
 				req_validate.update({'ParallelCrawler': {'required': True,'type': 'number','anyof':[{'min': 1, 'max': 25}]}})
 				req_validate.update({'Allow Robot.txt': {'required': True,'type': 'string','allowed':["yes","no"]}})
@@ -751,7 +755,6 @@ def domain_update():
 				query_sntx = {"$set":{"WhiteListUrls": json.loads(req_value)}}
 
 
-
 			# '''find_value = mcollection.find_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
 			# 	"EngineName":engine_name}}},{"_id":0,"Engines.Domains.$":1})
 			
@@ -767,6 +770,7 @@ def domain_update():
 			# 	{"$replaceRoot":{"newRoot":"$Domains"}},{"$addFields":domain_update}])
 			
 			if query_sntx != None:
+				query_sntx.get("$set").update({"UpdatedAt":datetime.datetime.utcnow(),"last_updater_ip":str(request.remote_addr)})
 				engine_collection = mdb['Engines']
 				results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},query_sntx)
 				if results.modified_count == 1:
@@ -913,12 +917,62 @@ def get_domain_data():
 			domain_info = engine_collection.find(query,{"_id":0})
 			
 			if domain_info.count() > 0:
-				return jsonify({"result":"success","data":list(domain_info)[0]})
+				return jsonify({"result":"success","data":list(domain_info)})
 			else:
 				return jsonify({"result":"success","data":{}})
 
 	except Exception:
 		logger.exception("get_domain_data")
+		return jsonify({"result":"failed","message":"unknown fail"})
+
+@app.route('/portal/get_engine_data',methods = ['GET'])
+def get_engine_data():
+	try:
+		# Get engine/domain data from DB
+		if request.method == 'GET':
+			result = request.args.to_dict()
+
+			############## SESSION VALIDATION START ##################
+			session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data == None:
+					return jsonify({"result":"failed","message":"Please login again"})
+			else:
+				return jsonify({"result":"failed","message":"Please login again"})
+
+			############## SESSION VALIDATION END #####################
+			user_id = user_data.get("_id")
+			engine_name = result.get("engine_name")
+			engine_collection = mdb['Engines']
+			
+			query = {"user_id":user_id}
+
+			if engine_name != None:
+				query.update({"EngineName":engine_name})
+			
+			req_fld = {"DomainName":1}
+			req_fld.update({"EngineName":1})
+			req_fld.update({"type":1})
+			req_fld.update({"user_id":1})
+			req_fld.update({"CreatedAt":1})
+			req_fld.update({"CreatedBy":1})
+			req_fld.update({"CurrentStatus":1})
+			req_fld.update({"creater_ip":1})
+			req_fld.update({"last_updater_ip":1})
+			req_fld.update({"UpdatedAt":1})
+			req_fld.update({"_id":0})
+
+			info = engine_collection.find(query,req_fld)
+			
+			if info.count() > 0:
+				return jsonify({"result":"success","data":list(info)})
+			else:
+				return jsonify({"result":"failed","data":"Information not found , Please check provided input"})
+
+	except Exception:
+		logger.exception("get_engine_data")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
 @app.route('/portal/get_user_info',methods = ['GET'])
@@ -950,7 +1004,7 @@ def get_user_info():
 			required_fields.update({"MaximumDomains":1})
 			required_fields.update({"MaximumEngines":1})
 			required_fields.update({"MaximumDomainsInEngine":1})
-			required_fields.update({"Engines":1})
+			#required_fields.update({"Engines":1})
 
 			user_data = mcollection.find_one({"_id":user_id},required_fields)
 			
@@ -1252,17 +1306,24 @@ def create_new_user():
 		logger.exception("create_new_user")
 		return jsonify({"result":"failed","message":"create_new_user failed"})
 
-def update_key_to_redis_server(user_id=None):
+def update_key_to_redis_server(user_id=None,engine_name=None,domain_name=None):
 	try:
 		if user_id == None:
 			users = {}
 		else:
-			users = {"_id":user_id}
+			users = {"user_id":user_id}
+			if domain_name != None:
+				# Update paticular domain key (need engine_name also)
+				users.append({"EngineName":engine_name,"DomainName":domain_name})
+			elif engine_name != None:
+				# Update all the key in particular engine
+				users.append({"EngineName":engine_name})
+
 		
 		engine_collection = mdb['Engines']
 		db_results = engine_collection.find(users,{"engine_write_key":1,"EngineName":1,
 				"engine_read_key":1,"DomainName":1,"domain_read_key":1,"domain_write_key":1,"Weight":1,"Synonums":1,
-				"CustomResults":1,"user_id":1})
+				"CustomResults":1,"user_id":1,"user_id":1,"type":1})
 		
 		all_keys = []
 		for data in db_results:
@@ -1274,30 +1335,32 @@ def update_key_to_redis_server(user_id=None):
 				old_keys = red.keys(key_append+"*")
 				for old in old_keys:
 					red.delete(old)
-				for engine in data.get("Engines"):
-					engine_name = engine.get("EngineName")
-					engine_r_key = engine.get("engine_read_key")
-					engine_w_key = engine.get("engine_write_key")
+				
+				if data.get("type") == "engine":
+					engine_name = data.get("EngineName")
+					engine_r_key = data.get("engine_read_key")
+					engine_w_key = data.get("engine_write_key")
 					if engine_r_key != None:
 						all_keys.append({engine_r_key:{"engine_name":engine_name,"type":"engine_read","user_id":user_id}})
 					if engine_w_key != None:
 						all_keys.append({engine_w_key:{"engine_name":engine_name,"type":"engine_write","user_id":user_id}})
-					
-					domains = engine.get("Domains")
-					if domains != None:
-						for domain in domains:
-							domain_name = domain.get("DomainName")
-							weight = domain.get("Weight")
-							synonums = domain.get("Synonums")
-							custom_results = domain.get("CustomResults")
-							domain_w_key = domain.get("domain_write_key")
-							domain_r_key = domain.get("domain_read_key")
-							if domain_r_key != None:
-								all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-									"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
-							if domain_w_key != None:
-								all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-									"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+				
+				elif data.get("type") == "domain":
+					domain_name = data.get("DomainName")
+					engine_name = data.get("EngineName")
+					weight = data.get("Weight")
+					synonums = data.get("Synonums")
+					custom_results = data.get("CustomResults")
+					domain_w_key = data.get("domain_write_key")
+					domain_r_key = data.get("domain_read_key")
+					if domain_r_key != None:
+						all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+							"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+					if domain_w_key != None:
+						all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
+							"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+				else:
+					logger.error("BUG Found> Type not found in 'Engine' collection> "+str(data))
 				for key in all_keys:
 					key_value = list(key.keys())[0]
 					key_data = key.get(key_value)
