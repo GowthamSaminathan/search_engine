@@ -1,0 +1,29 @@
+server {
+    listen         80 default_server;
+
+
+# FOR PHP FASTCGI
+    location /pages {
+    root /var/www;
+    fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+    include         fastcgi_params;
+    fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+    fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+  }
+
+# FOR STATIC FILES
+    location / {
+    root /var/www/html;
+    index index.html;
+  }
+
+# FOR PYTHON FASTCGI
+    location /portal {
+    root /var/www;
+    include fastcgi_params;
+    fastcgi_param PATH_INFO $fastcgi_script_name;
+    fastcgi_param SCRIPT_NAME "";
+    fastcgi_pass unix:/run/webr/python-webr-api.soc;
+  }
+
+}

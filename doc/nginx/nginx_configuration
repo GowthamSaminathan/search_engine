@@ -1,0 +1,6 @@
+# Pute 'sites' file to /etc/nginx/sites-enabled/sites location
+# Execute below commands
+
+sudo mkdir /run/webr
+sudo chown www-data /run/webr
+

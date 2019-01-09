@@ -26,7 +26,7 @@ import ast
 
 logger =  logging.getLogger("Rotating Log websnap")
 logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler("/home/ubuntu/web_server_log/web_server.log",maxBytes=5000000,backupCount=25)
+handler = RotatingFileHandler("web_server.log",maxBytes=5000000,backupCount=25)
 
 formatter = logging.Formatter('%(asctime)s > %(levelname)s > %(message)s')
 handler.setFormatter(formatter)
