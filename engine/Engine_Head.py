@@ -61,7 +61,7 @@ class run_crawler():
 						payload = await resp.text()
 						return {"payload":payload,"status":resp.status}
 		except Exception:
-			self.logger.exception(http_req)
+			self.logger.exception("http_req")
 
 	def count_application_types(self,application_type):
 		try:
@@ -113,10 +113,9 @@ class run_crawler():
 								body = body + "\n" +tag.string.strip()
 						continue
 			else:
-				return None
 				try:
 					async with aiohttp.ClientSession() as session:
-						async with session.put("http://127.0.0.1:9998/tika",data=data) as resp:
+						async with session.put("http://104.211.219.212:9998/tika",data=data) as resp:
 							body = await resp.text()
 				except Exception as e:
 					self.logger.exception("tika extract failed : status code:"+str(resp.status)+"url:"+var.get(url))

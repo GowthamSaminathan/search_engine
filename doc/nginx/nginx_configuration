@@ -1,6 +1,11 @@
 # Pute 'sites' file to /etc/nginx/sites-enabled/sites location
 # Execute below commands
 
+sudo rm -f /etc/nginx/sites-enabled/default
+sudo mkdir /var/www/pages
+sudo mkdir /var/www/portal
 sudo mkdir /run/webr
 sudo chown www-data /run/webr
+
+sudo nohup sudo -u www-data python3 python_webr_fastcgi.py &
 
