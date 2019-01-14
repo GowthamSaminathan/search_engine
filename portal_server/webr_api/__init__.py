@@ -53,11 +53,11 @@ red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
 SOLR_ADMIN_URL = "http://127.0.0.1:8983/solr/admin/"
 
 
-@app.route('/')
+@app.route('/portal')
 def main():
-	 return "API call only......."
+	 return "API UP"
 
-@app.route('/search',methods = ['POST', 'GET'])
+@app.route('/portal/search',methods = ['POST', 'GET'])
 def search_query():
 	if request.method == 'GET':
 		try:
@@ -130,7 +130,7 @@ def search_query():
 			logger.exception("search_query")
 			return jsonify({"results":"error","message":"query failed"})
 
-@app.route('/search_history',methods = ['POST', 'GET'])
+@app.route('/portal/search_history',methods = ['POST', 'GET'])
 def search_history():
 	try:
 		if request.method == 'GET':
@@ -187,7 +187,7 @@ def search_history():
 			#print(e)
 			return jsonify({"results":"error","message":"failed"})
 
-@app.route('/search_old',methods = ['POST', 'GET'])
+@app.route('/portal/search_old',methods = ['POST', 'GET'])
 def search_query_old():
 	if request.method == 'GET':
 		try:
@@ -223,7 +223,7 @@ def search_query_old():
 			logger.exception("search_query")
 			return jsonify({"result":"failed error"})
 
-@app.route('/correct_me',methods = ['GET'])
+@app.route('/portal/correct_me',methods = ['GET'])
 def correct_me():
 	if request.method == 'GET':
 		try:
@@ -279,7 +279,7 @@ def correct_me():
 			logger.exception("correct_me")
 			return jsonify({"results":"error","message":"query failed"})
 
-@app.route('/suggest',methods = ['POST', 'GET'])
+@app.route('/portal/suggest',methods = ['POST', 'GET'])
 def suggest():
 	if request.method == 'GET':
 		try:
@@ -304,7 +304,7 @@ def suggest():
 			logger.exception("suggest")
 			return jsonify({"result":"failed"})
 
-@app.route('/spell',methods = ['POST', 'GET'])
+@app.route('/portal/spell',methods = ['POST', 'GET'])
 def spell():
 	if request.method == 'GET':
 		try:
