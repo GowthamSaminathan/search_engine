@@ -396,6 +396,9 @@ class run_crawler():
 			solr_coll_name = user_id+"_"+solr_coll_name
 			tmp_solr_coll_name = solr_coll_name+"_temp"
 			solr_db_url = "http://127.0.0.1:8983/solr/"+solr_coll_name+"/"
+			max_html_page_size = 20000000
+			max_file_download_size = 20000000
+			extract_res = None
 
 			# Create connection for Solr DB
 			solr_conn = aiohttp.TCPConnector()
@@ -419,7 +422,12 @@ class run_crawler():
 							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
 							application_type = content_typ.split(";")[0]
 							self.count_application_types(application_type)
-							
+							content_length = resp.headers.get("Content-Length")
+							try:
+								content_length = int(content_length)
+							except:
+								content_length = None
+
 							# Check for user whitelist application
 							extract_var = dict()
 							extract_var.update({"url":url})
@@ -428,24 +436,28 @@ class run_crawler():
 								
 								if application_type == "text/html" or application_type == "application/html":
 									# If file type is "html" then read the full payload
-									payload = await resp.content.read(2000000)
-									extract_var.update({"url_extract":True,"application":"html","payload_type":"data"})
-									extract_res = await self.http_response_extractor(payload,extract_var)
+
+									if content_length == None or content_length <= max_html_page_size:
+										payload = await resp.content.read(max_html_page_size)
+										extract_var.update({"url_extract":True,"application":"html","payload_type":"data"})
+										extract_res = await self.http_response_extractor(payload,extract_var)
+									else:
+										#self.mdb_collect.update_one({"_id":url},{"$set":{"status":"error","error":"large page size"}})
+										self.logger.warning("Content length("+str(content_length)+") not stisfied with maximum allowed for>"+url)
 								else:
 									# If file type is not an html then chunk the file and read
 									extract_var.update({"url_extract":False,"application":application_type,"payload_type":"file"})
 									self.logger.debug("New application >"+str(application_type)+str(" >")+url)
 									
 									temp_fp = tempfile.TemporaryFile()
-									max_download_size = 20000000
 									#print(resp.headers.get("Content-Length"))
 									chunk = None
 									while chunk != b'':
-										chunk = await resp.content.read(max_download_size)
-										#async for data in response.content.iter_chunked(max_download_size):
-										max_download_size = max_download_size - chunk.__len__()
+										chunk = await resp.content.read(max_file_download_size)
+										#async for data in response.content.iter_chunked(max_file_download_size):
+										max_file_download_size = max_file_download_size - chunk.__len__()
 
-										if not chunk or max_download_size <= 0:
+										if not chunk or max_file_download_size <= 0:
 											#print("Bracked>"+str(resp.headers.get("Content-Length")))
 											break
 										else:

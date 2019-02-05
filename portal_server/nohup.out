@@ -7,3 +7,31 @@ Traceback (most recent call last):
   File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
     elif lock.acquire(block, timeout):
 KeyboardInterrupt
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
+    return jsonify({"results":"failed","List field required"})
+                                                            ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
+    return jsonify({"results":"failed","List field required"})
+                                                            ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
+    return jsonify({"results":"failed","List field required"})
+                                                            ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
+    return jsonify({"results":"failed","List field required"})
+                                                            ^
+SyntaxError: invalid syntax

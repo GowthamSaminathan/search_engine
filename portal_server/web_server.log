@@ -66,3 +66,110 @@ Traceback (most recent call last):
 requests.exceptions.ConnectionError: HTTPConnectionPool(host='127.0.0.1', port=8983): Max retries exceeded with url: /solr/admin/cores?action=CREATE&name=priya_test&instanceDir=priya_test&dataDir=data&configSet=template_ok (Caused by NewConnectionError('<requests.packages.urllib3.connection.HTTPConnection object at 0x7f53e8448048>: Failed to establish a new connection: [Errno 111] Connection refused',))
 2019-01-14 04:08:51,886 > INFO > Starting Webserver
 2019-01-14 04:09:11,860 > INFO > Starting Webserver
+2019-01-30 04:48:23,014 > INFO > Starting Webserver
+2019-01-30 04:48:42,592 > INFO > Starting Webserver
+2019-02-01 03:03:13,627 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 718, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '9' is not a document, must be a dict
+2019-02-01 03:03:47,102 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 718, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: 'ParallelCrawler' is not a document, must be a dict
+2019-02-01 03:32:34,127 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 718, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-01 03:33:31,560 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 718, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    ]' is not a document, must be a dict
+2019-02-05 15:58:51,888 > INFO > Starting Webserver
+2019-02-05 16:00:22,916 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 786, in domain_update
+    query_sntx.get("$set").update({"UpdatedAt":datetime.datetime.utcnow(),"last_updater_ip":str(request.remote_addr)})
+AttributeError: 'NoneType' object has no attribute 'update'
+2019-02-05 16:03:30,942 > INFO > Starting Webserver
+2019-02-05 16:04:47,770 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 788, in domain_update
+    results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},query_sntx)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/collection.py", line 995, in update_one
+    session=session),
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/collection.py", line 851, in _update_retryable
+    _update, session)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/mongo_client.py", line 1248, in _retryable_write
+    return self._retry_with_session(retryable, func, s, None)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/mongo_client.py", line 1201, in _retry_with_session
+    return func(session, sock_info, retryable)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/collection.py", line 847, in _update
+    retryable_write=retryable_write)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/collection.py", line 818, in _update
+    _check_write_command_response(result)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/helpers.py", line 217, in _check_write_command_response
+    _raise_last_write_error(write_errors)
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/helpers.py", line 199, in _raise_last_write_error
+    raise WriteError(error.get("errmsg"), error.get("code"), error)
+pymongo.errors.WriteError: $pullAll requires an array argument but was given a object
+2019-02-05 16:05:39,395 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 729, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 357, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 2 (char 1)
+2019-02-05 16:09:28,405 > INFO > Starting Webserver
+2019-02-05 16:31:09,237 > INFO > Starting Webserver
+2019-02-05 16:31:16,529 > ERROR > domain_update_list_query
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 653, in domain_update_list_query
+    if req_action == 'set':
+NameError: name 'req_action' is not defined
+2019-02-05 16:33:10,214 > INFO > Starting Webserver
+2019-02-05 16:33:16,593 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 763, in domain_update
+    query_sntx.update(created_query)
+AttributeError: 'NoneType' object has no attribute 'update'
+2019-02-05 16:33:26,526 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 763, in domain_update
+    query_sntx.update(created_query)
+AttributeError: 'NoneType' object has no attribute 'update'
+2019-02-05 16:34:53,259 > INFO > Starting Webserver
+2019-02-05 16:39:38,257 > INFO > Starting Webserver

@@ -342,7 +342,7 @@ def check_user_session(session_id):
 		else:
 			# Valid session
 			# Update user TTL for this session
-			red.expire(session_id,600)
+			red.expire(session_id,60000)
 			return user_id
 	except Exception:
 		logger.exception("check_user_session")
@@ -423,7 +423,7 @@ def portal_login():
 				# Setting session data to Redis DB
 				user_session_data = {"_id":user_id,"AccountType":account_type}
 				red.hmset(session_id,user_session_data)
-				red.expire(session_id,600)
+				red.expire(session_id,60000)
 				
 				resp = jsonify({"result":"success","message":"login success"})
 				resp.set_cookie('session_id', session_id)
@@ -645,6 +645,24 @@ def create_engine():
 		logger.exception("create_engine")
 		return jsonify({"result":"failed","message":"Domain creation failed"})
 
+def domain_update_list_query(req_action,elemt,list_value):
+	
+	try:
+		query_sntx = dict()
+		
+		if req_action == 'set':
+			query_sntx = {"$set":{elemt: list_value}}
+		
+		elif req_action == 'delete':
+			query_sntx = {"$pullAll":{elemt: list_value}}
+		
+		elif req_action == 'add':
+			query_sntx = {"$addToSet":{elemt: {"$each": list_value}}}
+
+		return query_sntx
+	except Exception:
+		logger.exception("domain_update_list_query")
+
 
 @app.route('/portal/domain_update',methods = ['PUT'])
 def domain_update():
@@ -692,7 +710,7 @@ def domain_update():
 			form_schema = dict()
 			form_schema.update({'domain_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
 			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
-			form_schema.update({'action': {'required': True,'type': 'string','allowed':['add','delete','update']}})
+			form_schema.update({'action': {'required': True,'type': 'string','allowed':['add','delete','set']}})
 			form_schema.update({'element': {'required': True,'type': 'string','allowed':allowed_elements}})
 			form_schema.update({'value': {'required': True}})
 			
@@ -708,6 +726,14 @@ def domain_update():
 			
 			query_sntx = None
 
+			list_settings = ["BlackListApp","BlackListUrls","CustomResults"]
+			list_settings.append("HtmlTags")
+			list_settings.append("ManualUrls")
+			list_settings.append("Synonums")
+			list_settings.append("Weight")
+			list_settings.append("WhiteListApp")
+			list_settings.append("WhiteListUrls")
+			
 			if req_element == "AdvancedSettings":
 				req_validate.update({'ParallelCrawler': {'required': True,'type': 'number','anyof':[{'min': 1, 'max': 25}]}})
 				req_validate.update({'Allow Robot.txt': {'required': True,'type': 'string','allowed':["yes","no"]}})
@@ -724,53 +750,23 @@ def domain_update():
 
 				query_sntx = {"$set":{"AdvancedSettings": json.loads(req_value)}}
 
-			elif req_element == "BlackListApp":
-				query_sntx = {"$set":{"BlackListApp": json.loads(req_value)}}
+			elif req_element in list_settings:
+				
+				list_value = json.loads(req_value)
+				
+				if type(list_value) != list:
+					return jsonify({"results":"failed","message":"List field required"})
 
-			elif req_element == "BlackListUrls":
-				query_sntx = {"$set":{"BlackListUrls": json.loads(req_value)}}
+				created_query = domain_update_list_query(req_action,req_element,list_value)
+
+				if created_query != None:
+					query_sntx = created_query
 
 			elif req_element == "CrawlSchedule":
 				query_sntx = {"$set":{"CrawlSchedule": json.loads(req_value)}}
-
-			elif req_element == "CustomResults":
-				query_sntx = {"$set":{"CustomResults": json.loads(req_value)}}
-
-			elif req_element == "HtmlTags":
-				query_sntx = {"$set":{"HtmlTags": json.loads(req_value)}}
-
-			elif req_element == "ManualUrls":
-				query_sntx = {"$set":{"ManualUrls": json.loads(req_value)}}
-
-			elif req_element == "Synonums":
-				query_sntx = {"$set":{"Synonums": json.loads(req_value)}}
-
-			elif req_element == "Weight":
-				query_sntx = {"$set":{"Weight": json.loads(req_value)}}
-
-			elif req_element == "WhiteListApp":
-				query_sntx = {"$set":{"WhiteListApp": json.loads(req_value)}}
-
-			elif req_element == "WhiteListUrls":
-				query_sntx = {"$set":{"WhiteListUrls": json.loads(req_value)}}
-
-
-			# '''find_value = mcollection.find_one({"_id":user_id,"Engines":{"$elemMatch":{"Domains.DomainName":{"$eq":domain_name},
-			# 	"EngineName":engine_name}}},{"_id":0,"Engines.Domains.$":1})
-			
-			# if find_value != None:
-			# 	find_value = find_value.get("Engines")[0]
-			# 	single_domain = find_value.get("Domains")[0]
-			# 	single_domain.update(domain_update)'''
-			
-			# single_domain = mcollection.aggregate([{"$match":{"_id":user_id}},{"$unwind":"$Engines"},
-			# 	{"$match":{"Engines.EngineName":engine_name}},
-			# 	{"$replaceRoot":{"newRoot":"$Engines"}},
-			# 	{"$unwind":"$Domains"},{"$match":{"Domains.DomainName":domain_name}},
-			# 	{"$replaceRoot":{"newRoot":"$Domains"}},{"$addFields":domain_update}])
 			
 			if query_sntx != None:
-				query_sntx.get("$set").update({"UpdatedAt":datetime.datetime.utcnow(),"last_updater_ip":str(request.remote_addr)})
+				#query_sntx.get("$set").update({"UpdatedAt":datetime.datetime.utcnow(),"last_updater_ip":str(request.remote_addr)})
 				engine_collection = mdb['Engines']
 				results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},query_sntx)
 				if results.modified_count == 1:
