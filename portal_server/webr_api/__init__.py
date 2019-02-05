@@ -766,10 +766,12 @@ def domain_update():
 				query_sntx = {"$set":{"CrawlSchedule": json.loads(req_value)}}
 			
 			if query_sntx != None:
-				#query_sntx.get("$set").update({"UpdatedAt":datetime.datetime.utcnow(),"last_updater_ip":str(request.remote_addr)})
+				update_info = {"UpdatedAt":datetime.datetime.utcnow(),"last_updater_ip":str(request.remote_addr)}
 				engine_collection = mdb['Engines']
 				results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},query_sntx)
+				
 				if results.modified_count == 1:
+					engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},{"$set":update_info})
 					return jsonify({"result":"success","message":"Update Success"})
 				else:
 					return jsonify({"result":"failed","message":"Not Updated / Already updated one"})
