@@ -650,6 +650,10 @@ def domain_update_list_query(req_action,elemt,list_value):
 	try:
 		query_sntx = dict()
 		
+		if elemt == "Synonums":
+			# adding array for synonums elemet
+			list_value = [list_value]
+
 		if req_action == 'set':
 			query_sntx = {"$set":{elemt: list_value}}
 		
@@ -741,6 +745,7 @@ def domain_update():
 				req_validate.update({'Use Only Sitemaps': {'required': True,'type': 'string','allowed':["yes","no"]}})
 
 				req_data_validate = cerberus.Validator()
+				req_value = json.loads(req_value)
 				form_valid = req_data_validate.validate(req_value, req_validate)
 				if form_valid == False:
 					# Form not valid
@@ -748,7 +753,7 @@ def domain_update():
 					error_status.update(req_validate.errors)
 					return jsonify(error_status)
 
-				query_sntx = {"$set":{"AdvancedSettings": json.loads(req_value)}}
+				query_sntx = {"$set":{"AdvancedSettings": req_value}}
 
 			elif req_element in list_settings:
 				

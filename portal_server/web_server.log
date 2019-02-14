@@ -193,3 +193,481 @@ Traceback (most recent call last):
     raise ValueError('update only works with $ operators')
 ValueError: update only works with $ operators
 2019-02-05 16:58:15,872 > INFO > Starting Webserver
+2019-02-10 00:23:06,612 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 755, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 357, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2019-02-10 00:24:11,834 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 755, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 357, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+2019-02-10 01:33:15,422 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 11,
+        "Use Sitemaps" : "no",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-10 01:33:33,718 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[
+        "ParallelCrawler" : 11,
+        "Use Sitemaps" : "no",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    ]' is not a document, must be a dict
+2019-02-10 01:33:42,768 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 11,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-10 01:36:42,765 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 11,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-10 01:37:58,941 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '"AdvancedSettings" : {
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-10 01:38:17,103 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '["AdvancedSettings" : {
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }]' is not a document, must be a dict
+2019-02-10 01:39:01,609 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{"AdvancedSettings" : {
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }}' is not a document, must be a dict
+2019-02-11 02:17:02,550 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 755, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2019-02-11 02:19:04,756 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 755, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2019-02-13 00:15:30,862 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }]' is not a document, must be a dict
+2019-02-13 00:16:05,836 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-13 00:16:13,088 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-13 04:00:30,940 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 755, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 357, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 3 (char 2)
+2019-02-13 04:32:28,659 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 755, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 357, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 3 (char 2)
+2019-02-13 04:46:04,719 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '{
+        "ParallelCrawler" : 10,
+        "Use Sitemaps" : "yes",
+        "Allow Robot.txt" : "yes",
+        "Use Only Sitemaps" : "no"
+    }' is not a document, must be a dict
+2019-02-13 04:58:26,469 > INFO > Starting Webserver
+2019-02-13 23:57:05,114 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 756, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 5 column 9 (char 70)
+2019-02-14 00:01:41,692 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 756, in domain_update
+    list_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 3 (char 2)
+2019-02-14 00:19:02,723 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    req_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 342, in decode
+    raise JSONDecodeError("Extra data", s, end)
+json.decoder.JSONDecodeError: Extra data: line 1 column 20 (char 19)
+2019-02-14 00:34:25,077 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[]' is not a document, must be a dict
+2019-02-14 00:34:31,873 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[]' is not a document, must be a dict
+2019-02-14 00:35:06,939 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[]' is not a document, must be a dict
+2019-02-14 00:45:02,793 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': 'onlysitemaps', 'field': 'onlysitemaps'}, {'weight': 'sitemaps', 'field': 'sitemaps'}, {'weight': 'robot', 'field': 'robot'}, {'weight': 'parallel', 'field': 'parallel'}]' is not a document, must be a dict
+2019-02-14 00:46:52,838 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}, {'weight': '', 'field': 'parallel'}]' is not a document, must be a dict
+2019-02-14 00:48:32,495 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}, {'weight': '', 'field': 'parallel'}]' is not a document, must be a dict
+2019-02-14 00:49:14,817 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:49:20,705 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:50:55,579 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:50:59,026 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:51:51,024 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:51:54,057 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:52:20,662 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 00:52:30,785 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 04:13:33,146 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 04:14:10,970 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}]' is not a document, must be a dict
+2019-02-14 04:18:29,793 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'weight': '', 'field': 'onlysitemaps'}, {'weight': '', 'field': 'sitemaps'}, {'weight': '', 'field': 'robot'}, {'weight': 'parallel', 'field': 'parallel'}]' is not a document, must be a dict
+2019-02-14 04:30:27,994 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[{'Use Only Sitemaps': 'no'}, {'Use Sitemaps': 'no'}, {'Allow Robot.txt': 'yes'}, {'ParallelCrawler': 10}]' is not a document, must be a dict
+2019-02-14 04:33:21,052 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 745, in domain_update
+    form_valid = req_data_validate.validate(req_value, req_validate)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 868, in validate
+    self.__init_processing(document, schema)
+  File "/usr/local/lib/python3.5/dist-packages/cerberus/validator.py", line 558, in __init_processing
+    errors.DOCUMENT_FORMAT.format(document))
+cerberus.validator.DocumentError: '[]' is not a document, must be a dict
+2019-02-14 04:40:42,209 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    req_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2019-02-14 04:41:25,574 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    req_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2019-02-14 04:41:55,002 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    req_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2019-02-14 04:42:41,554 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 744, in domain_update
+    req_value = json.loads(req_value)
+  File "/usr/lib/python3.5/json/__init__.py", line 319, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python3.5/json/decoder.py", line 339, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python3.5/json/decoder.py", line 355, in raw_decode
+    obj, end = self.scan_once(s, idx)
+json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+2019-02-14 04:43:38,597 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 749, in domain_update
+    error_status.update(req_validate.errors)
+AttributeError: 'dict' object has no attribute 'errors'
+2019-02-14 04:43:46,184 > ERROR > domain_update
+Traceback (most recent call last):
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 749, in domain_update
+    error_status.update(req_validate.errors)
+AttributeError: 'dict' object has no attribute 'errors'
+2019-02-14 17:11:50,524 > INFO > Starting Webserver
