@@ -94,18 +94,6 @@ def search_query():
 			bf = ",".join(boost_field)
 			bf = "bq="+bf
 
-
-
-			# Insert the search query to DB
-			try:
-				search_col = mdb2[user_id]
-				tim = datetime.datetime.utcnow()
-				search_col.insert({"EngineName":engine_name,"DomainName":domain_name,"query":str(query_str),
-					"url_ip":str(url_ip),"source_ip":request.remote_addr,"time":tim})
-			except Exception:
-				logger.exception("inserting search history to DB failed:")
-				
-
 			user_default_setting = "&fl=title,url,id"+"&"+qf+"&"+bf+"&defType=dismax"
 			user_query = request.query_string.decode("utf-8")
 			query = user_query + user_default_setting
@@ -116,6 +104,15 @@ def search_query():
 			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+query
 			solr_res = requests.get(solr_url)
 			
+			# Insert the search query to DB
+			try:
+				search_col = mdb2[user_id]
+				tim = datetime.datetime.utcnow()
+				search_col.insert({"EngineName":engine_name,"DomainName":domain_name,"query":str(query_str),
+					"url_ip":str(url_ip),"source_ip":request.remote_addr,"time":tim,"solr_query":solr_url})
+			except Exception:
+				logger.exception("inserting search history to DB failed:")
+
 			if solr_res.status_code == 200:
 				solr_res = solr_res.json()
 				# Removing response header
@@ -777,6 +774,7 @@ def domain_update():
 				
 				if results.modified_count == 1:
 					engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"DomainName":domain_name},{"$set":update_info})
+					update_key_to_redis_server(user_id,engine_name,domain_name)
 					return jsonify({"result":"success","message":"Update Success"})
 				else:
 					return jsonify({"result":"failed","message":"Not Updated / Already updated one"})
@@ -1317,10 +1315,10 @@ def update_key_to_redis_server(user_id=None,engine_name=None,domain_name=None):
 			users = {"user_id":user_id}
 			if domain_name != None:
 				# Update paticular domain key (need engine_name also)
-				users.append({"EngineName":engine_name,"DomainName":domain_name})
+				users.update({"EngineName":engine_name,"DomainName":domain_name})
 			elif engine_name != None:
 				# Update all the key in particular engine
-				users.append({"EngineName":engine_name})
+				users.update({"EngineName":engine_name})
 
 		
 		engine_collection = mdb['Engines']

@@ -392,6 +392,8 @@ class run_crawler():
 			# Make engine name and user_id as solr collection name
 			# Create temp collection for full recrawll , and then swap it later
 			solr_coll_name = self.task_details.get("engine_name")
+			ename = self.task_details.get("engine_name")
+			dname = self.task_details.get("domain_name")
 			user_id = self.task_details.get("user_id")
 			solr_coll_name = user_id+"_"+solr_coll_name
 			tmp_solr_coll_name = solr_coll_name+"_temp"
@@ -416,13 +418,16 @@ class run_crawler():
 					if resp != None:
 						self.count_http_code(resp.status)
 						self.visted_urls_count = self.visted_urls_count + 1
-						content_typ = resp.headers.get('content-type')
-						
+						content_typ = resp.headers.get("Content-Type")
+						last_modified = resp.headers.get("Last-Modified")
+						#charset = resp.headers.get('charset')
+						content_length = resp.headers.get("Content-Length")
+						#Etag = resp.headers.get('Etag')
 						if resp.status == 200:
 							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
 							application_type = content_typ.split(";")[0]
 							self.count_application_types(application_type)
-							content_length = resp.headers.get("Content-Length")
+							self.logger.debug(str(resp.headers))
 							try:
 								content_length = int(content_length)
 							except:
@@ -443,7 +448,7 @@ class run_crawler():
 										extract_res = await self.http_response_extractor(payload,extract_var)
 									else:
 										#self.mdb_collect.update_one({"_id":url},{"$set":{"status":"error","error":"large page size"}})
-										self.logger.warning("Content length("+str(content_length)+") not stisfied with maximum allowed for>"+url)
+										self.logger.warning("Content length("+str(content_length)+") not satisfied with maximum allowed for>"+url)
 								else:
 									# If file type is not an html then chunk the file and read
 									extract_var.update({"url_extract":False,"application":application_type,"payload_type":"file"})
@@ -472,6 +477,9 @@ class run_crawler():
 									all_href = extract_res.get("extracted_url")
 									extract_content = extract_res.get("content")
 									extract_content.update({"url":url})
+									extract_content.update({"domain":dname})
+									extract_content.update({"id":url})
+									print(dname)
 									# Add Extracted data to solr Database
 									# Get all href in page
 									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
@@ -518,19 +526,19 @@ class run_crawler():
 						else:
 							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
 
-			ename = self.task_details.get("engine_name")
-			dname = self.task_details.get("domain_name")
+			
 
 			# Make current URL as completed state
 			#print("Completed> "+url)
 			self.mdb_collect.update_one({"_id":url},
-					{"$set":{"status":"completed"}})
+					{"$set":{"status":"completed","Content-Type":str(content_typ),"Last-Modified":str(last_modified),
+						"Content-Length":str(content_length),"response_status":str(resp.status)}})
 			
 			self.logger.info("Url:"+url+" >"+" Having > "+str(len(new_urls))+" Link(s)")
 			for new_url in new_urls:
 				# If "new_url" not in database then insert
 				results = self.mdb_collect.update_one({"_id":new_url},{"$setOnInsert": {"status":"pending","version":
-					self.crawl_version,"_id":new_url}},upsert=True)
+					self.crawl_version,"_id":new_url,"domain_name":dname}},upsert=True)
 
 				if results.modified_count != None:
 					# If "new_url" in database and version not matched with current then update the current version and with pending as status

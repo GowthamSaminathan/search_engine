@@ -1,0 +1,2 @@
+sudo nohup sudo -u www-data python3 python_webr_fastcgi.py &
+
