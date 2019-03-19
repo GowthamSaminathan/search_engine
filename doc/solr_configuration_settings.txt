@@ -1,0 +1,24 @@
+ # Configuring the Query Elevation Component , ref : https://lucene.apache.org/solr/guide/7_7/the-query-elevation-component.html#configuring-the-query-elevation-component
+ 
+ File : solrconfig.xml
+
+ <searchComponent name="elevator" class="solr.QueryElevationComponent" >
+  <!-- pick a fieldType to analyze queries -->
+  <str name="queryFieldType">string</str>
+  <str name="config-file">elevate.xml</str>
+</searchComponent>
+
+# We can use default requestHandler also
+<requestHandler name="/elevate" class="solr.SearchHandler" startup="lazy">
+  <lst name="defaults">
+    <str name="echoParams">explicit</str>
+  </lst>
+  <arr name="last-components">
+    <str>elevator</str>
+  </arr>
+</requestHandler>
+
+#Optionally, in the Query Elevation Component configuration you can also specify the following to distinguish editorial results from "normal" results:
+
+<str name="editorialMarkerFieldName">foo</str>
+

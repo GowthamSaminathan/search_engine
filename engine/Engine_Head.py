@@ -9,6 +9,7 @@ from logging.handlers import SysLogHandler
 import requests
 import urllib.parse
 
+
 import datetime
 import redis
 import random
@@ -19,6 +20,9 @@ import aiohttp
 from mimetypes import guess_extension
 from bs4 import BeautifulSoup
 from urlmatch import urlmatch
+from url_normalize import url_normalize
+import validators
+
 from support import *
 import re
 import tempfile
@@ -478,8 +482,8 @@ class run_crawler():
 									extract_content = extract_res.get("content")
 									extract_content.update({"url":url})
 									extract_content.update({"domain":dname})
-									extract_content.update({"id":url})
-									print(dname)
+									
+									#extract_content.update({"id":url})
 									# Add Extracted data to solr Database
 									# Get all href in page
 									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
@@ -488,9 +492,21 @@ class run_crawler():
 										black_list = False
 										robot_black_list = False
 										href = href['href']
-										extracted_url = urllib.parse.urljoin(str(resp.url),href)
 
+										try:
+											extracted_url = urllib.parse.urljoin(str(resp.url),href)
+											extracted_url = url_normalize(extracted_url)
+											extracted_url = urllib.parse.urldefrag(extracted_url)[0]
+											validate = validators.url(extracted_url)
 
+											if validate != True:
+												self.logger.error(str(validate))
+												continue
+										except:
+											self.logger.exception("url normalize failed")
+											continue
+
+										
 										# Check if url is allowed or blocked in robots.txt
 										for domain_patten in self.robot_disallowed:
 											domain_patten = urllib.parse.urljoin(str(resp.url),domain_patten)

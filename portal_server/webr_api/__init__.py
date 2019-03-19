@@ -65,6 +65,7 @@ def search_query():
 			key = user_query_dic.get("key")
 			query_str = user_query_dic.get("q")
 			url_ip = user_query_dic.get("url_ip")
+			user_query = request.query_string.decode("utf-8")
 
 
 			if key == None:
@@ -82,6 +83,17 @@ def search_query():
 			else:
 				return jsonify({"result":"error","message":"invalid user"})
 			
+			try:
+				# Get elevated search ID's from redis
+				# Key = elevate_+user_id+"_"+engine_name+"_"+domain_name
+				elevate = None
+				elvate_key = "elevate_"+user_id+"_"+engine_name+"_"+domain_name
+				req_query_str = query_str.strip()
+				elevate = red.hget(elvate_key,req_query_str.lower())
+			except Exception:
+				elevate = None
+				logger.exception("getting elevator from redis failed:")
+
 			query_fields = []
 			boost_field = []
 			for w in weight:
@@ -95,12 +107,16 @@ def search_query():
 			bf = "bq="+bf
 
 			user_default_setting = "&fl=title,url,id"+"&"+qf+"&"+bf+"&defType=dismax"
-			user_query = request.query_string.decode("utf-8")
 			query = user_query + user_default_setting
 			
 			# Removeing user key in request
 			query = query.replace("&key="+key,"")
 
+			# Add elevate if elevate present
+			if elevate != None:
+				query = query+elevate
+
+			logger.warning(query)
 			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+query
 			solr_res = requests.get(solr_url)
 			
@@ -219,6 +235,94 @@ def search_query_old():
 		except Exception:
 			logger.exception("search_query")
 			return jsonify({"result":"failed error"})
+
+
+@app.route('/portal/result_rerank',methods = ['POST', 'GET' , 'DELETE'])
+def result_rerank():
+	if request.method in ['POST', 'GET' , 'DELETE']:
+		try:
+			result = request.form
+			if request.method != 'POST':
+				result = request.args.to_dict()
+			############## SESSION VALIDATION START ##################
+			session_id = result.get("session_id")
+			
+			if session_id == None:
+				# Getting session_id from cookie
+				session_id = request.cookies.get('session_id')
+			if session_id != None:
+				# Validate the user with session
+				user_data = check_user_session(session_id)
+				if user_data == None:
+					return jsonify({"result":"failed","message":"Please login again"})
+			else:
+				return jsonify({"result":"failed","message":"Please login again"})
+
+			############## SESSION VALIDATION END #####################
+			user_id = user_data.get("_id")
+			engine_name = result.get("engine_name")
+			domain_name = result.get("domain_name")
+			key = "elevate_"+user_id+"_"+engine_name+"_"+domain_name
+
+			engine_collection = mdb['Engines']
+			domain_check = engine_collection.find_one({"user_id":user_id,"EngineName":engine_name,
+				"type":"domain","DomainName":domain_name})
+			if domain_check == None:
+				return jsonify({"result":"failed","message":"invalid domain or engine"})
+
+			if request.method == "POST":
+				query = result.get("query").strip()
+				query = query.lower()
+				rank_id = result.get("rank_id")
+				exclude_rank_id = result.get("exclude_rank_id")
+				
+
+				try:
+					rank_id = json.loads(rank_id)
+					exclude_rank_id = json.loads(exclude_rank_id)
+				except Exception as e:
+					return jsonify({"result":"failed","message":"List objects failed for rank_id , exclude_rank_id"})
+				
+				value = ""
+				if type(rank_id) == list:
+					if len(rank_id) > 0:
+						rank_id = ",".join(rank_id)
+						value = "&elevateIds=" + rank_id
+
+				if type(exclude_rank_id) == list:
+					if len(exclude_rank_id) > 0:
+						exclude_rank_id = ",".join(exclude_rank_id)
+						value = value + "&excludeIds=" + rank_id
+				
+				if value != "":
+					response = red.hset(key,query,value)
+					return jsonify({"result":"success","message":"success"})
+				else:
+					return jsonify({"result":"failed","message":"required list objects for rank_id , exclude_rank_id"})
+			
+			elif request.method == "GET":
+				try:
+					t_cursor = int(result.get("cursor"))
+					t_count = int(result.get("count"))
+				except Exception:
+					logger.exception("error")
+					return jsonify({"result":"failed","message":"Required field cursor,count missed"})
+
+				result = red.hscan(key, t_cursor, "*", t_count)
+				return jsonify({"result":"success","data":result})
+
+			elif request.method == "DELETE":
+				query = result.get("query")
+				query = query.strip()
+				res = red.hdel(key,query.lower())
+				return jsonify({"result":"success","message":res})
+
+		except Exception:
+			logger.exception("result_rerank")
+			return jsonify({"results":"error","message":"Re-ranking failed"})
+	else:
+		return jsonify({"results":"error","message":"wrong method ( POST only)"})
+
 
 @app.route('/portal/correct_me',methods = ['GET'])
 def correct_me():

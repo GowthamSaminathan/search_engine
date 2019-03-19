@@ -1,37 +1,48 @@
-Error in atexit._run_exitfuncs:
 Traceback (most recent call last):
-  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
-    self._thread.join(timeout)
-  File "/usr/lib/python3.5/threading.py", line 1058, in join
-    self._wait_for_tstate_lock(timeout=max(timeout, 0))
-  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
-    elif lock.acquire(block, timeout):
-KeyboardInterrupt
+  File "python_webr_fastcgi.py", line 6, in <module>
+    WSGIServer(app, bindAddress='/run/webr/python-webr-api.soc').run()
+  File "/usr/local/lib/python3.5/dist-packages/flup/server/fcgi.py", line 111, in run
+    sock = self._setupSocket()
+  File "/usr/local/lib/python3.5/dist-packages/flup/server/fcgi_base.py", line 1062, in _setupSocket
+    sock.bind(self._bindAddress)
+FileNotFoundError: [Errno 2] No such file or directory
 Traceback (most recent call last):
-  File "python_webr_fastcgi.py", line 3, in <module>
-    from webr_api import app
-  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
-    return jsonify({"results":"failed","List field required"})
-                                                            ^
-SyntaxError: invalid syntax
-Traceback (most recent call last):
-  File "python_webr_fastcgi.py", line 3, in <module>
-    from webr_api import app
-  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
-    return jsonify({"results":"failed","List field required"})
-                                                            ^
-SyntaxError: invalid syntax
+  File "python_webr_fastcgi.py", line 6, in <module>
+    WSGIServer(app, bindAddress='/run/webr/python-webr-api.soc').run()
+  File "/usr/local/lib/python3.5/dist-packages/flup/server/fcgi.py", line 111, in run
+    sock = self._setupSocket()
+  File "/usr/local/lib/python3.5/dist-packages/flup/server/fcgi_base.py", line 1062, in _setupSocket
+    sock.bind(self._bindAddress)
+PermissionError: [Errno 13] Permission denied
 Traceback (most recent call last):
   File "python_webr_fastcgi.py", line 3, in <module>
     from webr_api import app
-  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
-    return jsonify({"results":"failed","List field required"})
-                                                            ^
-SyntaxError: invalid syntax
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 266
+    @app.route('/portal/correct_me',methods = ['GET'])
+    ^
+IndentationError: expected an indented block
 Traceback (most recent call last):
   File "python_webr_fastcgi.py", line 3, in <module>
     from webr_api import app
-  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 732
-    return jsonify({"results":"failed","List field required"})
-                                                            ^
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 266
+    @app.route('/portal/correct_me',methods = ['GET'])
+    ^
+IndentationError: expected an indented block
+[2019-03-19 18:22:44,701] ERROR in app: Exception on /portal/result_rerank [GET]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1816, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1831, in finalize_request
+    response = self.make_response(rv)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1957, in make_response
+    'The view function did not return a valid response. The'
+TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 252
+    session_id = request.cookies.get('session_id')-
+                                                  ^
 SyntaxError: invalid syntax
