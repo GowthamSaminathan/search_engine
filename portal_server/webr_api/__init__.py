@@ -52,6 +52,66 @@ red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
 
 SOLR_ADMIN_URL = "http://127.0.0.1:8983/solr/admin/"
 
+def check_user_session(session_id):
+	# Validate user session with cookie
+	try:
+		user_id = red.hgetall(session_id)
+		if not user_id:
+			# If user_id is None or not containe dict value
+			# No session found
+			return None
+		else:
+			# Valid session
+			# Update user TTL for this session
+			red.expire(session_id,60000)
+			return user_id
+	except Exception:
+		logger.exception("check_user_session")
+
+def validate_session(request):
+	try:
+		############## SESSION VALIDATION START ##################
+		session_id = None
+		
+		if session_id == None:
+			# Getting session_id from cookie
+			session_id = request.cookies.get('session_id')
+		if session_id != None:
+			# Validate the user with session
+			user_data = check_user_session(session_id)
+			if user_data == None:
+				return {"valid":False}
+			else:
+				return {"valid":True,"user_data":user_data}
+		else:
+			return {"valid":False}
+
+	except Exception :
+		logger.exception("search_query")
+		return {"valid":False}
+
+
+def validate_engine_domain(user_id,engine_name,domain_name):
+	try:
+		# Check if given engine , domain name valid for provided user
+		engine_collection = mdb['Engines']
+		query = {"user_id":user_id,"EngineName":engine_name}
+		
+		if domain_name != None:
+			query.update({"type":"domain","DomainName":domain_name})
+		else:
+			query.update({"type":"engine"})
+
+		domain_check = engine_collection.find_one(query)
+		
+		if domain_check == None:
+			return None
+		else:
+			return domain_check
+
+	except Exception :
+		logger.exception("validate_engine_domain")
+		return None
 
 @app.route('/portal')
 def main():
@@ -431,22 +491,6 @@ def spell():
 			return jsonify({"result":"failed"})
 
 ##############################################################################################################
-
-def check_user_session(session_id):
-	# Validate user session with cookie
-	try:
-		user_id = red.hgetall(session_id)
-		if not user_id:
-			# If user_id is None or not containe dict value
-			# No session found
-			return None
-		else:
-			# Valid session
-			# Update user TTL for this session
-			red.expire(session_id,60000)
-			return user_id
-	except Exception:
-		logger.exception("check_user_session")
 
 @app.route('/portal/logout',methods = ['POST', 'GET'])
 def portal_logout():
@@ -1194,6 +1238,120 @@ def get_crawl_history():
 		logger.exception("get_crawl_info")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
+
+@app.route('/portal/manage_synonyms',methods = ['PUT','GET','DELETE'])
+def manage_synonyms():
+	try:
+
+		user_validate = validate_session(request)
+		if user_validate.get("valid") == False:
+			return jsonify({"result":"failed","message":"Please login again"})
+		
+		user_data = user_validate.get("user_data")
+
+		if request.method != 'PUT':
+			result = request.args.to_dict()
+		else:
+			result = request.form
+		
+		user_id = user_data.get("_id")
+		engine_name = result.get("engine_name")
+		
+		if validate_engine_domain(user_id,engine_name,None) == None:
+			return jsonify({"result":"failed","message":"Please provide valid engine name / domain name"})
+
+		solr_url = "http://127.0.0.1:8983/solr/{}/schema/analysis/synonyms/english".format(user_id+"_"+engine_name)
+		
+		if request.method == 'GET':
+			# Get synonyms from Solr using solr API
+			solr_res = requests.get(solr_url)
+			
+			if solr_res.status_code == 200:
+				solr_res = solr_res.json()
+				solr_res.pop("responseHeader")
+				solr_res.update({"result":"success"})
+				return jsonify(solr_res)
+			else:
+				logger.error("Solr failed >"+solr_url+ " Responce Code:" + str(solr_res.status_code))
+				return jsonify({"result":"failed","message":"Internal server error"})
+
+		elif request.method == 'PUT':
+			synonyms = result.get("synonyms")
+			engine_name = result.get("engine_name")
+			form_schema = dict()
+			form_schema.update({'synonyms': {'required': True,'type': 'string','minlength':2}})
+			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+
+			form_validate = cerberus.Validator()
+			form_valid = form_validate.validate(result, form_schema)
+			
+			if form_valid == False:
+				# Form not valid
+				error_status = {"results":"failed"}
+				error_status.update(form_validate.errors)
+				return jsonify(error_status)
+
+			headers = {'Content-type': 'application/json',}
+			data = json.loads(synonyms)
+			solr_res = requests.post(solr_url,headers=headers, json=data)
+			
+			if solr_res.status_code == 200:
+				solr_res = solr_res.json()
+				solr_res.pop("responseHeader")
+				solr_res.update({"result":"success"})
+				try:
+					solr_admin_url = "http://127.0.0.1:8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
+					solr_admin_res = requests.get(solr_admin_url)
+					if solr_admin_res.status_code != 200:
+						logger.exception("Solr reload failed >"+solr_admin_url+ " Responce Code:" + str(solr_admin_res.status_code))
+				except Exception:
+					logger.exception("Solr reload failed")
+
+				return jsonify(solr_res)
+			else:
+				logger.error("Solr failed >"+solr_url+ " Responce Code:" + str(solr_res.status_code))
+				return jsonify({"result":"failed","message":"Internal server error"})
+
+
+		elif request.method == 'DELETE':
+			# DELETE a synonyms from Solr using solr API
+			result = request.args.to_dict()
+			synonyms = result.get("synonyms")
+			
+			if synonyms == None or synonyms == '':
+				return jsonify({"result":"failed","message":"synonyms required"})
+			
+			solr_url = solr_url + "/" + synonyms
+			solr_res = requests.delete(solr_url)
+			
+			if solr_res.status_code == 200:
+				solr_res = solr_res.json()
+				solr_res.pop("responseHeader")
+				solr_res.update({"result":"success"})
+				
+				try:
+					solr_admin_url = "http://127.0.0.1:8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
+					solr_admin_res = requests.get(solr_admin_url)
+					if solr_admin_res.status_code != 200:
+						logger.exception("Solr reload failed >"+solr_admin_url+ " Responce Code:" + str(solr_admin_res.status_code))
+				except Exception:
+					logger.exception("Solr reload failed")
+				
+				return jsonify(solr_res)
+
+			elif solr_res.status_code == 404:
+				return jsonify({"result":"failed","message":"synonyms not present"})
+			
+			else:
+				logger.error("Solr failed >"+solr_url+ " Responce Code:" + str(solr_res.status_code))
+				return jsonify({"result":"failed","message":"Internal server error"})
+
+		else:
+			return jsonify({"result":"failed","message":"Method not allowed"})
+
+	except Exception:
+		logger.exception("manage_synonyms")
+		return jsonify({"result":"failed","message":"unknown fail"})
 
 @app.route('/portal/start_crawl',methods = ['POST'])
 def start_crawler():

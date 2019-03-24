@@ -22,3 +22,28 @@
 
 <str name="editorialMarkerFieldName">foo</str>
 
+=================================================================================
+
+# Configuring dynamic stop words and synonyms using API
+# Get the managed schema http://13.232.131.155:8983/solr/priya_wisky/schema/managed
+# API :https://lucene.apache.org/solr/guide/6_6/managed-resources.html
+
+
+
+<fieldType name="text_general" class="solr.TextField" positionIncrementGap="100" multiValued="true">
+    <analyzer type="index">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+    <analyzer type="query">
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.SynonymGraphFilterFactory" expand="true" ignoreCase="true" synonyms="synonyms.txt"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ManagedStopFilterFactory" managed="english" />
+      <filter class="solr.ManagedSynonymFilterFactory" managed="english" />
+
+    </analyzer>
+  </fieldType>
+

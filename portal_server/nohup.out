@@ -46,3 +46,100 @@ Traceback (most recent call last):
     session_id = request.cookies.get('session_id')-
                                                   ^
 SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 87
+    return return {"valid":False}
+                ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 87
+    return return {"valid":False}
+                ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 87
+    return return {"valid":False}
+                ^
+SyntaxError: invalid syntax
+Traceback (most recent call last):
+  File "python_webr_fastcgi.py", line 3, in <module>
+    from webr_api import app
+  File "/home/ubuntu/project/search_engine/portal_server/webr_api/__init__.py", line 1262
+    solr_url = "http://127.0.0.1:8983/solr/{}/schema/analysis/synonyms/english".format(user_id+"_"engine_name)
+                                                                                                            ^
+SyntaxError: invalid syntax
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/lib/python3.5/threading.py", line 1058, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt
+['gov', 'government', 'governments']
+http://127.0.0.1:8983/solr/priya_wisky/schema/analysis/synonyms/english
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/lib/python3.5/threading.py", line 1058, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt
+['gov', 'government', 'governments']
+http://127.0.0.1:8983/solr/priya_wisky/schema/analysis/synonyms/english
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/lib/python3.5/threading.py", line 1058, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/lib/python3.5/threading.py", line 1058, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt
+[2019-03-24 06:33:14,883] ERROR in app: Exception on /portal/manage_synonyms [DELETE]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1816, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1831, in finalize_request
+    response = self.make_response(rv)
+  File "/usr/local/lib/python3.5/dist-packages/flask/app.py", line 1957, in make_response
+    'The view function did not return a valid response. The'
+TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/lib/python3.5/threading.py", line 1058, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/lib/python3.5/threading.py", line 1058, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/lib/python3.5/threading.py", line 1070, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt

@@ -1,0 +1,10 @@
+
+# https://lucene.apache.org/solr/guide/7_4/config-api.html
+
+collection/config: retrieve the full effective config, or modify the config. Use GET to retrieve and POST for executing commands
+
+http://13.232.131.155:8983/solr/priya_wisky/config
+
+
+
+
