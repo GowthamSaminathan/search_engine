@@ -1425,6 +1425,43 @@ def start_crawler():
 		logger.exception("start_crawler")
 		return jsonify({"result":"failed","message":"unknown fail"})
 
+@app.route('/portal/stop_crawl',methods = ['GET'])
+def stop_crawl():
+	try:
+		user_validate = validate_session(request)
+		if user_validate.get("valid") == False:
+			return jsonify({"result":"failed","message":"Please login again"})
+		
+		user_data = user_validate.get("user_data")
+
+		if request.method == 'GET':
+			result = request.args.to_dict()
+		else:
+			return jsonify({"result":"failed","message":"Requested method not supported"})
+		
+		user_id = user_data.get("_id")
+		engine_name = result.get("engine_name")
+		domain_name = result.get("domain_name")
+		
+		if validate_engine_domain(user_id,engine_name,domain_name) == None:
+			return jsonify({"result":"failed","message":"Please provide valid engine name / domain name"})
+
+		task_name = "crawl_task|"+engine_name+"|"+domain_name
+		task_details = red.hgetall(task_name)
+		
+		if task_details == None:
+			return jsonify({"result":"failed","message":"Task not running"})
+		else:
+			status = task_details.get("status")
+			if status == "running" or status == "started":
+				red.hset(task_name,"terminate","force")
+				return jsonify({"result":"success","message":"Task terminated..."})
+			else:
+				return jsonify({"result":"failed","message":"Task not running"})
+	except Exception:
+		logger.exception("stop_crawl")
+		return jsonify({"result":"failed","message":"unknown fail"})
+
 
 @app.route('/portal/user_update',methods = ['PUT'])
 def portal_user_info_update():
