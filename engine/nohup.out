@@ -1,2 +1,0 @@
-Task was destroyed but it is pending!
-task: <Task pending coro=<run_crawler.one_page_crawl() running at Engine_Head.py:477> wait_for=<Future finished result=True>>

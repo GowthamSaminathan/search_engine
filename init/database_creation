@@ -1,4 +1,4 @@
-# Creating mongodb admin account ( set ISODate date before run )
+# Creating mongodb admin account ( update ISODate date before run )
 # username : admin , password: user@123
 
 use accounts

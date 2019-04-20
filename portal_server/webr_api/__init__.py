@@ -10,6 +10,7 @@ from flask_pymongo import PyMongo
 import pymongo
 import logging
 from logging.handlers import RotatingFileHandler
+from logging.handlers import SysLogHandler
 
 import requests
 import urllib.parse
@@ -24,13 +25,12 @@ import binascii
 import ast
 
 
-logger =  logging.getLogger("Rotating Log websnap")
-logger.setLevel(logging.DEBUG)
-handler = RotatingFileHandler("web_server.log",maxBytes=5000000,backupCount=25)
+sysl = SysLogHandler(address='/dev/log')
+sysl.setFormatter(logging.Formatter('pser-portal: %(levelname)s > %(asctime)s > %(message)s'))
 
-formatter = logging.Formatter('%(asctime)s > %(levelname)s > %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger =  logging.getLogger("pser-portal")
+logger.addHandler(sysl)
+logger.setLevel(logging.DEBUG)
 #logger.propagate = False # DISABLE LOG STDOUT
 logger.info("Starting Webserver")
 
@@ -544,7 +544,6 @@ def portal_login():
 				if user_data != None:
 					return jsonify({"result":"success","message":"Already logged In"})
 			############## SESSION VALIDATION END #####################
-
 			user_id = result.get("user_name")
 			user_password = result.get("user_password")
 

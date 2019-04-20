@@ -7,11 +7,9 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<title>Search - Domain</title>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<title>Search - Synonyms</title>
 <link href="css/style.css" rel="stylesheet" type="text/css">
 <link href="css/responsive.css" rel="stylesheet" type="text/css">
-
 </head>
 <body>
 <header class="header-cont">
@@ -74,10 +72,10 @@
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav mr-auto">
               <li class="nav-item"> <a class="nav-link" href="#"> Dashboard</a> </li>
-              <li class="nav-item"> <a class="nav-link active" href="#">Domain </a> </li>
+              <li class="nav-item"> <a class="nav-link" href="#">Domain </a> </li>
               <li class="nav-item"> <a class="nav-link " href="#"> Analytics</a> </li>
               <li class="nav-item"> <a class="nav-link " href="#"> Search Preview</a> </li>
-              <li class="nav-item"> <a class="nav-link " href="#"> Search Customize </a> </li>
+              <li class="nav-item"> <a class="nav-link active" href="#"> Search Customize </a> </li>
               <li class="nav-item"> <a class="nav-link " href="#"> Page Content </a> </li>
               <li class="nav-item"> <a class="nav-link " href="#">API </a> </li>
             </ul>
@@ -92,185 +90,477 @@
     </div>
   </div>
 </section>
-<section class="body-cont">
+<section class="body-cont p-0">
 
  <!-- The overlay -->
-
-
-
-
-
-
-
-
   <div class="container">
     <div class="row">
     
-    <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 manage-domain-txt"> 
+    <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
+
+<div class="setting-left">
+
+<div class="left-heading"> 
+
+SETTINGS
+
+</div>
+
+
+<div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <a class="nav-link" id="v-pills-1-tab" data-toggle="pill" href="#v-pills-1" role="tab" aria-controls="v-pills-1" aria-selected="true">Weight</a>
+      <a class="nav-link" id="v-pills-2-tab" data-toggle="pill" href="#v-pills-2" role="tab" aria-controls="v-pills-2" aria-selected="false">Result Ranking</a>
+      <a class="nav-link active" id="v-pills-3-tab" data-toggle="pill" href="#v-pills-3" role="tab" aria-controls="v-pills-3" aria-selected="false">Synonyms</a>
+    </div>
+
+
+</div>
     
-    <h2> Manage domains </h2>
+    </div>
     
-    The domains below are crawled to ingest documents into your Engine. Click a domain 
-to make changes to its associated rules.
+    
+       <div class="col-12 col-sm-12 col-md-8 col-lg-9 col-xl-9">
+       
+       <div class="tab-content" id="v-pills-tabContent">
+      <div class="tab-pane fade" id="v-pills-1" role="tabpanel" aria-labelledby="v-pills-2-tab">
+      
+      <div class="cutomize-cont"> 
+      
+      <div class="row no-gutters">
+      <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-3 search-customize-left">
+      <div class="search-custom-heading1"> 
+      
+      Delaware Bussiness
+      </div>
+      
+      
+      <div class="search-option-cont">
+      
+      <ul style="margin:0px; padding:0px; list-style:none;">
+      <li> <div class="form-row1">
+      <label>Field</label><select class="custom-select" id="inputGroupSelect01">
+    <option selected>image</option>
+  </select>
+      
+      </div>
+      
+      <div class="form-row1">
+      <label>Weight </label><input type="text" value="6.0" class="slideControl" />
+      
+      </div>
+      
+      
+      </li>
+	
+	<li>
+    <div class="form-row1">
+    <div class="delete-link"><a href="#"> Delete </a></div>
+      <label>Field</label><select class="custom-select" id="inputGroupSelect01">
+    <option selected>image</option>
+  </select>
+      
+      </div>
+    
+    
+       <div class="form-row1">  
+        <label>Weight </label><input type="text" value="4.0" class="slideControl" />
+       
+       </div>
+   </li>
+	<li>
+    <div class="form-row1">
+      <label>Field</label><select class="custom-select" id="inputGroupSelect01">
+    <option selected>image</option>
+  </select>
+      
+      </div>
+       <div class="form-row1">
+        <label>Weight</label><input type="text" value="9.0" class="slideControl" />
+        </div>
+   </li>
+   
+   
+   <p class="add-field"> <a href="#">+Add Filed</a> </p>
+   
+   <span class="restore"> <a href="#"> Restore</a></span>
+   <span> <button class="btn btn-outline-secondary save-btn"> Save </button></span>
+   
+   
+</ul>
+   
+      </div>
+   
+      </div>
+  <div class="col-12 col-sm-6 col-md-9 searchpreview-cont">
+  
+  <div class="search-result2"> 
+  
+  <div class="input-group mb-3">
+  <input type="text" class="form-control form-control-lg" placeholder="Enter a keyword to search" aria-label="" aria-describedby="button-addon2">
+  <div class="input-group-append">
+    <button class="btn btn-primary" type="button" id="button-addon2"><img src="images/search-icon.png"  alt=""> </button>
+  </div>
+</div>
+<div class="result-count"> Showing 1–10 of 834 for "ecommerce"</div>
+
+<div class="search-result-cont"> 
+
+
+<div class="search-result">
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+
+<div class="pagination-cont"> <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    
+    <li class="page-item"><a class="page-link active" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+     <li class="page-item"><a class="page-link" href="#">4</a></li>
+    <li class="page-item"><a class="page-link" href="#">5</a></li>
+    <li class="page-item"><a class="page-link" href="#">6</a></li>
+     <li class="page-item"><a class="page-link" href="#">7</a></li>
+    <li class="page-item"><a class="page-link" href="#">8</a></li>
+    <li class="page-item"><a class="page-link" href="#">9</a></li>
+     <li class="page-item"><a class="page-link" href="#">10</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#">Next</a>
+    </li>
+  </ul>
+</nav> </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+  
+  </div>
+  
+  
+  </div>
+  
+</div>
+      
+      
+      </div>
+      
+      
+      </div>
+      <div class="tab-pane fade" id="v-pills-2" role="tabpanel" aria-labelledby="v-pills-3-tab">
+      
+      <div class="row">
+      
+        
+     
+     
+     
+     
+     <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="panel">
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 manage-domain-txt manage-domain-txt2"> 
+    
+    <h2> Set Preference </h2>
+    
+Below are the options to manage URL's.
     
     
      </div>
-     
-     
-     <div class="col-12 col-sm-12 col-md-4 col-lg-4 col-xl-4 mt-3 text-right">  <button class="btn btn1 btn-primary" onClick="openNav()"> <img src="images/icon1.png"  alt=""> Create New Domain</button>  </div>
-     
-     
-    
-    
-    
-      
-      
-      
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-        <div class="panel">
-          <div class="row">
-            <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9">
-              <div class="panel-heading panel-heading2">
-                <h2> Domains </h2>
-                </div>
-            </div>
-            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 more-options text-right">
-             <div class="input-group float-right">
-  <div class="input-group-prepend">
-    <span class="input-group-text" id="basic-addon1"> <img src="images/search-icon.jpg"  alt=""></span>
-  </div>
-  <input class="form-control search-filed1" placeholder="Search..." aria-label="" aria-describedby="basic-addon1" type="text">
-</div>
-            </div>
-            <div class="panel-details p-0 domain-table">
-               <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"></div>
-              <div class="table-responsive">
-              <table class="table table-hover display" id="table_1">
-  <thead class="table-heading1">
-    <tr>
-      <th scope="col">DOMAIN</th>
-      <th scope="col">PAGES</th>
-      <th scope="col">DATE CREATED</th>
-      <th scope="col">LAST CRAWL</th>
-      <th scope="col">CREATED BY</th>
-      <th scope="col">SCHEDULE</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><a href="#">https://www.pexels.com/</a></td>
-      <td>24</td>
-      <td>14 Mar, 2018</td>
-      <td>18 Mar, 2018</td>
-      <td><img src="images/user.jpg" class="user-img" alt=""> Christina Firth</td>
-      <td>Every 24 Hours</td>
-      <td align="center"><div class="btn-group">
-  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <img src="images/action-icon.jpg"  alt=""></button>
-  <div class="dropdown-menu dropdown-menu-right">
-    <button class="dropdown-item" type="button">Action</button>
-    <button class="dropdown-item" type="button">Another action</button>
-    <button class="dropdown-item" type="button">Something else here</button>
-  </div>
-</div></td>
-    </tr>
-    <tr>
-      <td><a href="#">https://dribbble.com/search?q=table&amp;s=latest</a></td>
-      <td>49</td>
-      <td>24 Jan, 2018</td>
-      <td>16 Mar, 2018</td>
-      <td><img src="images/user.jpg" class="user-img" alt=""> Jeffrey Flores</td>
-      <td>Every 8 Hours</td>
-      <td align="center"><div class="btn-group">
-  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <img src="images/action-icon.jpg"  alt=""></button>
-  <div class="dropdown-menu dropdown-menu-right">
-    <button class="dropdown-item" type="button">Action</button>
-    <button class="dropdown-item" type="button">Another action</button>
-    <button class="dropdown-item" type="button">Something else here</button>
-  </div>
-</div></td>
-    </tr>
-    
-    
-    
-    <tr>
-      <td><a href="https://mimosa-theme.myshopify.com/">https://mimosa-theme.myshopify.com/</a></td>
-      <td>24</td>
-      <td>14 Mar, 2018</td>
-      <td>18 Mar, 2018</td>
-      <td><img src="images/user.jpg" class="user-img" alt=""> Christina Firth</td>
-      <td>Every 24 Hours</td>
-      <td align="center"><div class="btn-group">
-  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <img src="images/action-icon.jpg"  alt=""></button>
-  <div class="dropdown-menu dropdown-menu-right">
-    <button class="dropdown-item" type="button">Action</button>
-    <button class="dropdown-item" type="button">Another action</button>
-    <button class="dropdown-item" type="button">Something else here</button>
-  </div>
-</div></td>
-    </tr>
-    
-    
-    <tr>
-      <td><a href="https://web.flock.com/?JwHefxzX2zF4pHwm=">https://web.flock.com/?JwHefxzX2zF4pHwm=</a></td>
-      <td>24</td>
-      <td>14 Mar, 2018</td>
-      <td>18 Mar, 2018</td>
-      <td><img src="images/user.jpg" class="user-img" alt=""> Christina Firth</td>
-      <td>Every 24 Hours</td>
-      <td align="center"><div class="btn-group">
-  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <img src="images/action-icon.jpg"  alt=""></button>
-  <div class="dropdown-menu dropdown-menu-right">
-    <button class="dropdown-item" type="button">Action</button>
-    <button class="dropdown-item" type="button">Another action</button>
-    <button class="dropdown-item" type="button">Something else here</button>
-  </div>
-</div></td>
-    </tr>
-    
-    <tr>
-      <td><a href="http://nouthemes.com/magento/zorka/">http://nouthemes.com/magento/zorka/</a></td>
-      <td>24</td>
-      <td>14 Mar, 2018</td>
-      <td>18 Mar, 2018</td>
-      <td><img src="images/user.jpg" class="user-img" alt=""> Christina Firth</td>
-      <td>Every 24 Hours</td>
-      <td align="center"><div class="btn-group">
-  <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <img src="images/action-icon.jpg"  alt=""></button>
-  <div class="dropdown-menu dropdown-menu-right">
-    <button class="dropdown-item" type="button">Action</button>
-    <button class="dropdown-item" type="button">Another action</button>
-    <button class="dropdown-item" type="button">Something else here</button>
-  </div>
-</div></td>
-    </tr>
-    
-    
-    
-    </tbody>
-</table>
+            
+            <div class="panel-details rules-table manage-search-result">
               
+              
+              <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"> 
+              
+              <div class="search-result-cont"> 
+
+
+
+<div class="search-result">
+
+<div class="manage-result-option"> <div class="search-cancle-btn"> <a href="#"> <img src="images/cancel.jpg"  alt=""> </a> </div>
+
+<div class="clicks-count"> <span> 4 </span> Clicks </div>
+
+
+</div>
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+<div class="manage-result-option"> <div class="search-cancle-btn"> <a href="#"> <img src="images/cancel.jpg"  alt=""> </a> </div>
+
+<div class="clicks-count"> <span> 4 </span> Clicks </div>
+
+
+</div>
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+<div class="manage-result-option"> <div class="search-cancle-btn"> <a href="#"> <img src="images/cancel.jpg"  alt=""> </a> </div>
+
+<div class="clicks-count"> <span> 4 </span> Clicks </div>
+
+
+</div>
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+
+<div class="manage-result-option"> <div class="search-cancle-btn"> <a href="#"> <img src="images/cancel.jpg"  alt=""> </a> </div>
+
+<div class="clicks-count"> <span> 4 </span> Clicks </div>
+
+
+</div>
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+<div class="search-result">
+<div class="manage-result-option"> <div class="search-cancle-btn"> <a href="#"> <img src="images/cancel.jpg"  alt=""> </a> </div>
+
+<div class="clicks-count"> <span> 4 </span> Clicks </div>
+
+
+</div>
+
+<p> <a href="#"> Electronic Commerce (ecommerce) - Investopedia</a></p>
+
+<p> <span> https://www.investopedia.com/terms/e/ecommerce.asp</span></p>
+
+<p>Electronic commerce, or eCommrce solutions (also written as eCommerce) is a type of business model, or segment of a larger business model, that enables a firm or individual to conduct business over an electronic network, typically the internet.</p>
+
+</div>
+
+
+<div class="pagination-cont"> <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    
+    <li class="page-item"><a class="page-link active" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+     <li class="page-item"><a class="page-link" href="#">4</a></li>
+    <li class="page-item"><a class="page-link" href="#">5</a></li>
+    <li class="page-item"><a class="page-link" href="#">6</a></li>
+     <li class="page-item"><a class="page-link" href="#">7</a></li>
+    <li class="page-item"><a class="page-link" href="#">8</a></li>
+    <li class="page-item"><a class="page-link" href="#">9</a></li>
+     <li class="page-item"><a class="page-link" href="#">10</a></li>
+    <li class="page-item">
+      <a class="page-link" href="#">Next</a>
+    </li>
+  </ul>
+</nav> </div>
+
+</div>
               
               
               </div>
               
               
+            </div>
+          </div>
+        </div>
+        
+        
+        
+        
+      </div>
+      
+      
+      </div>
+      
+      
+      
+      </div>
+      <div class="tab-pane fade  show active synonyms-btn" id="v-pills-3" role="tabpanel" aria-labelledby="v-pills-4-tab">
+      
+      <div class="row">
+      
+        
+     
+     
+     
+     
+     <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+        <div class="panel">
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 manage-domain-txt manage-domain-txt2"> 
+    
+    <h2> Create a Synonym Set </h2>
+    <p> <button class="btn btn-outline-secondary save-btn3 col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6" id="createPopup"> create a synonym set</button></p>
+    
+    <hr/>
+Enter a single term in each input box below. Each entry will be considered equivalent to every other entry in the set
+    
+    
+     </div>
+            
+            <div class="panel-details p-0 rules-table ">
+              
+              
+              <div id = "demo" class="col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6 synonyms-table"> 
+              
+              <!-- <p> <input name="" type="text" class=" form-control" placeholder="Add synonym"></p>
+               <p> <input name="" type="text" class=" form-control" placeholder="Add synonym"></p>
+                <p> <input name="" type="text" class=" form-control" placeholder="Add synonym"></p>
+                 <p> <input name="" type="text" class=" form-control" placeholder="Add synonym"></p> -->
+                 
+              
+              
+              
+              </div>
+
+                 <!-- <p class="add-field col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6" > <a href="#"> <img src="images/add.jpg"  alt=""> Add Filed</a> </p>
+                <p> <button class="btn btn-outline-secondary save-btn2 col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6" disabled> Save </button></p>
+               -->
               
             </div>
           </div>
         </div>
+ 
+      </div>
+ 
       </div>
       
-       <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-       
-       <div class="recent-msg"> <img src="images/icon2.jpg"  alt=""> The most recently completed full crawl finished July 29, 2018 at 7:26PM UTC. </div>
-       
+      
       </div>
+
+      <!-- Create a Synonyms List -->
+      <div class="tab-pane fade createSynonyms" id="v-pills-4" role="tabpanel" aria-labelledby="v-pills-5-tab">
+      
+        <div class="row">
+      
+       <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+          <div class="panel">
+            <div class="row">
+              <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 manage-domain-txt manage-domain-txt2"> 
+      
+      <h2> Create a Synonym Set </h2>
+      <h6 class = "backSynonym">Back to Synonym Set list</h6>
+      <hr/>
+  <!-- Enter a single term in each input box below. Each entry will be considered equivalent to every other entry in the set -->
+      
+      
+       </div>
+              
+              <div class="panel-details p-0 rules-table ">
+                
+                
+                <div id = "demo" class="col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6 synonyms-table"> 
+                
+                 <p> <input name="textbox1" type="text" class=" form-control synonymsDisabled" id="textbox1" placeholder="eg: Bike"  /></p>
+                 <p> <input name="textbox2" type="text" class=" form-control synonymsDisabled" id="textbox2" placeholder="eg: Vechile"  /></p>
+               <!--    <p> <input name="" type="text" class=" form-control" placeholder="Add synonym"></p>
+                       <p> <input name="" type="text" class=" form-control" placeholder="Add synonym"></p> -->
+                   
+                
+                
+                
+                </div>
+  
+                   <p class="add-field col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6" > <a href="#"> <img src="images/add.jpg"  alt=""> Add Filed</a> </p>
+                  <p> <button class="btn btn-outline-secondary save-btn2 col-12 col-sm-12 col-md-7 col-lg-6 col-xl-6" > Save </button></p>
+                
+                
+              </div>
+            </div>
+          </div>
+   
+        </div>
+   
+        </div>
+        
+        
+        </div>
+      
+    </div>
+
+
+    
+    </div>
+    
       
     </div>
   </div>
@@ -329,27 +619,80 @@ to make changes to its associated rules.
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script> 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script src="js/progresscircle.js"> </script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<script src="js/jquery.slideControl.js"> </script>
 
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.slideControl').slideControl();
+  // $('.createSynonyms').hide();
+  // Synonyms
+
+  var synonyms_counter = 2;
+  var synonyms_storeArray = [];
+  
+
+$('#createPopup').click(function () {  
+    // $('.createSynonyms').show();
+    $('.createSynonyms').addClass("show active");
+    $('.synonyms-btn').removeClass("show active");
+
+});
+$('.backSynonym').click(function () {  
+    $('.createSynonyms').removeClass("show active");
+    $('.synonyms-btn').addClass("show active");
+
+});
+
+  $(".add-field").click(function(){
+    synonyms_counter++;
+    $(".synonyms-table:last").append('<p><input name="textbox' + synonyms_counter + '" id="textbox' + synonyms_counter + '" type="text" class="form-control synonymsDisabled" value=""   /></p>');
+    
+    $('.synonymsDisabled').keyup(function(){
+        if($(this).val().length !=0)
+            $('.save-btn2').attr('disabled', false);            
+        else
+            $('.save-btn2').attr('disabled',true);
+    }) 
+  });
+  
+ $(".save-btn2").click(function () {
+  var synonyms_textValue = ''; 
+    // $('.save-btn2').attr("disabled", true);
+    
+    for( i=1 ; i<=synonyms_counter; i++){
+      synonyms_textValue +="\n" +$('#textbox' + i).val();      
+      // $('#textbox' + i).remove();
+      // synonyms_storeArray.push(synonyms_textValue);
+      
+    }
+    // $(".synonyms-table").css("white-space" , "pre");
+    //document.getElementById("demo").innerHTML = synonyms_textValue;
+   // console.log(synonyms_textValue)
+      synonyms_counter = 3; 
+      synonyms_storeArray.push(synonyms_textValue);
+  	  console.log(synonyms_storeArray);
+       alert(synonyms_textValue)
+       $.ajax({
+          url: 'http://13.232.131.155/portal/manage_synonyms',
+          type: 'PUT',
+          data: synonyms_textValue,
+          success: function(data) {
+            console.log(data)
+            alert(data);
+          }
+        });
+
+   });
+
+  });
+  
+</script>
 
 <script> $(function(){
 
   $('.circlechart').circlechart();
 
 });
-
-
-$(document).ready( function () {
-    $('#table_1').DataTable(
-	{
-		 paging: false,
-		  searching: false,
-	}
-	
-	
-	);
-} );
-
 
 
 /* Open when someone clicks on the span element */
@@ -362,24 +705,30 @@ function closeNav() {
     document.getElementById("myNav").style.width = "0%";
 } 
 
+
+var rangeSlider = function(){
+  var slider = $('.range-slider'),
+      range = $('.range-slider__range'),
+      value = $('.range-slider__value');
+    
+  slider.each(function(){
+
+    value.each(function(){
+      var value = $(this).prev().attr('value');
+      $(this).html(value);
+    });
+
+    range.on('input', function(){
+      $(this).next(value).html(this.value);
+    });
+  });
+};
+
+rangeSlider();
+
 </script>
 
-<script type="text/javascript" src="js/portal_api.js"></script>
 
-<script>
 
-get_domain(engine_name="testengine1",domain_name="all",onsuccess=function (result){
-console.log(result)
-
-$(result).each(function(index,data)
-{
-
-  console.log(data)
-
-});
-
-});
-
-</script>
 </body>
 </html>
