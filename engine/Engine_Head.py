@@ -94,11 +94,12 @@ class run_crawler():
 
 	async def http_response_extractor(self,data,var):
 		try:
-			tag_names = ["p","h[1-6]","b","i","u","tt","strong","blockquote","small","tr","th","td","dd","title"]
+			tag_names = self.user_default_settings.get("CrawlTags")
 			res = dict()
 			content = dict()
 			all_href = []
 			body = ""
+			extracted_data = dict()
 			
 			if var.get("application") == "html":
 				
@@ -109,12 +110,21 @@ class run_crawler():
 					# Extract all "a" tag in html page
 					all_href = beauty_data.find_all('a',href=True)
 				#content.update({"body":beauty_data.get_text()})
-			
+
+				extracted_data.update({"body":[]})
 				for tag in beauty_data.find_all(True):
 					for tag_patten in tag_names:
-						if re.match(tag.name,tag_patten) != None:
-							if tag.string != None:
-								body = body + "\n" +tag.string.strip()
+						if re.match("^"+tag.name+"$",tag_patten) != None:
+							if tag.get_text() != None:
+								ex_text = tag.get_text()
+								# Removing unwanted space,tab and new lines with space
+								ex_text = ex_text.split()
+								ex_text = " ".join(ex_text)
+								extracted_data["body"].append(ex_text)
+								#if tag.name+"_txt" in extracted_data.keys():
+								#	extracted_data[tag.name+"_txt"].append(ex_text)
+								#else:
+								#	extracted_data.update({tag.name+"_txt":[ex_text]})
 						continue
 			else:
 				try:
@@ -126,7 +136,9 @@ class run_crawler():
 				finally:
 					data.close()
 
-			content.update({"body":body})
+			if extracted_data != {}:
+				# if extracted data is not a empty dict
+				content.update(extracted_data)
 			res.update({"content":content})
 			res.update({"extracted_url":all_href})
 			return res
@@ -249,7 +261,7 @@ class run_crawler():
 			self.WhiteListUrls = self.user_default_settings.get("WhiteListUrls")
 			self.ManualUrlsOnly = self.user_default_settings.get("ManualUrlsOnly")
 			self.BlackListApp = self.user_default_settings.get("BlackListApp")
-			self.BlackListApp = self.user_default_settings.get("WhiteListApp")
+			self.WhiteListApp = self.user_default_settings.get("WhiteListApp")
 			self.ManualUrls = self.user_default_settings.get("ManualUrls")
 			self.DomainName = self.user_default_settings.get("DomainName")
 			self.robot_disallowed = []

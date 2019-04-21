@@ -621,6 +621,8 @@ def create_domain():
 			black_url = []
 			white_app = ["text/html"]
 			black_app = ["application/exe"]
+			CrawlTags = [ "p", "h1","h2","h3","h4","h5","h6","b","i","u","tt","strong","blockquote",
+			"small","tr","th","td","dd","div","label","li","ul","span","title"]
 			crawl_schedule = {"week":["Su","Mo","Tu","We","Th","Fr","Sa"],"day":[],"time":"00 AM"}
 			manual_url = []
 			adv_settings = {"Allow Robot.txt":"yes","ParallelCrawler":10}
@@ -646,6 +648,7 @@ def create_domain():
 			new_domain.update({"BlackListUrls":black_url})
 			new_domain.update({"WhiteListApp":white_app})
 			new_domain.update({"BlackListApp":black_app})
+			new_domain.update({"CrawlTags":CrawlTags})
 			new_domain.update({"CrawlSchedule":crawl_schedule})
 			new_domain.update({"ManualUrls":manual_url})
 			new_domain.update({"ManualUrlsOnly":"no"})
@@ -844,6 +847,7 @@ def domain_update():
 			#domain_update = json.loads(domain_update)
 			allowed_elements = ["AdvancedSettings"]
 			allowed_elements.append("BlackListApp")
+			allowed_elements.append("CrawlTags")
 			allowed_elements.append("BlackListUrls")
 			allowed_elements.append("CrawlSchedule")
 			allowed_elements.append("CustomResults")
@@ -874,7 +878,7 @@ def domain_update():
 			
 			query_sntx = None
 
-			list_settings = ["BlackListApp","BlackListUrls","CustomResults"]
+			list_settings = ["BlackListApp","BlackListUrls","CustomResults","CrawlTags"]
 			list_settings.append("HtmlTags")
 			list_settings.append("ManualUrls")
 			list_settings.append("Synonums")
