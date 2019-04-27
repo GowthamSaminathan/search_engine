@@ -92,6 +92,8 @@ class startup_check():
 					for key in all_keys:
 						key_value = list(key.keys())[0]
 						key_data = key.get(key_value)
+						print(key_value)
+						print(key_data)
 						self.red.hmset(key_value,key_data)
 
 				except Exception:

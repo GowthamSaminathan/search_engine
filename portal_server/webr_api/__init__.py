@@ -1400,7 +1400,7 @@ def start_crawler():
 			crawl_info.update({"engine_name":engine_name,"domain_name":domain_name,"custom_settings":custom_settings})
 			crawl_info.update({"status":"not started"})
 			crawl_info.update({"triggered_by":user_id})
-			crawl_info.update({"triggered_at":datetime.datetime.utcnow()})
+			crawl_info.update({"triggered_at":str(datetime.datetime.utcnow())})
 			crawl_info.update({"user_id":user_id})
 			
 			if account_type =="admin":
@@ -1667,6 +1667,8 @@ def update_key_to_redis_server(user_id=None,engine_name=None,domain_name=None):
 				for key in all_keys:
 					key_value = list(key.keys())[0]
 					key_data = key.get(key_value)
+					print(key_value)
+					print(key_data) 
 					red.hmset(key_value,key_data)
 
 			except Exception:
