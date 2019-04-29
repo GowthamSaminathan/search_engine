@@ -27,3 +27,6 @@ Traceback (most recent call last):
     sock.bind(self._bindAddress)
 FileNotFoundError: [Errno 2] No such file or directory
 sudo: python3: command not found
+sudo: python3: command not found
+sudo: unable to resolve host DEV
+sudo: unable to resolve host DEV

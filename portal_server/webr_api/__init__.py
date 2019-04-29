@@ -137,8 +137,8 @@ def search_query():
 				domain_name = settings.get("domain_name")
 				user_id = settings.get("user_id")
 				weight = ast.literal_eval(settings.get("weight"))
-				synonums = ast.literal_eval(settings.get("synonums"))
-				custom_results = ast.literal_eval(settings.get("custom_results"))
+				#synonums = ast.literal_eval(settings.get("synonums"))
+				#custom_results = ast.literal_eval(settings.get("custom_results"))
 				c_name = user_id+"_"+engine_name
 			else:
 				return jsonify({"result":"error","message":"invalid user"})
@@ -1657,11 +1657,11 @@ def update_key_to_redis_server(user_id=None,engine_name=None,domain_name=None):
 					domain_w_key = data.get("domain_write_key")
 					domain_r_key = data.get("domain_read_key")
 					if domain_r_key != None:
-						all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-							"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+						all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":str(weight),
+							"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
 					if domain_w_key != None:
-						all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-							"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+						all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":str(weight),
+							"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
 				else:
 					logger.error("BUG Found> Type not found in 'Engine' collection> "+str(data))
 				for key in all_keys:

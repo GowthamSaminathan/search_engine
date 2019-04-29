@@ -8,6 +8,7 @@ from logging.handlers import SysLogHandler
 import click
 import datetime
 import binascii
+import json
 
 sysl = SysLogHandler(address='/dev/log')
 sysl.setFormatter(logging.Formatter('pser-startup: %(levelname)s > %(asctime)s > %(message)s'))
@@ -82,11 +83,11 @@ class startup_check():
 						domain_w_key = data.get("domain_write_key")
 						domain_r_key = data.get("domain_read_key")
 						if domain_r_key != None:
-							all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-								"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+							all_keys.append({domain_r_key:{"engine_name":engine_name,"weight":str(weight),
+								"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
 						if domain_w_key != None:
-							all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":weight,"synonums":synonums,
-								"domain_name":domain_name,"type":"domain_read","user_id":user_id,"custom_results":custom_results}})
+							all_keys.append({domain_w_key:{"engine_name":engine_name,"weight":str(weight),
+								"domain_name":domain_name,"type":"domain_read","user_id":user_id}})
 					else:
 						logger.error("BUG Found> Type not found in 'Engine' collection> "+str(data))
 					for key in all_keys:
@@ -95,6 +96,7 @@ class startup_check():
 						print(key_value)
 						print(key_data)
 						self.red.hmset(key_value,key_data)
+						logger.info("API Keys updated to redis")
 
 				except Exception:
 					logger.exception("update key to redis server failed:")
