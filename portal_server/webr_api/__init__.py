@@ -115,9 +115,65 @@ def validate_engine_domain(user_id,engine_name,domain_name):
 
 @app.route('/portal')
 def main():
-	 return "API UP"
+	 return "API IS UP"
 
-@app.route('/portal/search',methods = ['POST', 'GET'])
+@app.route('/portal/search_fields',methods = ['GET'])
+def search_fields():
+	# User can search based on custome field that is supported by solr search
+	if request.method == 'GET':
+		try:
+			user_query_dic = request.args.to_dict()
+			key = user_query_dic.get("key")
+			url_ip = user_query_dic.get("url_ip")
+			user_query = request.query_string.decode("utf-8")
+
+			if key == None:
+				return jsonify({"result":"error","message":"key not specified"})
+
+			settings = red.hgetall(key)
+			if settings != None and settings != {}:
+				engine_name = settings.get("engine_name")
+				domain_name = settings.get("domain_name")
+				user_id = settings.get("user_id")
+				#weight = ast.literal_eval(settings.get("weight"))
+				#synonums = ast.literal_eval(settings.get("synonums"))
+				#custom_results = ast.literal_eval(settings.get("custom_results"))
+				c_name = user_id+"_"+engine_name
+			else:
+				return jsonify({"result":"error","message":"invalid user"})
+
+			# Removeing user key in request
+			user_query = user_query.replace("&key="+key,"")
+			logger.info(user_query)
+			
+			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+user_query
+			solr_res = requests.get(solr_url)
+			
+			# Insert the search query to DB
+			try:
+				search_col = mdb2[user_id]
+				tim = datetime.datetime.utcnow()
+				search_col.insert({"EngineName":engine_name,"DomainName":domain_name,"type":"custom",
+					"url_ip":str(url_ip),"source_ip":request.remote_addr,"time":tim,"solr_query":solr_url})
+			except Exception:
+				logger.exception("inserting search history to DB failed:")
+
+			if solr_res.status_code == 200:
+				solr_res = solr_res.json()
+				# Removing response header
+				solr_res.pop("responseHeader")
+				solr_res.update({"result":"success"})
+				return jsonify(solr_res)
+			else:
+				logger.exception("solr select error for request:"+solr_url)
+
+			return jsonify({"results":"error","message":"query failed"})
+		except Exception:
+			logger.exception("search_fields")
+			return jsonify({"results":"error","message":"query failed"})
+
+
+@app.route('/portal/search',methods = ['GET'])
 def search_query():
 	if request.method == 'GET':
 		try:
@@ -176,7 +232,7 @@ def search_query():
 			if elevate != None:
 				query = query+elevate
 
-			logger.warning(query)
+			logger.info(query)
 			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+query
 			solr_res = requests.get(solr_url)
 			
@@ -352,7 +408,7 @@ def result_rerank():
 				if type(exclude_rank_id) == list:
 					if len(exclude_rank_id) > 0:
 						exclude_rank_id = ",".join(exclude_rank_id)
-						value = value + "&excludeIds=" + rank_id
+						value = value + "&excludeIds=" + exclude_rank_id
 				
 				if value != "":
 					response = red.hset(key,query,value)

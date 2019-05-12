@@ -30,3 +30,5 @@ sudo: python3: command not found
 sudo: python3: command not found
 sudo: unable to resolve host DEV
 sudo: unable to resolve host DEV
+sudo: python3: command not found
+sudo: python3: command not found
