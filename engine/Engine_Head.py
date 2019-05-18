@@ -21,7 +21,7 @@ from mimetypes import guess_extension
 from bs4 import BeautifulSoup
 from urlmatch import urlmatch
 from url_normalize import url_normalize
-import validators
+import validators # Need to try yarl 
 
 from support import *
 import re
@@ -424,143 +424,171 @@ class run_crawler():
 
 			self.logger.debug("Trying to Crawl> "+url)
 			new_urls = []
+			resp_status = None
+			last_modified = None
+			content_typ = None
+			url_modified = False
 			error = "no"
 			conn = aiohttp.TCPConnector()
 			timeout = aiohttp.ClientTimeout(sock_connect=500)
 			headers = {"User-Agent":"superman"}
 			async with aiohttp.ClientSession(connector=conn,timeout=timeout) as session:
-				async with session.get(url,headers=headers) as resp:
+				async with session.get(url,headers=headers,allow_redirects=True,max_redirects=10) as resp:
 					# Count the responce code
-					if resp != None:
-						self.count_http_code(resp.status)
-						self.visted_urls_count = self.visted_urls_count + 1
-						content_typ = resp.headers.get("Content-Type")
-						last_modified = resp.headers.get("Last-Modified")
-						#charset = resp.headers.get('charset')
-						content_length = resp.headers.get("Content-Length")
-						#Etag = resp.headers.get('Etag')
-						if resp.status == 200:
-							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
-							application_type = content_typ.split(";")[0]
-							self.count_application_types(application_type)
-							self.logger.debug(str(resp.headers))
-							try:
-								content_length = int(content_length)
-							except:
-								content_length = None
+					try:
 
-							# Check for user whitelist application
-							extract_var = dict()
-							extract_var.update({"url":url})
+						if resp != None:
+							resp_status = resp.status
+							self.count_http_code(resp.status)
+							self.visted_urls_count = self.visted_urls_count + 1
+							content_typ = resp.headers.get("Content-Type")
+							last_modified = resp.headers.get("Last-Modified")
+							#charset = resp.headers.get('charset')
+							content_length = resp.headers.get("Content-Length")
+							#Etag = resp.headers.get('Etag')
 							
-							if application_type in self.WhiteListApp:
+							if resp.status == 200:
+
+								# Check IF there is any redirectiond
+								if str(resp.url) != url:
+									# Request URL and responce url not mached ( Redirection)
+									url_modified = True
+									# Add redirected url as new url
+									new_urls.append(str(resp.url))
+									raise ValueError("REDIRECT_URL")
+
+								try:
+									content_length = int(content_length)
+								except:
+									content_length = None
 								
-								if application_type == "text/html" or application_type == "application/html":
-									# If file type is "html" then read the full payload
+								self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
+								application_type = content_typ.split(";")[0]
+								self.count_application_types(application_type)
+								#self.logger.debug(str(resp.headers))
+								
 
-									if content_length == None or content_length <= max_html_page_size:
-										payload = await resp.content.read(max_html_page_size)
-										extract_var.update({"url_extract":True,"application":"html","payload_type":"data"})
-										extract_res = await self.http_response_extractor(payload,extract_var)
-									else:
-										#self.mdb_collect.update_one({"_id":url},{"$set":{"status":"error","error":"large page size"}})
-										self.logger.warning("Content length("+str(content_length)+") not satisfied with maximum allowed for>"+url)
-								else:
-									# If file type is not an html then chunk the file and read
-									extract_var.update({"url_extract":False,"application":application_type,"payload_type":"file"})
-									self.logger.debug("New application >"+str(application_type)+str(" >")+url)
+								# Check for user whitelist application
+								extract_var = dict()
+								extract_var.update({"url":url})
+								
+								if application_type in self.WhiteListApp:
 									
-									temp_fp = tempfile.TemporaryFile()
-									#print(resp.headers.get("Content-Length"))
-									chunk = None
-									while chunk != b'':
-										chunk = await resp.content.read(max_file_download_size)
-										#async for data in response.content.iter_chunked(max_file_download_size):
-										max_file_download_size = max_file_download_size - chunk.__len__()
+									if application_type == "text/html" or application_type == "application/html":
+										# If file type is "html" then read the full payload
 
-										if not chunk or max_file_download_size <= 0:
-											#print("Bracked>"+str(resp.headers.get("Content-Length")))
-											break
+										if content_length == None or content_length <= max_html_page_size:
+											payload = await resp.content.read(max_html_page_size)
+											extract_var.update({"url_extract":True,"application":"html","payload_type":"data"})
+											extract_res = await self.http_response_extractor(payload,extract_var)
 										else:
-											temp_fp.write(chunk)
-									
-									temp_fp.seek(0)
-									
-									extract_res = await self.http_response_extractor(temp_fp,extract_var)
-								
-								
-								if type(extract_res) == dict:									
-									all_href = extract_res.get("extracted_url")
-									extract_content = extract_res.get("content")
-									extract_content.update({"url":url})
-									extract_content.update({"domain":dname})
-									
-									#extract_content.update({"id":url})
-									# Add Extracted data to solr Database
-									# Get all href in page
-									solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
-									self.logger.info("SOLR UPDATE STATUS:"+solr_res.get("error")+ " >for URL:"+url)
-									for href in all_href:
-										black_list = False
-										robot_black_list = False
-										href = href['href']
-
-										try:
-											extracted_url = urllib.parse.urljoin(str(resp.url),href)
-											extracted_url = url_normalize(extracted_url)
-											extracted_url = urllib.parse.urldefrag(extracted_url)[0]
-											validate = validators.url(extracted_url)
-
-											if validate != True:
-												self.logger.error(str(validate))
-												continue
-										except:
-											self.logger.exception("url normalize failed")
-											continue
-
+											#self.mdb_collect.update_one({"_id":url},{"$set":{"status":"error","error":"large page size"}})
+											self.logger.warning("Content length("+str(content_length)+") not satisfied with maximum allowed for>"+url)
+									else:
+										# If file type is not an html then chunk the file and read
+										extract_var.update({"url_extract":False,"application":application_type,"payload_type":"file"})
+										self.logger.debug("New application >"+str(application_type)+str(" >")+url)
 										
-										# Check if url is allowed or blocked in robots.txt
-										for domain_patten in self.robot_disallowed:
-											domain_patten = urllib.parse.urljoin(str(resp.url),domain_patten)
-											if urlmatch(domain_patten,extracted_url) == True:
-												self.logger.debug("Url Black listed by robots.txt>"+extracted_url+" >Patten >"+domain_patten)
-												robot_black_list = True
+										temp_fp = tempfile.TemporaryFile()
+										#print(resp.headers.get("Content-Length"))
+										chunk = None
+										while chunk != b'':
+											chunk = await resp.content.read(max_file_download_size)
+											#async for data in response.content.iter_chunked(max_file_download_size):
+											max_file_download_size = max_file_download_size - chunk.__len__()
+
+											if not chunk or max_file_download_size <= 0:
+												#print("Bracked>"+str(resp.headers.get("Content-Length")))
 												break
-										if robot_black_list == True:
-											continue
-
-										# Check for user blacklist and whitelist url's
-										if len(self.BlackListUrls) > 0:
-											# Check if given url is blacklisted
-											for domain_patten in self.BlackListUrls:
-												if urlmatch(domain_patten,extracted_url) == True:
-													self.logger.debug("Url Black listed by user>"+extracted_url+" >Patten >"+domain_patten)
-													black_list = True
-													break
-										if black_list == True:
-											continue
-										for domain_patten in self.WhiteListUrls:
-											if urlmatch(domain_patten,extracted_url) == True:
-												#print("URL Matched:"+extracted_url+", Patten:"+domain_patten)
-												new_urls.append(extracted_url)
-												#logger.info(extracted_url)
 											else:
-												self.logger.debug("URL Not Matched with WhiteListUrls:"+extracted_url+
-													", Patten:"+domain_patten)
-								else:
-									self.crawl_message = "data extracting error"
-							else:
-								self.logger.debug("Application not white listed by user>"+str(application_type)+str(" >")+url)
-						else:
-							self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
+												temp_fp.write(chunk)
+										
+										temp_fp.seek(0)
+										
+										extract_res = await self.http_response_extractor(temp_fp,extract_var)
+									
+									
+									if type(extract_res) == dict:									
+										all_href = extract_res.get("extracted_url")
+										extract_content = extract_res.get("content")
+										extract_content.update({"url":url})
+										extract_content.update({"domain":dname})
+										
+										#extract_content.update({"id":url})
+										# Add Extracted data to solr Database
+										# Get all href in page
+										solr_res = await self.solr_doc_add(solr_conn,solr_timeout,extract_content,solr_db_url)
+										self.logger.info("SOLR UPDATE STATUS:"+solr_res.get("error")+ " >for URL:"+url)
+										for href in all_href:
+											black_list = False
+											robot_black_list = False
+											href = href['href']
 
+											try:
+												# Join the URL with current url
+												extracted_url = urllib.parse.urljoin(str(resp.url),href)
+												extracted_url = url_normalize(extracted_url)
+												extracted_url = urllib.parse.urldefrag(extracted_url)[0]
+												validate = validators.url(extracted_url)
+
+												if validate != True:
+													self.logger.error(str(validate))
+													continue
+											except:
+												self.logger.exception("url normalize failed")
+												continue
+
+											
+											# Check if url is allowed or blocked in robots.txt
+											for domain_patten in self.robot_disallowed:
+												domain_patten = urllib.parse.urljoin(str(resp.url),domain_patten)
+												if urlmatch(domain_patten,extracted_url) == True:
+													self.logger.debug("Url Black listed by robots.txt>"+extracted_url+" >Patten >"+domain_patten)
+													robot_black_list = True
+													break
+											if robot_black_list == True:
+												continue
+
+											# Check for user blacklist and whitelist url's
+											if len(self.BlackListUrls) > 0:
+												# Check if given url is blacklisted
+												for domain_patten in self.BlackListUrls:
+													if urlmatch(domain_patten,extracted_url) == True:
+														self.logger.debug("Url Black listed by user>"+extracted_url+" >Patten >"+domain_patten)
+														black_list = True
+														break
+											if black_list == True:
+												continue
+											for domain_patten in self.WhiteListUrls:
+												if urlmatch(domain_patten,extracted_url) == True:
+													#print("URL Matched:"+extracted_url+", Patten:"+domain_patten)
+													new_urls.append(extracted_url)
+													#logger.info(extracted_url)
+												else:
+													self.logger.debug("URL Not Matched with WhiteListUrls:"+extracted_url+
+														", Patten:"+domain_patten)
+									else:
+										self.crawl_message = "data extracting error"
+								else:
+									self.logger.debug("Application not white listed by user>"+str(application_type)+str(" >")+url)
+							else:
+								self.logger.debug("Response code:"+str(resp.status)+"> URL> "+url)
+
+					except ValueError as vlaue_error:
+						pass;
 			
 
 			# Make current URL as completed state
 			#print("Completed> "+url)
-			self.mdb_collect.update_one({"_id":url},
-					{"$set":{"status":"completed","Content-Type":str(content_typ),"Last-Modified":str(last_modified),
-						"Content-Length":str(content_length),"response_status":str(resp.status)}})
+
+			# If URL redirect found then insert the redirected URL
+			if url_modified == True:
+				self.mdb_collect.update_one({"_id":url},
+						{"$set":{"status":"completed","url_type":"redirected","redirected_url":str(resp.url)}})
+			else:
+				self.mdb_collect.update_one({"_id":url},
+						{"$set":{"status":"completed","Content-Type":str(content_typ),"Last-Modified":str(last_modified),
+							"Content-Length":str(content_length),"response_status":str(resp_status)}})
 			
 			self.logger.info("Url:"+url+" >"+" Having > "+str(len(new_urls))+" Link(s)")
 			for new_url in new_urls:
@@ -569,7 +597,8 @@ class run_crawler():
 					self.crawl_version,"_id":new_url,"domain_name":dname}},upsert=True)
 
 				if results.modified_count != None:
-					# If "new_url" in database and version not matched with current then update the current version and with pending as status
+					# If "new_url" in database and version not matched with current then 
+					# update the current version with pending as status
 					self.mdb_collect.update_one({"_id":new_url,"version":{"$ne":self.crawl_version}},
 						{"$set":{"status":"pending","version":self.crawl_version}})
 		except Exception:

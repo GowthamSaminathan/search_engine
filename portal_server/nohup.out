@@ -32,3 +32,12 @@ sudo: unable to resolve host DEV
 sudo: unable to resolve host DEV
 sudo: python3: command not found
 sudo: python3: command not found
+Error in atexit._run_exitfuncs:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.7/site-packages/pymongo/periodic_executor.py", line 96, in join
+    self._thread.join(timeout)
+  File "/usr/local/lib/python3.7/threading.py", line 1036, in join
+    self._wait_for_tstate_lock(timeout=max(timeout, 0))
+  File "/usr/local/lib/python3.7/threading.py", line 1048, in _wait_for_tstate_lock
+    elif lock.acquire(block, timeout):
+KeyboardInterrupt
