@@ -812,6 +812,8 @@ def create_engine():
 						else:
 							return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
 					else:
+						error = "Solr error:"+str(res.status_code)+str(res.text)
+						logger.error(error)
 						return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
 				except Exception:
 					logger.exception("solr admin api failed")
