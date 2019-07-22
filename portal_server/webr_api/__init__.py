@@ -605,6 +605,8 @@ def portal_login():
 
 			# Get User information from database
 			pass_hash = hashlib.sha1(user_password.encode()).hexdigest()
+			#print({"_id":user_id,"PasswordHash":pass_hash})
+			#print({"_id":1,"AccountType":1})
 			user_data = mcollection.find_one({"_id":user_id,"PasswordHash":pass_hash},{"_id":1,"AccountType":1})
 			
 			if user_data == None:
