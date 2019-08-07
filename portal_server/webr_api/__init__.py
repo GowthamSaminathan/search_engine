@@ -24,7 +24,6 @@ import cerberus
 import binascii
 import ast
 
-
 sysl = SysLogHandler(address='/dev/log')
 sysl.setFormatter(logging.Formatter('pser-portal: %(levelname)s > %(asctime)s > %(message)s'))
 
@@ -34,23 +33,49 @@ logger.setLevel(logging.DEBUG)
 #logger.propagate = False # DISABLE LOG STDOUT
 logger.info("Starting Webserver")
 
+# Reading Environment variable
+webr_mongodb = os.environ.get('WEBR_MONGODB')
+webr_solr = os.environ.get('WEBR_SOLR')
+webr_redis = os.environ.get('WEBR_REDIS')
+
+webr_mongodb = "server1.webr-env01.xyz"
+webr_solr = "server2.webr-env01.xyz"
+webr_redis = "server1.webr-env01.xyz"
+webr_solr_url = "http://"+webr_solr+":8983/"
+
+
+if webr_mongodb == None:
+	logger.error("Environment not set for: WEBR_MONGODB")
+	exit()
+elif webr_solr == None:
+	logger.error("Environment not set for: WEBR_SOLR")
+	exit()
+elif webr_redis == None:
+	logger.error("Environment not set for: WEBR_REDIS")
+	exit()
+else:
+	logger.info("Environment set for WEBR_MONGODB:"+webr_mongodb)
+	logger.info("Environment set for WEBR_SOLR:"+webr_solr)
+	logger.info("Environment set for WEBR_REDIS:"+webr_redis)
+
+
 app = Flask(__name__,static_url_path='/static')
 CORS(app)
 #app.config['MONGO_DBNAME'] = 'accounts'
 #app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/'
 
-mongoc = PyMongo(app,uri='mongodb://127.0.0.1:27017/accounts')
+mongoc = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/accounts')
 mdb = mongoc.db
 mcollection = mdb['users']
 
-mongoc2 = PyMongo(app,uri='mongodb://127.0.0.1:27017/Search_history')
+mongoc2 = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/Search_history')
 mdb2 = mongoc2.db
 #search_collection = mdb2['users']
 
-red = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
+red = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
 
 
-SOLR_ADMIN_URL = "http://127.0.0.1:8983/solr/admin/"
+SOLR_ADMIN_URL = "http://"+webr_solr+":8983/solr/admin/"
 
 def check_user_session(session_id):
 	# Validate user session with cookie
@@ -146,7 +171,7 @@ def search_fields():
 			user_query = user_query.replace("&key="+key,"")
 			logger.info(user_query)
 			
-			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+user_query
+			solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/select?"+user_query
 			solr_res = requests.get(solr_url)
 			
 			# Insert the search query to DB
@@ -233,7 +258,7 @@ def search_query():
 				query = query+elevate
 
 			logger.info(query)
-			solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/select?"+query
+			solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/select?"+query
 			solr_res = requests.get(solr_url)
 			
 			# Insert the search query to DB
@@ -328,7 +353,7 @@ def search_query_old():
 			application = get_req.get("application")
 			rows = get_req.get("rows")
 			start = get_req.get("start")
-			solr_url = "http://127.0.0.1:8983/solr/"+domain+"/select?"
+			solr_url = "http://"+webr_solr+":8983/solr/"+domain+"/select?"
 			if domain != None:
 				enc_url = {"fl":fl,"q":q,"rows":rows,"start":start}
 				if search_domain != None and search_domain != "all":
@@ -472,9 +497,9 @@ def correct_me():
 			
 			if query_type == "spell":
 				#query = query.replace("correct_me?q=","spell?q=")
-				solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/spell?"+query
+				solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/spell?"+query
 			elif query_type == "suggest":
-				solr_url = "http://127.0.0.1:8983/solr/"+c_name+"/suggest?"+query
+				solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/suggest?"+query
 
 			else:
 				jsonify({"result":"error","message":"type not specified"})
@@ -504,7 +529,7 @@ def suggest():
 			domain = get_req.get("domain")
 			q = get_req.get("q")
 			
-			solr_url = "http://127.0.0.1:8983/solr/"
+			solr_url = "http://"+webr_solr+":8983/solr/"
 			if domain != None:
 				enc_url = {"suggest":"true","suggest.build":"true","suggest.dictionary":"mySuggester","suggest.q":q}
 				enc_url = urllib.parse.urlencode(enc_url)
@@ -529,7 +554,7 @@ def spell():
 			domain = get_req.get("domain")
 			q = get_req.get("q")
 			
-			solr_url = "http://127.0.0.1:8983/solr/"
+			solr_url = "http://"+webr_solr+":8983/solr/"
 			if domain != None:
 				enc_url = {"df":"text","spellcheck.q":q,"spellcheck":"true","spellcheck.collateParam.q.op":"AND"}
 				enc_url = urllib.parse.urlencode(enc_url)
@@ -802,10 +827,37 @@ def create_engine():
 
 				c_name = user_id+"_"+engine_name
 				create_status = False
-				url = SOLR_ADMIN_URL+"cores?action=CREATE&name="+c_name+"&instanceDir="+c_name+"&dataDir=data&configSet=template_ok"
-				
+				eng_url = SOLR_ADMIN_URL+"cores?action=CREATE&name="+c_name+"&instanceDir="+c_name+"&dataDir=data&configSet=template_ok"
+
+				# Create copy of Configuration from template
 				try:
-					# Create core using admin API
+					conf_url = webr_solr_url+"api/cluster/configs?omitHeader=false"
+					#querystring = {"omitHeader":"false"}
+					payload = {"create":{"name": c_name,"baseConfigSet": "template_ok"}}
+					res = requests.post(conf_url, json=payload)
+					if res.status_code == 200:
+						data = res.json()
+						if data.get("responseHeader").get("status") == 0:
+							create_status = True
+						else:
+							return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
+					else:
+						error = "Solr config template creation error:"+str(res.status_code)+str(res.text)
+						logger.error(error)
+						return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
+				except Exception:
+					logger.exception("solr collection configuration api failed")
+					return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
+				
+
+				try:
+					# Create collection using admin API
+					new_col_name = "&name="+c_name
+					numShards = "&numShards="+"2"
+					replicationFactor = "&replicationFactor="+"1"
+					col_config = "&collection.configName="+c_name
+					url = webr_solr_url + "solr/admin/collections?action=CREATE"+new_col_name
+					url = url + numShards + replicationFactor + col_config
 					res = requests.get(url)
 					if res.status_code == 200:
 						data = res.json()
@@ -1067,7 +1119,7 @@ def engine_delete():
 			try:
 				# Delete core using admin API
 				c_name = user_id+"_"+engine_name
-				url = SOLR_ADMIN_URL+"cores?action=UNLOAD&core="+c_name+"&deleteIndex=true&deleteDataDir=true&deleteInstanceDir=true"
+				url = solr_admin_url+"admin/collections?action=DELETE&name="+c_name
 				res = requests.get(url)
 				if res.status_code == 200:
 					data = res.json()
@@ -1283,7 +1335,7 @@ def get_crawl_history():
 			if current_status != None:
 				search_field.update({"current_status":current_status})
 			
-			crawl_history = PyMongo(app,uri='mongodb://127.0.0.1:27017/Crawl_DB')
+			crawl_history = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/Crawl_DB')
 			crawl_history_db = crawl_history.db
 			crawl_history_col = crawl_history_db[user_id+"_"+engine_name+"_history"]
 
@@ -1323,7 +1375,7 @@ def manage_synonyms():
 		if validate_engine_domain(user_id,engine_name,None) == None:
 			return jsonify({"result":"failed","message":"Please provide valid engine name / domain name"})
 
-		solr_url = "http://127.0.0.1:8983/solr/{}/schema/analysis/synonyms/english".format(user_id+"_"+engine_name)
+		solr_url = "http://"+webr_solr+":8983/solr/{}/schema/analysis/synonyms/english".format(user_id+"_"+engine_name)
 		
 		if request.method == 'GET':
 			# Get synonyms from Solr using solr API
@@ -1363,7 +1415,7 @@ def manage_synonyms():
 				solr_res.pop("responseHeader")
 				solr_res.update({"result":"success"})
 				try:
-					solr_admin_url = "http://127.0.0.1:8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
+					solr_admin_url = "http://"+webr_solr+":8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
 					solr_admin_res = requests.get(solr_admin_url)
 					if solr_admin_res.status_code != 200:
 						logger.exception("Solr reload failed >"+solr_admin_url+ " Responce Code:" + str(solr_admin_res.status_code))
@@ -1393,7 +1445,7 @@ def manage_synonyms():
 				solr_res.update({"result":"success"})
 				
 				try:
-					solr_admin_url = "http://127.0.0.1:8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
+					solr_admin_url = "http://"+webr_solr+":8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
 					solr_admin_res = requests.get(solr_admin_url)
 					if solr_admin_res.status_code != 200:
 						logger.exception("Solr reload failed >"+solr_admin_url+ " Responce Code:" + str(solr_admin_res.status_code))
