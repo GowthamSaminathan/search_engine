@@ -1,6 +1,0 @@
-export WEBR_MONGODB="mongodb.webr-env01.xyz"
-export WEBR_SOLR="solr.webr-env01.xyz"
-export WEBR_REDIS="redis.webr-env01.xyz"
-
-sudo nohup sudo -u www-data python3 python_webr_fastcgi.py &
-
