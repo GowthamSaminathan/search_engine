@@ -23,8 +23,27 @@ import random
 import cerberus
 import binascii
 import ast
+import socket
 
-sysl = SysLogHandler(address='/dev/log')
+
+# Reading Environment variable
+webr_mongodb = os.environ.get('WEBR_MONGODB')
+webr_logserver = os.environ.get('WEBR_LOGSERVER')
+webr_solr = os.environ.get('WEBR_SOLR')
+webr_redis = os.environ.get('WEBR_REDIS')
+
+#webr_mongodb = "server1.webr-env01.xyz"
+#webr_solr = "server2.webr-env01.xyz"
+#webr_redis = "server1.webr-env01.xyz"
+webr_solr_url = webr_solr.split(",")[0]
+
+if webr_logserver == None:
+	logger.error("Environment not set for: WEBR_LOGSERVER")
+	exit()
+
+# Syslog configuration
+
+sysl = SysLogHandler(address=(webr_logserver,10514),socktype=socket.SOCK_DGRAM)
 sysl.setFormatter(logging.Formatter('pser-portal: %(levelname)s > %(asctime)s > %(message)s'))
 
 logger =  logging.getLogger("pser-portal")
@@ -32,16 +51,6 @@ logger.addHandler(sysl)
 logger.setLevel(logging.DEBUG)
 #logger.propagate = False # DISABLE LOG STDOUT
 logger.info("Starting Webserver")
-
-# Reading Environment variable
-webr_mongodb = os.environ.get('WEBR_MONGODB')
-webr_solr = os.environ.get('WEBR_SOLR')
-webr_redis = os.environ.get('WEBR_REDIS')
-
-webr_mongodb = "server1.webr-env01.xyz"
-webr_solr = "server2.webr-env01.xyz"
-webr_redis = "server1.webr-env01.xyz"
-webr_solr_url = "http://"+webr_solr+":8983/"
 
 
 if webr_mongodb == None:
@@ -57,6 +66,10 @@ else:
 	logger.info("Environment set for WEBR_MONGODB:"+webr_mongodb)
 	logger.info("Environment set for WEBR_SOLR:"+webr_solr)
 	logger.info("Environment set for WEBR_REDIS:"+webr_redis)
+
+
+
+
 
 
 app = Flask(__name__,static_url_path='/static')
@@ -140,7 +153,7 @@ def validate_engine_domain(user_id,engine_name,domain_name):
 
 @app.route('/portal')
 def main():
-	 return "API IS UP"
+	 return "API IS UP :"+str(datetime.datetime.utcnow())
 
 @app.route('/portal/search_fields',methods = ['GET'])
 def search_fields():
@@ -827,11 +840,10 @@ def create_engine():
 
 				c_name = user_id+"_"+engine_name
 				create_status = False
-				eng_url = SOLR_ADMIN_URL+"cores?action=CREATE&name="+c_name+"&instanceDir="+c_name+"&dataDir=data&configSet=template_ok"
 
 				# Create copy of Configuration from template
 				try:
-					conf_url = webr_solr_url+"api/cluster/configs?omitHeader=false"
+					conf_url = webr_solr_url+"/api/cluster/configs?omitHeader=false"
 					#querystring = {"omitHeader":"false"}
 					payload = {"create":{"name": c_name,"baseConfigSet": "template_ok"}}
 					res = requests.post(conf_url, json=payload)
@@ -839,34 +851,40 @@ def create_engine():
 						data = res.json()
 						if data.get("responseHeader").get("status") == 0:
 							create_status = True
+							logger.info("New Configuration created in zookeeper for:"+c_name)
 						else:
+							logger.error("New Configuration failed in zookeeper for:"+c_name)
 							return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
 					else:
 						error = "Solr config template creation error:"+str(res.status_code)+str(res.text)
 						logger.error(error)
-						return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
+						return jsonify({"result":"failed","message":"Already exist","engine_name":engine_name})
 				except Exception:
-					logger.exception("solr collection configuration api failed")
+					logger.exception("solr collection configuration api failed for"+c_name)
 					return jsonify({"result":"failed","message":"Creating engine failed","engine_name":engine_name})
 				
 
 				try:
 					# Create collection using admin API
 					new_col_name = "&name="+c_name
-					numShards = "&numShards="+"2"
-					replicationFactor = "&replicationFactor="+"1"
+					numShards = "&numShards="+"1"
+					replicationFactor = "&replicationFactor="+"2"
 					col_config = "&collection.configName="+c_name
-					url = webr_solr_url + "solr/admin/collections?action=CREATE"+new_col_name
+					url = webr_solr_url + "/solr/admin/collections?action=CREATE"+new_col_name
 					url = url + numShards + replicationFactor + col_config
 					res = requests.get(url)
+					logger.info(url)
 					if res.status_code == 200:
 						data = res.json()
-						if data.get("responseHeader").get("status") == 0:
+						if data.get("responseHeader").get("status") == 0 and data.get("success") != None:
+							logger.info("Creating solr collection success:"+c_name+":using:"+url)
 							create_status = True
 						else:
+							error = "Solr error when creating collection:"+c_name+":"+str(res.text)
+							logger.error(error)
 							return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
 					else:
-						error = "Solr error:"+str(res.status_code)+str(res.text)
+						error = "Solr error when creating collection:"+c_name+":"+str(res.status_code)+str(res.text)
 						logger.error(error)
 						return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
 				except Exception:
@@ -885,15 +903,19 @@ def create_engine():
 						
 						if results.upserted_id != None:
 							# Create Solar collection with "name_engine_name" as collection name
+							logger.info("Added new engine info to MongoDB success:"+engine_name)
 							return jsonify({"result":"success","message":"Engine created","engine_name":engine_name})
 						else:
+							logger.error("Failed to add new engine info to MongoDB:"+engine_name)
 							return jsonify({"result":"failed","message":"Engine already exist","engine_name":engine_name})
 					
 					else:
+						logger.error("Failed to add engine (Already in use):"+engine_name)
 						return jsonify({"result":"failed","message":"Engine already exist (in account)","engine_name":engine_name})
 				
 
 				else:
+					logger.error("Engine already exist (in index)"+engine_name)
 					return jsonify({"result":"failed","message":"Engine already exist (in index)","engine_name":engine_name})
 				
 			except Exception:
@@ -1115,31 +1137,70 @@ def engine_delete():
 
 			user_id = user_data.get("_id")
 			engine_name = result.get("engine_name")
+			c_name = user_id+"_"+engine_name
+			
+			phase_1 = None
+			phase_2 = None
+			phase_3 = None
 
+			#Phase-1 Deleting solr collection
 			try:
-				# Delete core using admin API
-				c_name = user_id+"_"+engine_name
-				url = solr_admin_url+"admin/collections?action=DELETE&name="+c_name
+				url = webr_solr_url+"/solr/admin/collections?action=DELETE&name="+c_name
+				logger.info("Trying to delete collection:"+c_name+":using:"+url)
 				res = requests.get(url)
 				if res.status_code == 200:
 					data = res.json()
-					if data.get("responseHeader").get("status") == 0:
-						pass;
+					if data.get("responseHeader").get("status") == 0 and data.get("success") != None:
+						phase_1 = True
+						logger.error("Collection deleted:"+c_name+":response:"+res.text)
 					else:
-						return jsonify({"result":"failed","message":"engine already deleted"})
+						logger.error("Failed to deletect Collection :"+c_name+":response:"+res.text)
+						#return jsonify({"result":"failed","message":"engine already deleted"})
 				else:
-					return jsonify({"result":"failed","message":"engine already deleted"})
+					logger.error("Failed to deletect Collection :"+c_name+":"+str(res.status_code)+":"+res.text)
+					#return jsonify({"result":"failed","message":"engine already deleted"})
 			except Exception:
-				logger.exception("solr admin api failed")
+				logger.exception("deleting phase-1 failed for collection :"+c_name)
+				#return jsonify({"result":"failed","message":"engine not deleted"})
+
+			#Phase-2 Deleting solr configsets ( stored in zookeeper )
+			try:
+				url = webr_solr_url+"/api/cluster/configs/"+c_name+"?omitHeader=false"
+				logger.info("Trying to delete collection configSet:"+c_name+":using:"+url)
+				res = requests.delete(url)
+				if res.status_code == 200:
+					data = res.json()
+					if data.get("responseHeader").get("status") == 0:
+						phase_2 = True
+						logger.info("Collection configSet deleted:"+c_name+":response:"+res.text)
+					else:
+						logger.error("Failed to deletect Collection configSet:"+c_name+":response:"+res.text)
+						#return jsonify({"result":"failed","message":"engine already deleted"})
+				else:
+					logger.error("Failed to deletect Collection configSet:"+c_name+":"+str(res.status_code)+":"+res.text)
+					#return jsonify({"result":"failed","message":"engine already deleted"})
+			except Exception:
+				phase_2 = None
+				logger.exception("deleting phase-2 failed for configset:"+c_name)
+				#return jsonify({"result":"failed","message":"engine not deleted"})
+
+			if phase_1 == True and phase_2 == True:
+				logger.info("Deleting collection phase-1,2 completed for:"+c_name)
+			else:
+				logger.error("Deleting collection phase-1,2 failed for:"+c_name)
 				return jsonify({"result":"failed","message":"engine not deleted"})
 
+			# Phase-3 Delete from mongoDB
+			logger.info("Tryinging to delete mongodb engine details for:"+engine_name+":user:"+user_id)
 			engine_collection = mdb['Engines']
 			result = engine_collection.delete_many({"user_id":user_id,"EngineName":engine_name})
-			
+			logger.info("delete mongodb engine status for:"+engine_name+":user:"+user_id+":>"+str(result.deleted_count))
 			if result.deleted_count > 0:
 				# Deleting core
+				logger.info("Deleting collection phase-3 success for:"+c_name)
 				return jsonify({"result":"success","message":"engine deleted"})
 			else:
+				logger.error("Deleting collection phase-3 failed for:"+c_name)
 				return jsonify({"result":"failed","message":"engine not deleted"})
 
 	except Exception:
