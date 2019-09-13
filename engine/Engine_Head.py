@@ -26,24 +26,50 @@ import validators # Need to try yarl
 from support import *
 import re
 import tempfile
+import socket
 
-sysl = SysLogHandler(address='/dev/log')
+# Reading Environment variable
+webr_mongodb = os.environ.get('WEBR_MONGODB')
+webr_logserver = os.environ.get('WEBR_LOGSERVER')
+webr_solr = os.environ.get('WEBR_SOLR')
+webr_redis = os.environ.get('WEBR_REDIS')
+webr_tika_url = os.environ.get('WEBR_TIKA_URL')
+
+if webr_logserver == None:
+	logger.error("Environment not set for: WEBR_LOGSERVER")
+	exit()
+
+sysl = SysLogHandler(address=(webr_logserver,10514),socktype=socket.SOCK_DGRAM)
 sysl.setFormatter(logging.Formatter('pser-engine: %(levelname)s > %(asctime)s > %(message)s'))
 
 logger =  logging.getLogger("pser-engine")
 logger.addHandler(sysl)
 logger.setLevel(logging.DEBUG)
 
-logger.warning("Restarted>Engine_Head")
+if webr_mongodb == None:
+	logger.error("Environment not set for: WEBR_MONGODB")
+	exit()
+elif webr_solr == None:
+	logger.error("Environment not set for: WEBR_SOLR")
+	exit()
+elif webr_redis == None:
+	logger.error("Environment not set for: WEBR_REDIS")
+	exit()
+else:
+	logger.info("Environment set for WEBR_MONGODB:"+webr_mongodb)
+	logger.info("Environment set for WEBR_SOLR:"+webr_solr)
+	logger.info("Environment set for WEBR_REDIS:"+webr_redis)
 
-TIKA_URL = "http://127.0.0.1:9998"
+webr_solr_url = webr_solr.split(",")[0]
+
+logger.warning("Restarted>Engine_Head")
 
 class run_crawler():
 	
 	def __init__(self):
 		# Initialize new logger to sup-process
 		self.crawl_version = datetime.datetime.utcnow()
-		self.sysl = SysLogHandler(address='/dev/log')
+		self.sysl = SysLogHandler(address=(webr_logserver,10514),socktype=socket.SOCK_DGRAM)
 		self.sysl.setFormatter(logging.Formatter('pser-engine: <V>'+str(self.crawl_version)+'>%(levelname)s>%(asctime)s>%(message)s'))
 
 		self.logger =  logging.getLogger(str(self.crawl_version))
@@ -129,7 +155,7 @@ class run_crawler():
 			else:
 				try:
 					async with aiohttp.ClientSession() as session:
-						async with session.put("http://104.211.219.212:9998/tika",data=data) as resp:
+						async with session.put(webr_tika_url+"/tika",data=data) as resp:
 							body = await resp.text()
 				except Exception as e:
 					self.logger.exception("tika extract failed : status code:"+str(resp.status)+"url:"+var.get(url))
@@ -182,7 +208,7 @@ class run_crawler():
 			dname = self.task_details.get("domain_name")
 
 			self.logger.info("Creating mongodb connection")
-			self.mdb_client = pymongo.MongoClient('127.0.0.1', 27017)
+			self.mdb_client = pymongo.MongoClient(webr_mongodb, 27017)
 			self.mdb_db = self.mdb_client["accounts"]
 			self.mdb_collect = self.mdb_db["Engines"]
 
@@ -240,7 +266,7 @@ class run_crawler():
 				"message":self.crawl_message,"page_info":self.page_info}})
 			
 			# Update completed status in Redius server
-			red_ser = redis.Redis(host='127.0.0.1', port=6379, db=0,decode_responses=True)
+			red_ser = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
 			task_key = self.task_details.get("task_key")
 			red_ser.delete(task_key)
 			self.logger.info("Task details deleted> "+task_key+" from redis DB")
@@ -340,7 +366,7 @@ class run_crawler():
 			
 			# Connect redis server to check any termination request is present
 			self.logger.info("Creating redis DB connection to check terminate process status")
-			red_ser = redis.Redis(host='127.0.0.1', port=6379, db=0,decode_responses=True)
+			red_ser = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
 			task_key = self.task_details.get("task_key")
 
 			while self.craw_fin != True:
@@ -413,7 +439,7 @@ class run_crawler():
 			user_id = self.task_details.get("user_id")
 			solr_coll_name = user_id+"_"+solr_coll_name
 			tmp_solr_coll_name = solr_coll_name+"_temp"
-			solr_db_url = "http://127.0.0.1:8983/solr/"+solr_coll_name+"/"
+			solr_db_url = webr_solr_url+"/solr/"+solr_coll_name+"/"
 			max_html_page_size = 20000000
 			max_file_download_size = 20000000
 			extract_res = None
@@ -657,7 +683,7 @@ class start_main():
 		try:
 			logger.debug("initial_tasks")
 			logger.info("Trying to connect redis server")
-			self.red = redis.Redis(host='127.0.0.1', port=6379, db=0,decode_responses=True)
+			self.red = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
 			logger.info("Redis connection create...")
 			t1 = loop.create_task(self.check_new_crawl_job(loop))
 			#t2 = loop.create_task(self.check(loop))
