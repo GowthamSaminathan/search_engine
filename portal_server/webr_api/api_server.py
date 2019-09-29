@@ -544,7 +544,7 @@ def suggest():
 			
 			solr_url = "http://"+webr_solr+":8983/solr/"
 			if domain != None:
-				enc_url = {"suggest":"true","suggest.build":"true","suggest.dictionary":"mySuggester","suggest.q":q}
+				enc_url = {"suggest":"true","suggest.build":"true","suggest.dictionary":"mySuggester","suggest.q":q,"shards.qt":"/suggest"}
 				enc_url = urllib.parse.urlencode(enc_url)
 				solr_url = solr_url + domain + "/suggest?" + enc_url
 				solr_res = requests.get(solr_url)
