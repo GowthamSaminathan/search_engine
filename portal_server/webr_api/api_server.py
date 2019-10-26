@@ -88,8 +88,6 @@ mdb2 = mongoc2.db
 red = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
 
 
-SOLR_ADMIN_URL = "http://"+webr_solr+":8983/solr/admin/"
-
 def check_user_session(session_id):
 	# Validate user session with cookie
 	try:
@@ -184,7 +182,7 @@ def search_fields():
 			user_query = user_query.replace("&key="+key,"")
 			logger.info(user_query)
 			
-			solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/select?"+user_query
+			solr_url = webr_solr_url+"/solr/"+c_name+"/select?"+user_query
 			solr_res = requests.get(solr_url)
 			
 			# Insert the search query to DB
@@ -271,7 +269,7 @@ def search_query():
 				query = query+elevate
 
 			logger.info(query)
-			solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/select?"+query
+			solr_url = webr_solr_url+"/solr/"+c_name+"/select?"+query
 			solr_res = requests.get(solr_url)
 			
 			# Insert the search query to DB
@@ -366,7 +364,7 @@ def search_query_old():
 			application = get_req.get("application")
 			rows = get_req.get("rows")
 			start = get_req.get("start")
-			solr_url = "http://"+webr_solr+":8983/solr/"+domain+"/select?"
+			solr_url = webr_solr_url+"/solr/"+domain+"/select?"
 			if domain != None:
 				enc_url = {"fl":fl,"q":q,"rows":rows,"start":start}
 				if search_domain != None and search_domain != "all":
@@ -504,18 +502,23 @@ def correct_me():
 				return jsonify({"result":"error","message":"invalid user"})
 			
 			# Removeing user key and type in request
-			query = request.query_string.decode("utf-8")
-			query = query.replace("&key="+key,"")
-			query = query.replace("&type="+query_type,"")
+			#query = request.query_string.decode("utf-8")
+			#query = query.replace("&key="+key,"")
+			#query = query.replace("&type="+query_type,"")
 			
 			if query_type == "spell":
 				#query = query.replace("correct_me?q=","spell?q=")
-				solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/spell?"+query
+				query_url = "spellcheck=true&spellcheck.build=true&shards.qt=/webr_spellcheck&spellcheck.q="
+				query_url = query_url+query_str
+				solr_url = webr_solr_url+"/api/collections/"+c_name+"/webr_spellcheck?"+query_url
 			elif query_type == "suggest":
-				solr_url = "http://"+webr_solr+":8983/solr/"+c_name+"/suggest?"+query
+				query_url = "suggest=true&suggest.build=true&suggest.dictionary=title_suggest&"
+				query_url = query_url+"suggest.q="
+				query_url = query_url+query_str
+				solr_url = webr_solr_url+"/solr/"+c_name+"/webr_suggest?"+query_url
 
 			else:
-				jsonify({"result":"error","message":"type not specified"})
+				jsonify({"result":"error","message":"type not valid/specified"})
 			
 			
 			solr_res = requests.get(solr_url)
@@ -542,7 +545,7 @@ def suggest():
 			domain = get_req.get("domain")
 			q = get_req.get("q")
 			
-			solr_url = "http://"+webr_solr+":8983/solr/"
+			solr_url = webr_solr_url+"/solr/"
 			if domain != None:
 				enc_url = {"suggest":"true","suggest.build":"true","suggest.dictionary":"mySuggester","suggest.q":q,"shards.qt":"/suggest"}
 				enc_url = urllib.parse.urlencode(enc_url)
@@ -567,7 +570,7 @@ def spell():
 			domain = get_req.get("domain")
 			q = get_req.get("q")
 			
-			solr_url = "http://"+webr_solr+":8983/solr/"
+			solr_url = webr_solr_url+"/solr/"
 			if domain != None:
 				enc_url = {"df":"text","spellcheck.q":q,"spellcheck":"true","spellcheck.collateParam.q.op":"AND"}
 				enc_url = urllib.parse.urlencode(enc_url)
@@ -1436,7 +1439,7 @@ def manage_synonyms():
 		if validate_engine_domain(user_id,engine_name,None) == None:
 			return jsonify({"result":"failed","message":"Please provide valid engine name / domain name"})
 
-		solr_url = "http://"+webr_solr+":8983/solr/{}/schema/analysis/synonyms/english".format(user_id+"_"+engine_name)
+		solr_url = webr_solr_url+"/solr/{}/schema/analysis/synonyms/english".format(user_id+"_"+engine_name)
 		
 		if request.method == 'GET':
 			# Get synonyms from Solr using solr API
@@ -1476,7 +1479,7 @@ def manage_synonyms():
 				solr_res.pop("responseHeader")
 				solr_res.update({"result":"success"})
 				try:
-					solr_admin_url = "http://"+webr_solr+":8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
+					solr_admin_url = webr_solr_url+"/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
 					solr_admin_res = requests.get(solr_admin_url)
 					if solr_admin_res.status_code != 200:
 						logger.exception("Solr reload failed >"+solr_admin_url+ " Responce Code:" + str(solr_admin_res.status_code))
@@ -1506,7 +1509,7 @@ def manage_synonyms():
 				solr_res.update({"result":"success"})
 				
 				try:
-					solr_admin_url = "http://"+webr_solr+":8983/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
+					solr_admin_url = webr_solr_url+"/solr/admin/cores?action=RELOAD&core="+user_id+"_"+engine_name
 					solr_admin_res = requests.get(solr_admin_url)
 					if solr_admin_res.status_code != 200:
 						logger.exception("Solr reload failed >"+solr_admin_url+ " Responce Code:" + str(solr_admin_res.status_code))
