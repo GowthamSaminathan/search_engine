@@ -111,7 +111,7 @@ def validate_session(request):
 		
 		if session_id == None:
 			# Getting session_id from cookie
-			session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 		if session_id != None:
 			# Validate the user with session
 			user_data = check_user_session(session_id)
@@ -397,18 +397,14 @@ def result_rerank():
 			if request.method != 'POST':
 				result = request.args.to_dict()
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			user_id = user_data.get("_id")
@@ -596,27 +592,25 @@ def portal_logout():
 		if request.method == 'GET':
 			# Get session ID from GET argument
 			get_req = request.args.to_dict()
-			session_id = get_req.get("session_id")
 			
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
+			
 			if session_id != None:
 				# Validate the user with session id
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"success","message":"Already Logged out"})
+					return jsonify({"result":"success","message":"Already Logged out"}),401
 				else:
 					# Remove user session from Redis DB
 					delete_status = red.delete(session_id)
 					if delete_status == 1:
 						return jsonify({"result":"success","message":"Logout success"})
 					else:
-						return jsonify({"result":"success","message":"Already Logged out"})
+						return jsonify({"result":"success","message":"Already Logged out"}),401
 			else:
-				return jsonify({"result":"failed","message":"Session information missing"})
+				return jsonify({"result":"failed","message":"Session information missing"}),401
 		else:
-			return jsonify({"result":"failed","message":"Invalid API call"})
+			return jsonify({"result":"failed","message":"Invalid API call"}),401
 			
 	except Exception:
 		logger.exception("portal_logout")
@@ -631,48 +625,47 @@ def portal_login():
 			result = request.form
 			
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data != None:
-					return jsonify({"result":"success","message":"Already logged In"})
-			############## SESSION VALIDATION END #####################
-			user_id = result.get("user_name")
-			user_password = result.get("user_password")
-
-			# Get User information from database
-			pass_hash = hashlib.sha1(user_password.encode()).hexdigest()
-			#print({"_id":user_id,"PasswordHash":pass_hash})
-			#print({"_id":1,"AccountType":1})
-			user_data = mcollection.find_one({"_id":user_id,"PasswordHash":pass_hash},{"_id":1,"AccountType":1})
+					return jsonify({"result":"success","message":"Session Valid"})
+				else:
+					return jsonify({"result":"success","message":"Invalid Session Key"})
 			
-			if user_data == None:
-				# Provided user information in not available in database
-				session_id = None
-				return jsonify({"result":"failed","message":"Username or Password Not matched"})
 			else:
-				# Provided user information in available in database
-				# Gendrating session id for user
-				# Saving session and user information to Redis DB
-				user_id = user_data.get("_id")
-				account_type = user_data.get("AccountType")
-				rand_number = str(random.randint(100,999999) + time.time())
-				session_id = "user_"+user_id+"_"+hashlib.sha1(rand_number.encode()).hexdigest()
+				user_id = result.get("user_name")
+				user_password = result.get("user_password")
+
+				# Get User information from database
+				pass_hash = hashlib.sha1(user_password.encode()).hexdigest()
+				#print({"_id":user_id,"PasswordHash":pass_hash})
+				#print({"_id":1,"AccountType":1})
+				user_data = mcollection.find_one({"_id":user_id,"PasswordHash":pass_hash},{"_id":1,"AccountType":1})
 				
-				# Setting session data to Redis DB
-				user_session_data = {"_id":user_id,"AccountType":account_type}
-				red.hmset(session_id,user_session_data)
-				red.expire(session_id,60000)
-				
-				resp = jsonify({"result":"success","message":"login success"})
-				resp.set_cookie('session_id', session_id)
-				return resp
+				if user_data == None:
+					# Provided user information in not available in database
+					session_id = None
+					return jsonify({"result":"failed","message":"Username or Password Not matched"}),401
+				else:
+					# Provided user information in available in database
+					# Gendrating session id for user
+					# Saving session and user information to Redis DB
+					user_id = user_data.get("_id")
+					account_type = user_data.get("AccountType")
+					rand_number = str(random.randint(100,999999) + time.time())
+					session_id = "user_"+user_id+"_"+hashlib.sha1(rand_number.encode()).hexdigest()
+					
+					# Setting session data to Redis DB
+					user_session_data = {"_id":user_id,"AccountType":account_type}
+					red.hmset(session_id,user_session_data)
+					red.expire(session_id,60000)
+					
+					resp = jsonify({"result":"success","message":"login success","X-Api-Key":session_id})
+					return resp,200
 		else:
-			return jsonify({"result":"failed","message":"POST method required"})
+			return jsonify({"result":"failed","message":"POST method required"}),401
 
 	except Exception:
 		logger.exception("portal_login")
@@ -685,17 +678,14 @@ def create_domain():
 			result = request.form
 			
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			
@@ -788,17 +778,14 @@ def create_engine():
 			result = request.form
 			
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			
@@ -959,17 +946,14 @@ def domain_update():
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 
@@ -1082,17 +1066,14 @@ def domain_delete():
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 
@@ -1124,17 +1105,14 @@ def engine_delete():
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 
@@ -1219,14 +1197,14 @@ def get_domain_data():
 			result = request.args.to_dict()
 
 			############## SESSION VALIDATION START ##################
-			session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			user_id = user_data.get("_id")
@@ -1261,14 +1239,14 @@ def get_engine_data():
 			result = request.args.to_dict()
 
 			############## SESSION VALIDATION START ##################
-			session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			user_id = user_data.get("_id")
@@ -1310,14 +1288,14 @@ def get_user_info():
 		if request.method == 'GET':
 			############## SESSION VALIDATION START ##################
 			#session_id = result.get("session_id")
-			session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			user_id = user_data.get("_id")
@@ -1354,14 +1332,14 @@ def get_crawl_history():
 			############## SESSION VALIDATION START ##################
 			#session_id = result.get("session_id")
 			result = request.args.to_dict()
-			session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			user_id = user_data.get("_id")
@@ -1539,14 +1517,14 @@ def start_crawler():
 		if request.method == 'POST':
 			############## SESSION VALIDATION START ##################
 			#session_id = result.get("session_id")
-			session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			
@@ -1652,17 +1630,14 @@ def portal_user_info_update():
 			user_password = result.get("user_password")
 			
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			
@@ -1694,17 +1669,15 @@ def create_new_user():
 			result = request.form
 
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			
@@ -1864,17 +1837,14 @@ def manage_api_key():
 				result = request.form
 
 			############## SESSION VALIDATION START ##################
-			session_id = result.get("session_id")
-			if session_id == None:
-				# Getting session_id from cookie
-				session_id = request.cookies.get('session_id')
+			session_id = request.headers.get("X-Api-Key")
 			if session_id != None:
 				# Validate the user with session
 				user_data = check_user_session(session_id)
 				if user_data == None:
-					return jsonify({"result":"failed","message":"Please login again"})
+					return jsonify({"result":"failed","message":"Please login again"}),401
 			else:
-				return jsonify({"result":"failed","message":"Please login again"})
+				return jsonify({"result":"failed","message":"Please login again"}),401
 
 			############## SESSION VALIDATION END #####################
 			engine_name = result.get("engine_name")

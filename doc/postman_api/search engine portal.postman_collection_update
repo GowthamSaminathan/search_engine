@@ -1,0 +1,2023 @@
+{
+	"info": {
+		"_postman_id": "4075f193-db10-44cd-9343-a894895e7257",
+		"name": "search engine portal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "USER LOGIN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_name",
+							"value": "priya",
+							"type": "text"
+						},
+						{
+							"key": "user_password",
+							"value": "priya@123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/login",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"login"
+					]
+				},
+				"description": "Login to user account\n\nPost variables:\nuser_name: <user name>\nuser_password: < user password>\n"
+			},
+			"response": [
+				{
+					"name": "USER LOGIN",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user_name",
+									"value": "priya",
+									"type": "text"
+								},
+								{
+									"key": "user_password",
+									"value": "priya@123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/login",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"login"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "CREATE NEW USERS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "first_name",
+							"value": "priya",
+							"type": "text"
+						},
+						{
+							"key": "last_name",
+							"value": "sam",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "priya",
+							"type": "text"
+						},
+						{
+							"key": "user_email",
+							"value": "gowtham@localhost",
+							"type": "text"
+						},
+						{
+							"key": "user_password",
+							"value": "priya@123",
+							"type": "text"
+						},
+						{
+							"key": "maximum_domains",
+							"value": "100000",
+							"type": "text"
+						},
+						{
+							"key": "maximum_engines",
+							"value": "100000",
+							"type": "text"
+						},
+						{
+							"key": "maximum_domains_in_engine",
+							"value": "100000",
+							"type": "text"
+						},
+						{
+							"key": "account_type",
+							"value": "user",
+							"type": "text"
+						},
+						{
+							"key": "max_lic_days",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "user_ip",
+							"value": "127.0.0.1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/create_new_user",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"create_new_user"
+					]
+				},
+				"description": "Creating new user\n================================================\n\nCreating new user required \"AccountType\" as admin\n\nKey:\nfirst_name: <required> <name of the user>\nlast_name: <required> <last name of the user>\nuser_id: <required> <user id to login>\nuser_email: <required> <user email>\nuser_password: <required> <user password>\nmaximum_domains: <required> <maximum domain allowed for the user>\nmaximum_engines: <required> <maximum engines allowed for the user>\nmaximum_domains_in_engine: <required> <maximum domains for one engines>\naccount_type: <required> <'admin' or 'user'>\nmax_lic_days: <required> <maximum days allowed for the user>\nuser_ip: <required> <user ip addredd where account is created>"
+			},
+			"response": [
+				{
+					"name": "CREATE NEW USERS",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "first_name",
+									"value": "priya",
+									"type": "text"
+								},
+								{
+									"key": "last_name",
+									"value": "sam",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "priya",
+									"type": "text"
+								},
+								{
+									"key": "user_email",
+									"value": "gowtham@localhost",
+									"type": "text"
+								},
+								{
+									"key": "user_password",
+									"value": "priya@123",
+									"type": "text"
+								},
+								{
+									"key": "maximum_domains",
+									"value": "100000",
+									"type": "text"
+								},
+								{
+									"key": "maximum_engines",
+									"value": "100000",
+									"type": "text"
+								},
+								{
+									"key": "maximum_domains_in_engine",
+									"value": "100000",
+									"type": "text"
+								},
+								{
+									"key": "account_type",
+									"value": "user",
+									"type": "text"
+								},
+								{
+									"key": "max_lic_days",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "user_ip",
+									"value": "127.0.0.1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/create_new_user",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"create_new_user"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "GET USER INFORMATION",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "\"X-Api-Key\"",
+						"value": " \"user_priya_57ffd7118ed6be155229bc3ec1e9551ab14eae9a\"",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{server}}/portal/get_user_info",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"get_user_info"
+					]
+				},
+				"description": "Get user Basic informations\n=====================================\n\nRequest: none\n\n\nResponse fields:\n1)result 2)data (or) message\n\n1)result: \"success\" or \"failed\"\n\n2)data:\n\nFirstName\nLastName\nEmail\nLicenceEnd\nLicenceStart\nAccountCreatedDate\nAccountStatus\nMaximumDomains\nMaximumEngines\nMaximumDomainsInEngine\nEngines\n\n3)message: <  fail reasion>"
+			},
+			"response": [
+				{
+					"name": "GET USER INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_user_info",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_user_info"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "UPDATE USER INFORMATION",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_email",
+							"value": "gowthamsss@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "user_password",
+							"value": "password@1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/user_update",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"user_update"
+					]
+				},
+				"description": "Update user information\n================================\nupdate user email and password\n\nuser_email: <required>\nuser_password: <required>\n\n"
+			},
+			"response": [
+				{
+					"name": "UPDATE USER INFORMATION",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "user_email",
+									"value": "gowthamsss@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "user_password",
+									"value": "password@1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/user_update",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"user_update"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "CREATE NEW ENGINE",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "engine_name",
+							"value": "wisky",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/create_engine",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"create_engine"
+					]
+				},
+				"description": "Creating new Engine\n=============================\n\nrequest:\n\nengine_name: <required>\n\nresponse:\n\n\"results\":\"failed\" or \"result\":\"success\""
+			},
+			"response": [
+				{
+					"name": "CREATE NEW ENGINE",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "engine_name",
+									"value": "pengine",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/create_engine",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"create_engine"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "CREATE NEW DOMAIN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov",
+							"type": "text"
+						},
+						{
+							"key": "engine_name",
+							"value": "wisky",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/create_domain",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"create_domain"
+					]
+				},
+				"description": "Creating new domain for an specific engine\n=============================================\n\nrequest:\ndomain_name <required> < domain name to create >\nengine_name: <required> <engine name to map the domain>\n"
+			},
+			"response": [
+				{
+					"name": "CREATE NEW DOMAIN",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "http://www.yahoo.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "testengine1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/create_domain",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"create_domain"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "GET ENGINES INFORMATION",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/get_engine_data",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"get_engine_data"
+					]
+				},
+				"description": "Get Domain information \n===============================\n\nrequest:\n\nengine_name: <optional> <engine name>\n\nresponse:\n{result:<success> or <failed>,data:[\nDomainName\nEngineName\ntype\nuser_id\nCreatedAt\nCreatedBy\nCurrentStatus\ncreater_ip\nlast_updater_ip\nUpdatedAt]"
+			},
+			"response": [
+				{
+					"name": "GET ENGINES INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_engine_data?engine_name=engine5",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_engine_data"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine5"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "613"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 23 Dec 2018 06:07:55 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:24:01 GMT\",\n            \"EngineName\": \"engine5\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"type\": \"engine\",\n            \"user_id\": \"priya\"\n        },\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:28:54 GMT\",\n            \"CreatedBy\": \"priya\",\n            \"CurrentStatus\": \"created\",\n            \"DomainName\": \"yahoo.com\",\n            \"EngineName\": \"engine5\",\n            \"UpdatedAt\": \"Sun, 23 Dec 2018 05:43:05 GMT\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"last_updater_ip\": \"49.207.184.106\",\n            \"type\": \"domain\",\n            \"user_id\": \"priya\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "GET SYNONYMS MAPPING",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/manage_synonyms?engine_name=wisky",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"manage_synonyms"
+					],
+					"query": [
+						{
+							"key": "engine_name",
+							"value": "wisky"
+						}
+					]
+				},
+				"description": "Get Domain information \n===============================\n\nrequest:\n\nengine_name: <required> <engine name>\n\nresponse:\n{result:<success> or <failed>"
+			},
+			"response": [
+				{
+					"name": "GET ENGINES INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_engine_data?engine_name=engine5",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_engine_data"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine5"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "613"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 23 Dec 2018 06:07:55 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:24:01 GMT\",\n            \"EngineName\": \"engine5\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"type\": \"engine\",\n            \"user_id\": \"priya\"\n        },\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:28:54 GMT\",\n            \"CreatedBy\": \"priya\",\n            \"CurrentStatus\": \"created\",\n            \"DomainName\": \"yahoo.com\",\n            \"EngineName\": \"engine5\",\n            \"UpdatedAt\": \"Sun, 23 Dec 2018 05:43:05 GMT\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"last_updater_ip\": \"49.207.184.106\",\n            \"type\": \"domain\",\n            \"user_id\": \"priya\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "DELETE SYNONYMS MAPPING",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/manage_synonyms?engine_name=wisky&synonyms=kongu",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"manage_synonyms"
+					],
+					"query": [
+						{
+							"key": "engine_name",
+							"value": "wisky"
+						},
+						{
+							"key": "synonyms",
+							"value": "kongu"
+						}
+					]
+				},
+				"description": "Get Domain information \n===============================\n\nrequest:\n\nengine_name: <required> <engine name>\nsynonyms: <required> <synonyms string to delete>\nresponse:\n{result:<success> or <failed>"
+			},
+			"response": [
+				{
+					"name": "GET ENGINES INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_engine_data?engine_name=engine5",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_engine_data"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine5"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "613"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 23 Dec 2018 06:07:55 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:24:01 GMT\",\n            \"EngineName\": \"engine5\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"type\": \"engine\",\n            \"user_id\": \"priya\"\n        },\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:28:54 GMT\",\n            \"CreatedBy\": \"priya\",\n            \"CurrentStatus\": \"created\",\n            \"DomainName\": \"yahoo.com\",\n            \"EngineName\": \"engine5\",\n            \"UpdatedAt\": \"Sun, 23 Dec 2018 05:43:05 GMT\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"last_updater_ip\": \"49.207.184.106\",\n            \"type\": \"domain\",\n            \"user_id\": \"priya\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "ADD SYNONYMS MAPPIN",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "engine_name",
+							"value": "wisky",
+							"type": "text"
+						},
+						{
+							"key": "synonyms",
+							"value": "{\"test\":[\"government\",\"governments\"]}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/manage_synonyms",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"manage_synonyms"
+					]
+				},
+				"description": "Get Domain information \n===============================\n\nrequest:\n\nengine_name: <required>, <engine name>\nsynonyms: <required>, <list of sunonyms> or <json one to many mapping> <refer : https://lucene.apache.org/solr/guide/6_6/managed-resources.html >\n\nresponse:\n{result:<success> or <failed>"
+			},
+			"response": [
+				{
+					"name": "GET ENGINES INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_engine_data?engine_name=engine5",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_engine_data"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine5"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "613"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 23 Dec 2018 06:07:55 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:24:01 GMT\",\n            \"EngineName\": \"engine5\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"type\": \"engine\",\n            \"user_id\": \"priya\"\n        },\n        {\n            \"CreatedAt\": \"Sun, 23 Dec 2018 05:28:54 GMT\",\n            \"CreatedBy\": \"priya\",\n            \"CurrentStatus\": \"created\",\n            \"DomainName\": \"yahoo.com\",\n            \"EngineName\": \"engine5\",\n            \"UpdatedAt\": \"Sun, 23 Dec 2018 05:43:05 GMT\",\n            \"creater_ip\": \"49.207.184.106\",\n            \"last_updater_ip\": \"49.207.184.106\",\n            \"type\": \"domain\",\n            \"user_id\": \"priya\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "GET DOMAIN INFORMATION",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/get_domain_data?domain_name=https://gic.delaware.gov&engine_name=engine1",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"get_domain_data"
+					],
+					"query": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov"
+						},
+						{
+							"key": "engine_name",
+							"value": "engine1"
+						}
+					]
+				},
+				"description": "Get Domain information \n===============================\n\nrequest:\n\ndomain_name: <optional> <domain name>\n\nengine_name: <optional> <engine name>\n\nresponse:\n\nEngines.Domains.Pages\nEngines.Domains.DomainName\nEngines.Domains.LastCrawl\nEngines.Domains.CurrentStatus\nEngines.Domains.CreatedAt\nEngines.Domains.CreatedBy\nEngines.Domains.CrawlSchedule"
+			},
+			"response": [
+				{
+					"name": "GET DOMAIN INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_domain_data?domain_name=https://google.com&engine_name=testengin",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_domain_data"
+							],
+							"query": [
+								{
+									"key": "domain_name",
+									"value": "https://google.com"
+								},
+								{
+									"key": "engine_name",
+									"value": "testengin"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "UPDATE EXISTING DOMAIN INFORMATION",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov",
+							"type": "text"
+						},
+						{
+							"key": "domain_update",
+							"value": "{\"ManualUrlsOnly\":\"yes\"}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "engine_name",
+							"value": "wisky",
+							"type": "text"
+						},
+						{
+							"key": "action",
+							"value": "delete",
+							"type": "text"
+						},
+						{
+							"key": "element",
+							"value": "BlackListApp",
+							"type": "text"
+						},
+						{
+							"key": "value",
+							"value": "[\"application/exe\"]",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/domain_update",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"domain_update"
+					]
+				},
+				"description": "Update Domain settings\n=============================\n\nrequest:\n\ndomain_name: <required>\nengine_name: <required>\n\naction:<delete,add,set>\nelement:<below elements>\nvalue:<value to the element>\n\nelements:\n\nAdvancedSettings : <optional> <dict>\nBlackListApp : <optional>  <list>\nBlackListUrls : <optional>  <list>\nCrawlSchedule : <optional>  <list>\nCustomResults : <optional> <list>\nHtmlTags : <optional>  <list>\nManualUrls : <optional> <list>\nSynonums : <optional>  <list>\nWeight : <optional> <list>\nWhiteListApp : <optional> <list>\nWhiteListUrls : <optional> <list>\n\nresponse:\n\n\"result\":\"success\" or \"result\":\"failed\""
+			},
+			"response": [
+				{
+					"name": "UPDATE EXISTING DOMAIN INFORMATION",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "http://robotstxt3.org",
+									"type": "text"
+								},
+								{
+									"key": "domain_update",
+									"value": "{\"ManualUrlsOnly\":\"yes\"}",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "engine_name",
+									"value": "engine_7",
+									"type": "text"
+								},
+								{
+									"key": "action",
+									"value": "add",
+									"type": "text"
+								},
+								{
+									"key": "element",
+									"value": "BlackListApp",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "[\"app/exe\"]",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/domain_update",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"domain_update"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "58"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 22 Dec 2018 16:46:25 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"message\": \"Update Success\",\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "DELETE AN ENGINE",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "engine_name",
+							"value": "gowtham",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/engine_delete",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"engine_delete"
+					]
+				},
+				"description": "Delete existing engine and all domains belongs to that engine\n===========================================================\n\nrequest:\n\nengine_name <required> < engine name to delete>\n\nresponse:\n\n\"result\":\"failed\" or \"result\":\"success\"\n"
+			},
+			"response": [
+				{
+					"name": "DELETE AN ENGINE",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "engine_name",
+									"value": "engine2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/engine_delete",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"engine_delete"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "DELETE DOMAIN",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "domain_name",
+							"value": "http://raw.ping.com",
+							"type": "text"
+						},
+						{
+							"key": "engine_name",
+							"value": "engine1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/domain_delete",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"domain_delete"
+					]
+				},
+				"description": "Delete existing domain\n=============================\n\nrequest:\n\ndomain_name: <required>\nengine_name: <required>\n\nresponse:\n\n\"result\":\"failed\" or \"result\":\"success\"\n"
+			},
+			"response": [
+				{
+					"name": "DELETE DOMAIN",
+					"originalRequest": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "http://raw.ping.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "engine1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/domain_delete",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"domain_delete"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "CREATE API KEY",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "refresh",
+							"value": "domain_read_key",
+							"type": "text"
+						},
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov",
+							"type": "text"
+						},
+						{
+							"key": "engine_name",
+							"value": "wisky",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/manage_api_key",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"manage_api_key"
+					]
+				},
+				"description": "Create user API key (read key and write key for domain or engine)\n=====================================================\n\nrequest:\n\nengine_name: <engine name>\n\ndomain_name: <optional and only required to create domain key>\n\nrefresh: <required> < create any one of the following key types: 'domain_read_key','domain_write_key','engine_read_key','engine_write_key'>\n\nresponse:\n\n\"result\":\"failed\"\n\"result\":\"success\""
+			},
+			"response": [
+				{
+					"name": "CREATE API KEY",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "refresh",
+									"value": "domain_read_key",
+									"type": "text"
+								},
+								{
+									"key": "domain_name",
+									"value": "http://www.robotstxt.org",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "pengine",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/manage_api_key",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"manage_api_key"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "GET ALL API KEYS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/manage_api_key",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"manage_api_key"
+					]
+				},
+				"description": "Get all API keys\n======================\n\nrequest: none\n\nresponse:\n\n\"result\":\"success\" \"data\": <keys>\n\n(or)\n\n\"result\":\"failed\"\n"
+			},
+			"response": [
+				{
+					"name": "GET ALL API KEYS",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/manage_api_key",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"manage_api_key"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "START A WEB CRAWL",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov",
+							"type": "text"
+						},
+						{
+							"key": "engine_name",
+							"value": "engine40",
+							"type": "text"
+						},
+						{
+							"key": "custom_settings",
+							"value": "no",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/start_crawl",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"start_crawl"
+					]
+				},
+				"description": "Start the web page crawl for given engine and domain name\n=====================================================\n\nrequest:\n\ndomain_name: <required> <domain name to crawl>\nengine_name: <required> <engine name domain belons to>\ncustom_settings: <required> < \"no\" key word for no additional settings >\n\nresponse:\n\n\"results\":\"failed\"\n\n or\n \n\"result\":\"success\" "
+			},
+			"response": [
+				{
+					"name": "START A WEB CRAWL",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "https://www.yahoo.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "my",
+									"type": "text"
+								},
+								{
+									"key": "custom_settings",
+									"value": "no",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/start_crawl",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"start_crawl"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "STOP A WEB CRAWL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/stop_crawl?domain_name=https://gic.delaware.gov&engine_name=engine1",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"stop_crawl"
+					],
+					"query": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov"
+						},
+						{
+							"key": "engine_name",
+							"value": "engine1"
+						},
+						{
+							"key": "custom_settings",
+							"value": "no",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Start the web page crawl for given engine and domain name\n=====================================================\n\nrequest:\n\ndomain_name: <required> <domain name to crawl>\nengine_name: <required> <engine name domain belons to>\n\nresponse:\n\n\"results\":\"failed\"\n\n or\n \n\"result\":\"success\""
+			},
+			"response": [
+				{
+					"name": "START A WEB CRAWL",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "https://www.yahoo.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "my",
+									"type": "text"
+								},
+								{
+									"key": "custom_settings",
+									"value": "no",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/start_crawl",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"start_crawl"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "SEARCH RESULT RE-RANKING",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov",
+							"type": "text"
+						},
+						{
+							"key": "engine_name",
+							"value": "wisky",
+							"type": "text"
+						},
+						{
+							"key": "rank_id",
+							"value": "[\"3cd18d01-e04a-468e-8e04-39f3be8690f1\",\"dfc83116-5c48-4aea-b12a-a2e9f157d979\",\"e38204c2-4557-4fab-b0da-7204dc9da1f4\"]",
+							"type": "text"
+						},
+						{
+							"key": "query",
+							"value": "erode",
+							"type": "text"
+						},
+						{
+							"key": "exclude_rank_id",
+							"value": "[]",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/result_rerank",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"result_rerank"
+					]
+				},
+				"description": "Start the web page crawl for given engine and domain name\n=====================================================\n\nrequest:\n\ndomain_name: <required> <domain name to crawl>\nengine_name: <required> <engine name domain belons to>\nrank_id: <required> < array of search result id >\nquery: < required> <query keyword >\nexclude_rank_id:<required> < array of search result id > <used to exclude the results>\n\nresponse:\n\n\"results\":\"failed\"\n\n or\n \n\"result\":\"success\""
+			},
+			"response": [
+				{
+					"name": "START A WEB CRAWL",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "https://www.yahoo.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "my",
+									"type": "text"
+								},
+								{
+									"key": "custom_settings",
+									"value": "no",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/start_crawl",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"start_crawl"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "GET RESULT RE-RANKING QUERYS",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/result_rerank?domain_name=https://gic.delaware.gov&engine_name=wisky&cursor=0&count=10",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"result_rerank"
+					],
+					"query": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov"
+						},
+						{
+							"key": "engine_name",
+							"value": "wisky"
+						},
+						{
+							"key": "cursor",
+							"value": "0"
+						},
+						{
+							"key": "count",
+							"value": "10"
+						}
+					]
+				},
+				"description": "Start the web page crawl for given engine and domain name\n=====================================================\n\nrequest:\n\ndomain_name: <required> <domain name to crawl>\nengine_name: <required> <engine name domain belons to>\ncursor: <required> < integer number >\ncount : <required> < integer number >\n\nresponse:\n\n\"results\":\"failed\"\n\n or\n \n\"result\":\"success\""
+			},
+			"response": [
+				{
+					"name": "START A WEB CRAWL",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "https://www.yahoo.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "my",
+									"type": "text"
+								},
+								{
+									"key": "custom_settings",
+									"value": "no",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/start_crawl",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"start_crawl"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "DELETE RESULT RE-RANKING QUERYS",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/result_rerank?domain_name=https://gic.delaware.gov&engine_name=wisky&query=erode",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"result_rerank"
+					],
+					"query": [
+						{
+							"key": "domain_name",
+							"value": "https://gic.delaware.gov"
+						},
+						{
+							"key": "engine_name",
+							"value": "wisky"
+						},
+						{
+							"key": "query",
+							"value": "erode"
+						}
+					]
+				},
+				"description": "This delete methode will reset the provided qury ranking\n=====================================================\n\nrequest:\n\ndomain_name: <required> <domain name to crawl>\nengine_name: <required> <engine name domain belons to>\nquery: <required> < query to reset the elevation >\n\nresponse:\n\n\"results\":\"failed\"\n\n or\n \n\"result\":\"success\""
+			},
+			"response": [
+				{
+					"name": "START A WEB CRAWL",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "domain_name",
+									"value": "https://www.yahoo.com",
+									"type": "text"
+								},
+								{
+									"key": "engine_name",
+									"value": "my",
+									"type": "text"
+								},
+								{
+									"key": "custom_settings",
+									"value": "no",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://13.232.131.155/portal/start_crawl",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"start_crawl"
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "GET USER SEARCH HISTORY INFORMATION",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/search_history?qtype=top_searches&key=70726979613a269e2c786b4114348e73d52da081b45db79fe8&limit=20",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"search_history"
+					],
+					"query": [
+						{
+							"key": "qtype",
+							"value": "top_searches"
+						},
+						{
+							"key": "key",
+							"value": "70726979613a269e2c786b4114348e73d52da081b45db79fe8"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						}
+					]
+				},
+				"description": "Get end user Search history\n====================================\nrequest:\n\nfrom_time: <optional>\nto_time: <optional>\nqtype: <required>  <\"top_searches\">\nlimit: <required> <limit number of results>\nkey: <required> < specify the key \"domain\" key or \"engine\" key\n\nresponse:\n\n\"result\":\"success\"\n\nor\n\n\"result\":\"error\""
+			},
+			"response": [
+				{
+					"name": "GET USER SEARCH HISTORY INFORMATION",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/search_history?qtype=top_searches&key=70726979613a269e2c786b4114348e73d52da081b45db79fe8&limit=20",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"search_history"
+							],
+							"query": [
+								{
+									"key": "qtype",
+									"value": "top_searches"
+								},
+								{
+									"key": "key",
+									"value": "70726979613a269e2c786b4114348e73d52da081b45db79fe8"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "USER LOGOUT",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/logout",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"logout"
+					]
+				},
+				"description": "Logout the user based on cookie session\n"
+			},
+			"response": []
+		},
+		{
+			"name": "GET CRAWL INFO",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/get_crawl_info?engine_name=engine2&skip=2&current_status=completed",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"get_crawl_info"
+					],
+					"query": [
+						{
+							"key": "engine_name",
+							"value": "engine2"
+						},
+						{
+							"key": "domain_name",
+							"value": "http://kongu.ac.in",
+							"disabled": true
+						},
+						{
+							"key": "skip",
+							"value": "2"
+						},
+						{
+							"key": "current_status",
+							"value": "completed"
+						}
+					]
+				},
+				"description": "Get crawl infrom based on engine name\nrequest:\nengine_name : <engine name> <required>\ndomain_name : <domain name> < optional >\nskip : <skip the first n number of results ><optional>\ncurrent_status : <filter based on current crawl status > <options: running / completed / pending /failed > <optional>"
+			},
+			"response": [
+				{
+					"name": "GET CRAWL INFO",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_crawl_info?engine_name=engine2&skip=2&current_status=running",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_crawl_info"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine2"
+								},
+								{
+									"key": "domain_name",
+									"value": "http://kongu.ac.in",
+									"disabled": true
+								},
+								{
+									"key": "skip",
+									"value": "2"
+								},
+								{
+									"key": "current_status",
+									"value": "running"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "8675"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 20 Dec 2018 03:06:10 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:28:05 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:28:03 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:28:03 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:27:32 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:27:30 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:27:30 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:15 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:20:13 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:20:13 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:07 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:19:41 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 79,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:19:41 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:18:59 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:18:32 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 80,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:18:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:17:47 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:17:45 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:17:45 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:16:01 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:15:59 GMT\",\n            \"crawling_sec\": 2,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:15:59 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:10:32 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Wed, 19 Dec 2018 18:10:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:05:29 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:05:25 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:05:25 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:01:56 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:01:53 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:01:53 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:59:09 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 16:59:09 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:56:39 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:56:38 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:56:38 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:39:56 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:39:54 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:39:54 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:31:36 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 05:31:36 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 05:27:04 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:26:08 GMT\",\n            \"crawling_sec\": 56,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 300,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 315\n            },\n            \"version\": \"Tue, 11 Dec 2018 05:26:08 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:22:29 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:22:24 GMT\",\n            \"crawling_sec\": 4,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:22:24 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:15:06 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:15:02 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:15:02 GMT\"\n        },\n        {\n            \"crawl_end\": \"Sun, 09 Dec 2018 11:21:22 GMT\",\n            \"crawl_start\": \"Sun, 09 Dec 2018 11:20:29 GMT\",\n            \"crawling_sec\": 53,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 301,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 316\n            },\n            \"version\": \"Sun, 09 Dec 2018 11:20:29 GMT\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "X-Api-Key",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "user_priya_aa197950772378e9950183972ed48b26312aa8be",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "817c0455-7cf1-4765-9dde-c5501aff20c9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4cc6e729-f24f-4213-bc9e-4bb3a150492a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "c77a1153-bee1-4068-b596-275c663a6fac",
+			"key": "server",
+			"value": "server1.webr-env01.xyz",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

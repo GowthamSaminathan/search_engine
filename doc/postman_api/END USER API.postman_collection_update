@@ -1,0 +1,373 @@
+{
+	"info": {
+		"_postman_id": "a12ab306-fa12-43f3-a714-a467c6cb8d6c",
+		"name": "END USER API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "END USER SUGGEST API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/correct_me?q=government&key=7072697961297ed3613a54ab654cdbdc8e7269af095f07f555&type=suggest&suggest.dictionary=mySuggester",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"correct_me"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "government"
+						},
+						{
+							"key": "key",
+							"value": "7072697961297ed3613a54ab654cdbdc8e7269af095f07f555"
+						},
+						{
+							"key": "type",
+							"value": "suggest"
+						},
+						{
+							"key": "suggest.dictionary",
+							"value": "mySuggester"
+						}
+					]
+				},
+				"description": "Suggest for user to search based on user input\n==================================================="
+			},
+			"response": [
+				{
+					"name": "END USER SUGGEST API",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/correct_me?q=robotq&key=7072697961267d6215860984a870769157467f54cfab4e7a3a&type=suggest&suggest.dictionary=mySuggester",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"correct_me"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "robotq"
+								},
+								{
+									"key": "key",
+									"value": "7072697961267d6215860984a870769157467f54cfab4e7a3a"
+								},
+								{
+									"key": "type",
+									"value": "suggest"
+								},
+								{
+									"key": "suggest.dictionary",
+									"value": "mySuggester"
+								}
+							]
+						}
+					},
+					"_postman_previewlanguage": "Text",
+					"header": [],
+					"cookie": [],
+					"body": ""
+				}
+			]
+		},
+		{
+			"name": "END USER SEARCH API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/search?q=government&key=7072697961e1b353ec85523ac6c93d4d412540bebb1459494a&hl=true&hl.snippets=1&hl.fragsize=100&hl.fl=body",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"search"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "government"
+						},
+						{
+							"key": "key",
+							"value": "7072697961e1b353ec85523ac6c93d4d412540bebb1459494a"
+						},
+						{
+							"key": "hl",
+							"value": "true"
+						},
+						{
+							"key": "hl.snippets",
+							"value": "1"
+						},
+						{
+							"key": "hl.fragsize",
+							"value": "100"
+						},
+						{
+							"key": "hl.fl",
+							"value": "body"
+						}
+					]
+				},
+				"description": "Search the crawled pages\n====================================\n\nrequest:\n\nkey: <request> <key value for specific domain or engine>\nq: <required> <search sting>\n\n"
+			},
+			"response": [
+				{
+					"name": "END USER SEARCH API",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/search?q=robots&key=7072697961267d6215860984a870769157467f54cfab4e7a3a&hl=true&hl.snippets=1&hl.fragsize=100&hl.fl=body",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "robots"
+								},
+								{
+									"key": "key",
+									"value": "7072697961267d6215860984a870769157467f54cfab4e7a3a"
+								},
+								{
+									"key": "hl",
+									"value": "true"
+								},
+								{
+									"key": "hl.snippets",
+									"value": "1"
+								},
+								{
+									"key": "hl.fragsize",
+									"value": "100"
+								},
+								{
+									"key": "hl.fl",
+									"value": "body"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "3844"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 08 Dec 2018 08:25:11 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"highlighting\": {\n        \"20845a86-1d05-42eb-b2c3-a26103f76c06\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"632c6e92-7e4d-4798-b139-ff3b224c79b0\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"760fa12e-86ed-4fc4-be4e-9aed271fb3e3\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"7e347bdc-4375-485c-8604-5b7e489abd00\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"8fb03b73-8845-46cd-bcaa-6e87370943c2\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"996c0727-4bb6-4c8a-a2e7-44697dc33071\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"9ccf7a2e-e303-48f7-b9b6-c7a3591955a3\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"a28fdff2-c7cc-4c4c-9f7a-d3dd4d22d6e3\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"d5d7b7db-41e0-4656-a048-6920549e9662\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"ed490e35-45e6-442d-b381-c149e8bc7941\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        }\n    },\n    \"response\": {\n        \"docs\": [\n            {\n                \"id\": \"632c6e92-7e4d-4798-b139-ff3b224c79b0\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/othernames.html\"\n            },\n            {\n                \"id\": \"d5d7b7db-41e0-4656-a048-6920549e9662\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/othernames.html#content\"\n            },\n            {\n                \"id\": \"20845a86-1d05-42eb-b2c3-a26103f76c06\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/othernames.html#what\"\n            },\n            {\n                \"id\": \"8fb03b73-8845-46cd-bcaa-6e87370943c2\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/meta.html#content\"\n            },\n            {\n                \"id\": \"a28fdff2-c7cc-4c4c-9f7a-d3dd4d22d6e3\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/meta.html\"\n            },\n            {\n                \"id\": \"ed490e35-45e6-442d-b381-c149e8bc7941\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org\"\n            },\n            {\n                \"id\": \"996c0727-4bb6-4c8a-a2e7-44697dc33071\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/\"\n            },\n            {\n                \"id\": \"7e347bdc-4375-485c-8604-5b7e489abd00\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/#content\"\n            },\n            {\n                \"id\": \"9ccf7a2e-e303-48f7-b9b6-c7a3591955a3\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/bad.html\"\n            },\n            {\n                \"id\": \"760fa12e-86ed-4fc4-be4e-9aed271fb3e3\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/bad.html#content\"\n            }\n        ],\n        \"numFound\": 712,\n        \"start\": 0\n    },\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "END USER CUSTOME SEARCH",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/search_fields?q=url:\"https://gic.delaware.gov/tag/delaware-gov/\"&key=707269796143cbf221f3ee0221095dc9ad55e432320146511e&fl=title,url,id",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"search_fields"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "url:\"https://gic.delaware.gov/tag/delaware-gov/\""
+						},
+						{
+							"key": "key",
+							"value": "707269796143cbf221f3ee0221095dc9ad55e432320146511e"
+						},
+						{
+							"key": "hl",
+							"value": "true",
+							"disabled": true
+						},
+						{
+							"key": "hl.snippets",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "hl.fragsize",
+							"value": "100",
+							"disabled": true
+						},
+						{
+							"key": "hl.fl",
+							"value": "body",
+							"disabled": true
+						},
+						{
+							"key": "fl",
+							"value": "title,url,id"
+						}
+					]
+				},
+				"description": "Search the crawled pages\n====================================\n\nrequest:\n\nkey: <request> <key value for specific domain or engine>\nq: <required> <search sting> <this is a direct solr search call >"
+			},
+			"response": [
+				{
+					"name": "END USER SEARCH API",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/search?q=robots&key=7072697961267d6215860984a870769157467f54cfab4e7a3a&hl=true&hl.snippets=1&hl.fragsize=100&hl.fl=body",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "robots"
+								},
+								{
+									"key": "key",
+									"value": "7072697961267d6215860984a870769157467f54cfab4e7a3a"
+								},
+								{
+									"key": "hl",
+									"value": "true"
+								},
+								{
+									"key": "hl.snippets",
+									"value": "1"
+								},
+								{
+									"key": "hl.fragsize",
+									"value": "100"
+								},
+								{
+									"key": "hl.fl",
+									"value": "body"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "3844"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 08 Dec 2018 08:25:11 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"highlighting\": {\n        \"20845a86-1d05-42eb-b2c3-a26103f76c06\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"632c6e92-7e4d-4798-b139-ff3b224c79b0\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"760fa12e-86ed-4fc4-be4e-9aed271fb3e3\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"7e347bdc-4375-485c-8604-5b7e489abd00\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"8fb03b73-8845-46cd-bcaa-6e87370943c2\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"996c0727-4bb6-4c8a-a2e7-44697dc33071\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"9ccf7a2e-e303-48f7-b9b6-c7a3591955a3\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"a28fdff2-c7cc-4c4c-9f7a-d3dd4d22d6e3\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"d5d7b7db-41e0-4656-a048-6920549e9662\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        },\n        \"ed490e35-45e6-442d-b381-c149e8bc7941\": {\n            \"body\": [\n                \"\\n\\nThe Web <em>Robots</em> Pages\\n\\n\\n\\n\\n\\nskip to content\\n\\n\\nAdvertisement\\n<!--\\ngoogle_ad_client = \\\"pub\"\n            ]\n        }\n    },\n    \"response\": {\n        \"docs\": [\n            {\n                \"id\": \"632c6e92-7e4d-4798-b139-ff3b224c79b0\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/othernames.html\"\n            },\n            {\n                \"id\": \"d5d7b7db-41e0-4656-a048-6920549e9662\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/othernames.html#content\"\n            },\n            {\n                \"id\": \"20845a86-1d05-42eb-b2c3-a26103f76c06\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/othernames.html#what\"\n            },\n            {\n                \"id\": \"8fb03b73-8845-46cd-bcaa-6e87370943c2\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/meta.html#content\"\n            },\n            {\n                \"id\": \"a28fdff2-c7cc-4c4c-9f7a-d3dd4d22d6e3\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/meta.html\"\n            },\n            {\n                \"id\": \"ed490e35-45e6-442d-b381-c149e8bc7941\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org\"\n            },\n            {\n                \"id\": \"996c0727-4bb6-4c8a-a2e7-44697dc33071\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/\"\n            },\n            {\n                \"id\": \"7e347bdc-4375-485c-8604-5b7e489abd00\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/#content\"\n            },\n            {\n                \"id\": \"9ccf7a2e-e303-48f7-b9b6-c7a3591955a3\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/bad.html\"\n            },\n            {\n                \"id\": \"760fa12e-86ed-4fc4-be4e-9aed271fb3e3\",\n                \"title\": \"The Web Robots Pages\",\n                \"url\": \"http://www.robotstxt.org/faq/bad.html#content\"\n            }\n        ],\n        \"numFound\": 712,\n        \"start\": 0\n    },\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "END USER SPELL CHECK",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/correct_me?q=robotq&key=7072697961297ed3613a54ab654cdbdc8e7269af095f07f555&type=spell",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"correct_me"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "robotq"
+						},
+						{
+							"key": "key",
+							"value": "7072697961297ed3613a54ab654cdbdc8e7269af095f07f555"
+						},
+						{
+							"key": "type",
+							"value": "spell"
+						}
+					]
+				},
+				"description": "Checking spelling for user input"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
