@@ -625,18 +625,18 @@ def portal_login():
 			result = request.form
 			
 			############## SESSION VALIDATION START ##################
-			session_id = request.headers.get("X-Api-Key")
-			if session_id != None:
+			#session_id = request.headers.get("X-Api-Key")
+			user_id = result.get("user_name")
+			user_password = result.get("user_password")
+			if user_id == None or user_password == None:
 				# Validate the user with session
-				user_data = check_user_session(session_id)
-				if user_data != None:
-					return jsonify({"result":"success","message":"Session Valid"})
-				else:
-					return jsonify({"result":"success","message":"Invalid Session Key"})
+				#user_data = check_user_session(session_id)
+				#if user_data != None:
+				#	return jsonify({"result":"success","message":"Session Valid"})
+				#else:
+				return jsonify({"result":"success","message":"Please provide username or password"}),401
 			
 			else:
-				user_id = result.get("user_name")
-				user_password = result.get("user_password")
 
 				# Get User information from database
 				pass_hash = hashlib.sha1(user_password.encode()).hexdigest()
