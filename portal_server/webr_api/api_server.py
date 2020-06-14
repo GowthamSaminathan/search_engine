@@ -792,6 +792,7 @@ def create_engine():
 			user_id = user_data.get("_id")
 			form_schema = dict()
 			form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+			form_schema.update({'engine_type': {'required': True,'type': 'string','allowed':['crawler','api']}})
 
 			form_validate = cerberus.Validator()
 			form_valid = form_validate.validate(result, form_schema)
@@ -802,6 +803,7 @@ def create_engine():
 				return jsonify(error_status)
 			
 			engine_name = result.get("engine_name")
+			engine_type = result.get("engine_type")
 			
 			new_engine = dict()
 			new_engine.update({"EngineName":engine_name})
@@ -888,7 +890,7 @@ def create_engine():
 					if check_engine == None:
 						# Engine not exist , creating new engine
 						results = engine_collection.update_one({"user_id":user_id,"EngineName":engine_name,"type":"engine"},
-							{"$setOnInsert":{"user_id":user_id,"EngineName":engine_name,"type":"engine",
+							{"$setOnInsert":{"user_id":user_id,"EngineName":engine_name,"type":"engine","engine_type":engine_type,
 							"CreatedAt":datetime.datetime.utcnow(),"creater_ip":str(request.remote_addr)}},upsert=True)
 						
 						if results.upserted_id != None:
@@ -1925,7 +1927,134 @@ def manage_api_key():
 		logger.exception("manage_api_key")
 		return jsonify({"result":"failed","message":"Referesh API key failed"})
 
+#====== API BASED ENGINE ======#
 
+@app.route('/portal/api_engine/<engine_name>/schema/<path:u_path>',methods = ['GET'])
+@app.route('/portal/api_engine/<engine_name>/schema',methods = ['POST'])
+def api_engine_action(engine_name,u_path=None):
+	# Reference : https://lucene.apache.org/solr/guide/7_4/schema-api.html
+	try:
+		############## SESSION VALIDATION START ##################
+		#session_id = result.get("session_id")
+		
+		session_id = request.headers.get("X-Api-Key")
+		if session_id != None:
+			# Validate the user with session
+			user_data = check_user_session(session_id)
+			if user_data == None:
+				return jsonify({"result":"failed","message":"Please login again"}),401
+		else:
+			return jsonify({"result":"failed","message":"Please login again"}),401
+
+		############## SESSION VALIDATION END #####################
+		
+		user_id = user_data.get("_id")
+		account_type = user_data.get("AccountType")
+		result = {"engine_name":engine_name}
+		
+		form_schema = dict()
+		form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+
+		form_validate = cerberus.Validator()
+		form_valid = form_validate.validate(result, form_schema)
+
+		if form_valid == False:
+			# Form not valid
+			error_status = {"results":"failed"}
+			error_status.update(form_validate.errors)
+			return jsonify(error_status)
+
+		if request.method == 'POST' :
+			req_solr_url = urllib.parse.urljoin(webr_solr_url,"/solr/"+user_id+"_"+engine_name+"/schema")
+			logger.info(req_solr_url)
+			payload = request.get_json()
+			logger.info(payload)
+			res = requests.post(req_solr_url, json=payload)
+			if res.status_code == 200:
+				data = res.json()
+				return data,200
+			else:
+				return jsonify({"results":"failed","message":res.text}),res.status_code
+
+		elif request.method == 'GET':
+			# Get Schema information from solr
+			req_solr_url = urllib.parse.urljoin(webr_solr_url,"/solr/"+user_id+"_"+engine_name+"/schema/"+u_path)
+			res = requests.get(req_solr_url)
+			if res.status_code == 200:
+				data = res.json()
+				return data,200
+			else:
+				return jsonify({"results":"failed","message":res.text}),res.status_code
+		else:
+			return jsonify({"results":"failed","message":"Method Not Allowed"}),405
+
+	except Exception:
+		logger.exception("api_engine_action")
+		return jsonify({"result":"failed","message":"unknown fail"})
+
+
+#@app.route('/portal/api_engine/<engine_name>/update/<path:u_path>',methods = ['POST'])
+@app.route('/portal/api_engine/<engine_name>/update',methods = ['POST'])
+def api_engine_update_document(engine_name):
+	# Reference : https://lucene.apache.org/solr/guide/7_4/uploading-data-with-index-handlers.html
+	try:
+		############## SESSION VALIDATION START ##################
+		#session_id = result.get("session_id")
+		#logger.info(path)
+		
+		session_id = request.headers.get("X-Api-Key")
+		if session_id != None:
+			# Validate the user with session
+			user_data = check_user_session(session_id)
+			if user_data == None:
+				return jsonify({"result":"failed","message":"Please login again"}),401
+		else:
+			return jsonify({"result":"failed","message":"Please login again"}),401
+
+		############## SESSION VALIDATION END #####################
+		
+		user_id = user_data.get("_id")
+		account_type = user_data.get("AccountType")
+		result = {"engine_name":engine_name}
+		
+		form_schema = dict()
+		form_schema.update({'engine_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+
+		form_validate = cerberus.Validator()
+		form_valid = form_validate.validate(result, form_schema)
+
+		if form_valid == False:
+			# Form not valid
+			error_status = {"results":"failed"}
+			error_status.update(form_validate.errors)
+			return jsonify(error_status)
+
+		if request.method == 'POST' :
+			content_type = request.content_type
+			req_solr_url = urllib.parse.urljoin(webr_solr_url,"/solr/"+user_id+"_"+engine_name+"/update?wt=json")
+			
+
+			headers = {'Content-type': content_type}
+
+			if content_type.find("json") != -1:
+				payload = request.get_json()
+				res = requests.post(req_solr_url, json=payload)
+			else:
+				payload = request.data
+				res = requests.post(req_solr_url, data=payload,headers=headers)
+
+			
+			if res.status_code == 200:
+				data = res.json()
+				return data,200
+			else:
+				return jsonify({"results":"failed","message":res.text}),res.status_code
+		else:
+			return jsonify({"results":"failed","message":"Method Not Allowed"}),405
+
+	except Exception:
+		logger.exception("api_engine_update_document")
+		return jsonify({"result":"failed","message":"unknown fail"})
 
 # if __name__ == '__main__':
 # 	app.run()
