@@ -2001,7 +2001,6 @@ def api_engine_update_document(engine_name):
 		############## SESSION VALIDATION START ##################
 		#session_id = result.get("session_id")
 		#logger.info(path)
-		
 		session_id = request.headers.get("X-Api-Key")
 		if session_id != None:
 			# Validate the user with session
@@ -2030,11 +2029,18 @@ def api_engine_update_document(engine_name):
 			return jsonify(error_status)
 
 		if request.method == 'POST' :
+			args = request.full_path.split(request.path)[1]
+			args = args[1:]
 			content_type = request.content_type
-			req_solr_url = urllib.parse.urljoin(webr_solr_url,"/solr/"+user_id+"_"+engine_name+"/update?wt=json")
-			
+			req_solr_url = urllib.parse.urljoin(webr_solr_url,"/solr/"+user_id+"_"+engine_name+"/update")
+
+			if len(args) > 0:
+				args = '&'+args
+
+			req_solr_url = req_solr_url+'?wt=json'+args
 
 			headers = {'Content-type': content_type}
+			logger.info(req_solr_url)
 
 			if content_type.find("json") != -1:
 				payload = request.get_json()
