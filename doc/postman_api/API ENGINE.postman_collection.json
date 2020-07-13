@@ -1,0 +1,370 @@
+{
+	"info": {
+		"_postman_id": "00abd384-c181-49a2-8e80-7ef7b2fe6eec",
+		"name": "API ENGINE",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET ENGINE SCHEMA",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_test_dad17f80a4e2d47b72c42b10a8f3b63071312694",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{server}}/portal/api_engine/engine1/schema/fieldtypes/binary",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"api_engine",
+						"engine1",
+						"schema",
+						"fieldtypes",
+						"binary"
+					],
+					"query": [
+						{
+							"key": "skip",
+							"value": "2",
+							"disabled": true
+						}
+					]
+				},
+				"description": "http://{{server}}/portal/api_engine/{engine_name}/schema/fields - Return the schema fiels for the specified engine\r\n\r\nRef:https://lucene.apache.org/solr/guide/7_4/schema-api.html"
+			},
+			"response": [
+				{
+					"name": "GET CRAWL INFO",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_crawl_info?engine_name=engine2&skip=2&current_status=running",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_crawl_info"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine2"
+								},
+								{
+									"key": "domain_name",
+									"value": "http://kongu.ac.in",
+									"disabled": true
+								},
+								{
+									"key": "skip",
+									"value": "2"
+								},
+								{
+									"key": "current_status",
+									"value": "running"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "8675"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 20 Dec 2018 03:06:10 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:28:05 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:28:03 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:28:03 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:27:32 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:27:30 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:27:30 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:15 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:20:13 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:20:13 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:07 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:19:41 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 79,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:19:41 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:18:59 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:18:32 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 80,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:18:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:17:47 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:17:45 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:17:45 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:16:01 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:15:59 GMT\",\n            \"crawling_sec\": 2,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:15:59 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:10:32 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Wed, 19 Dec 2018 18:10:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:05:29 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:05:25 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:05:25 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:01:56 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:01:53 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:01:53 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:59:09 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 16:59:09 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:56:39 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:56:38 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:56:38 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:39:56 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:39:54 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:39:54 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:31:36 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 05:31:36 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 05:27:04 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:26:08 GMT\",\n            \"crawling_sec\": 56,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 300,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 315\n            },\n            \"version\": \"Tue, 11 Dec 2018 05:26:08 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:22:29 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:22:24 GMT\",\n            \"crawling_sec\": 4,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:22:24 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:15:06 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:15:02 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:15:02 GMT\"\n        },\n        {\n            \"crawl_end\": \"Sun, 09 Dec 2018 11:21:22 GMT\",\n            \"crawl_start\": \"Sun, 09 Dec 2018 11:20:29 GMT\",\n            \"crawling_sec\": 53,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 301,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 316\n            },\n            \"version\": \"Sun, 09 Dec 2018 11:20:29 GMT\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "MANAGE ENGINE SCHEMA",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_test_dad17f80a4e2d47b72c42b10a8f3b63071312694",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"add-field\":{\r\n     \"name\":\"body\",\r\n     \"type\":\"text_general\",\r\n     \"stored\":true }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/api_engine/engine1/schema",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"api_engine",
+						"engine1",
+						"schema"
+					]
+				},
+				"description": "http://{{server}}/portal/api_engine/{engine_name}/schema - Post the schema fiels for the specified engine\r\n\r\nRef: https://lucene.apache.org/solr/guide/7_4/schema-api.html"
+			},
+			"response": [
+				{
+					"name": "GET CRAWL INFO",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_crawl_info?engine_name=engine2&skip=2&current_status=running",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_crawl_info"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine2"
+								},
+								{
+									"key": "domain_name",
+									"value": "http://kongu.ac.in",
+									"disabled": true
+								},
+								{
+									"key": "skip",
+									"value": "2"
+								},
+								{
+									"key": "current_status",
+									"value": "running"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "8675"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 20 Dec 2018 03:06:10 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:28:05 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:28:03 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:28:03 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:27:32 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:27:30 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:27:30 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:15 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:20:13 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:20:13 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:07 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:19:41 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 79,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:19:41 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:18:59 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:18:32 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 80,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:18:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:17:47 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:17:45 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:17:45 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:16:01 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:15:59 GMT\",\n            \"crawling_sec\": 2,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:15:59 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:10:32 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Wed, 19 Dec 2018 18:10:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:05:29 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:05:25 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:05:25 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:01:56 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:01:53 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:01:53 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:59:09 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 16:59:09 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:56:39 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:56:38 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:56:38 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:39:56 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:39:54 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:39:54 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:31:36 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 05:31:36 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 05:27:04 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:26:08 GMT\",\n            \"crawling_sec\": 56,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 300,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 315\n            },\n            \"version\": \"Tue, 11 Dec 2018 05:26:08 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:22:29 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:22:24 GMT\",\n            \"crawling_sec\": 4,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:22:24 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:15:06 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:15:02 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:15:02 GMT\"\n        },\n        {\n            \"crawl_end\": \"Sun, 09 Dec 2018 11:21:22 GMT\",\n            \"crawl_start\": \"Sun, 09 Dec 2018 11:20:29 GMT\",\n            \"crawling_sec\": 53,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 301,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 316\n            },\n            \"version\": \"Sun, 09 Dec 2018 11:20:29 GMT\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		},
+		{
+			"name": "MANAGE DOCUMENTS",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_test_dad17f80a4e2d47b72c42b10a8f3b63071312694",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "<add> \r\n   <doc> \r\n      <field name = \"id\">001</field> \r\n      <field name = \"first name\">Rajiv</field> \r\n      <field name = \"last name\">Reddy</field> \r\n      <field name = \"phone\">9848022337</field> \r\n      <field name = \"city\">Hyderabad</field> \r\n   </doc>  \r\n   </add>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{server}}/portal/api_engine/engine1/update",
+					"protocol": "http",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"portal",
+						"api_engine",
+						"engine1",
+						"update"
+					]
+				},
+				"description": "http://{{server}}/portal/api_engine/{engine_name}/update - Add , Update , Delete Documents\r\n\r\nRef: hhttps://lucene.apache.org/solr/guide/7_4/uploading-data-with-index-handlers.html"
+			},
+			"response": [
+				{
+					"name": "GET CRAWL INFO",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://13.232.131.155/portal/get_crawl_info?engine_name=engine2&skip=2&current_status=running",
+							"protocol": "http",
+							"host": [
+								"13",
+								"232",
+								"131",
+								"155"
+							],
+							"path": [
+								"portal",
+								"get_crawl_info"
+							],
+							"query": [
+								{
+									"key": "engine_name",
+									"value": "engine2"
+								},
+								{
+									"key": "domain_name",
+									"value": "http://kongu.ac.in",
+									"disabled": true
+								},
+								{
+									"key": "skip",
+									"value": "2"
+								},
+								{
+									"key": "current_status",
+									"value": "running"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "8675"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/0.14.1 Python/3.5.2"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 20 Dec 2018 03:06:10 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"data\": [\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:28:05 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:28:03 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:28:03 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:27:32 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:27:30 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:27:30 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:15 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:20:13 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:20:13 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:20:07 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:19:41 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 79,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:19:41 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:18:59 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:18:32 GMT\",\n            \"crawling_sec\": 26,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 80,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 305,\n                    \"400\": 5,\n                    \"404\": 9\n                },\n                \"visted\": 319\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:18:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:17:47 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:17:45 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:17:45 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:16:01 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:15:59 GMT\",\n            \"crawling_sec\": 2,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:15:59 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:10:32 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Wed, 19 Dec 2018 18:10:32 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:05:29 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:05:25 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:05:25 GMT\"\n        },\n        {\n            \"crawl_end\": \"Wed, 19 Dec 2018 18:01:56 GMT\",\n            \"crawl_start\": \"Wed, 19 Dec 2018 18:01:53 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Wed, 19 Dec 2018 18:01:53 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:59:09 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 16:59:09 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:56:39 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:56:38 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:56:38 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 16:39:56 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 16:39:54 GMT\",\n            \"crawling_sec\": 1,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 16:39:54 GMT\"\n        },\n        {\n            \"crawl_end\": 0,\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:31:36 GMT\",\n            \"current_status\": \"running\",\n            \"version\": \"Tue, 11 Dec 2018 05:31:36 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 05:27:04 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 05:26:08 GMT\",\n            \"crawling_sec\": 56,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 223\n                },\n                \"http_status\": {\n                    \"200\": 300,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 315\n            },\n            \"version\": \"Tue, 11 Dec 2018 05:26:08 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:22:29 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:22:24 GMT\",\n            \"crawling_sec\": 4,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Error found\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:22:24 GMT\"\n        },\n        {\n            \"crawl_end\": \"Tue, 11 Dec 2018 04:15:06 GMT\",\n            \"crawl_start\": \"Tue, 11 Dec 2018 04:15:02 GMT\",\n            \"crawling_sec\": 3,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"data extracting error\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"text/html\": 1\n                },\n                \"http_status\": {\n                    \"200\": 1\n                },\n                \"visted\": 1\n            },\n            \"version\": \"Tue, 11 Dec 2018 04:15:02 GMT\"\n        },\n        {\n            \"crawl_end\": \"Sun, 09 Dec 2018 11:21:22 GMT\",\n            \"crawl_start\": \"Sun, 09 Dec 2018 11:20:29 GMT\",\n            \"crawling_sec\": 53,\n            \"current_status\": \"completed\",\n            \"domain\": \"http://kongu.ac.in\",\n            \"message\": \"Good\",\n            \"page_info\": {\n                \"application_count\": {\n                    \"application/pdf\": 75,\n                    \"application/vnd.openxmlformats-officedocument.wordprocessingml.document\": 1,\n                    \"application/x-shockwave-flash\": 1,\n                    \"text/html\": 224\n                },\n                \"http_status\": {\n                    \"200\": 301,\n                    \"400\": 5,\n                    \"404\": 10\n                },\n                \"visted\": 316\n            },\n            \"version\": \"Sun, 09 Dec 2018 11:20:29 GMT\"\n        }\n    ],\n    \"result\": \"success\"\n}"
+				}
+			]
+		}
+	],
+	"protocolProfileBehavior": {}
+}

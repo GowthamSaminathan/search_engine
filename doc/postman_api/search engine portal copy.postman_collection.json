@@ -1,13 +1,28 @@
 {
 	"info": {
-		"_postman_id": "4075f193-db10-44cd-9343-a894895e7257",
-		"name": "search engine portal",
+		"_postman_id": "3abde7c2-83bf-4b24-8c76-d444ba0a4129",
+		"name": "search engine portal copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "USER LOGIN",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_test_dad17f80a4e2d47b72c42b10a8f3b63071312694",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -15,15 +30,18 @@
 					"formdata": [
 						{
 							"key": "user_name",
-							"value": "priya",
+							"value": "test",
 							"type": "text"
 						},
 						{
 							"key": "user_password",
-							"value": "priya@123",
+							"value": "test@123",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/login",
@@ -144,7 +162,10 @@
 							"value": "127.0.0.1",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/create_new_user",
@@ -250,11 +271,26 @@
 		{
 			"name": "GET USER INFORMATION",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_priya_43f26c9bf8445d1b49d70b2de37fc896d010b562",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [
 					{
-						"key": "\"X-Api-Key\"",
-						"value": " \"user_priya_57ffd7118ed6be155229bc3ec1e9551ab14eae9a\"",
+						"key": "X-Api-Key",
+						"value": "user_priya_c68bb00b21ea793679427a75bccde1cac7f419ed",
 						"type": "text"
 					}
 				],
@@ -302,6 +338,21 @@
 		{
 			"name": "UPDATE USER INFORMATION",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_priya_4ebc56ee523742dabd6b3450e9af9ddfc1899d79",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "PUT",
 				"header": [],
 				"body": {
@@ -317,7 +368,10 @@
 							"value": "password@1",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/user_update",
@@ -378,6 +432,21 @@
 		{
 			"name": "CREATE NEW ENGINE",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_priya_4ebc56ee523742dabd6b3450e9af9ddfc1899d79",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -388,7 +457,10 @@
 							"value": "wisky",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/create_engine",
@@ -401,7 +473,7 @@
 						"create_engine"
 					]
 				},
-				"description": "Creating new Engine\n=============================\n\nrequest:\n\nengine_name: <required>\n\nresponse:\n\n\"results\":\"failed\" or \"result\":\"success\""
+				"description": "Creating new Engine\n=============================\n\nrequest:\n\nengine_name: <required>\n\nengine_type: <required> <crawler or api>\n\nresponse:\n\n\"results\":\"failed\" or \"result\":\"success\""
 			},
 			"response": [
 				{
@@ -456,10 +528,13 @@
 						},
 						{
 							"key": "engine_name",
-							"value": "wisky",
+							"value": "engine1",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/create_domain",
@@ -520,6 +595,21 @@
 		{
 			"name": "GET ENGINES INFORMATION",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_priya_c68bb00b21ea793679427a75bccde1cac7f419ed",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -783,7 +873,10 @@
 							"value": "{\"test\":[\"government\",\"governments\"]}",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/manage_synonyms",
@@ -960,7 +1053,10 @@
 							"value": "[\"application/exe\"]",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/domain_update",
@@ -1075,7 +1171,10 @@
 							"value": "gowtham",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/engine_delete",
@@ -1146,7 +1245,10 @@
 							"value": "engine1",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/domain_delete",
@@ -1207,6 +1309,26 @@
 		{
 			"name": "CREATE API KEY",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_priya_c68bb00b21ea793679427a75bccde1cac7f419ed",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -1224,10 +1346,13 @@
 						},
 						{
 							"key": "engine_name",
-							"value": "wisky",
+							"value": "engine1",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/manage_api_key",
@@ -1293,6 +1418,26 @@
 		{
 			"name": "GET ALL API KEYS",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_priya_c68bb00b21ea793679427a75bccde1cac7f419ed",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -1351,7 +1496,7 @@
 						},
 						{
 							"key": "engine_name",
-							"value": "engine40",
+							"value": "engine1",
 							"type": "text"
 						},
 						{
@@ -1359,7 +1504,10 @@
 							"value": "no",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/start_crawl",
@@ -1536,7 +1684,10 @@
 							"value": "[]",
 							"type": "text"
 						}
-					]
+					],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/result_rerank",
@@ -1609,7 +1760,10 @@
 				"header": [],
 				"body": {
 					"mode": "formdata",
-					"formdata": []
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/result_rerank?domain_name=https://gic.delaware.gov&engine_name=wisky&cursor=0&count=10",
@@ -1697,7 +1851,10 @@
 				"header": [],
 				"body": {
 					"mode": "formdata",
-					"formdata": []
+					"formdata": [],
+					"options": {
+						"formdata": {}
+					}
 				},
 				"url": {
 					"raw": "http://{{server}}/portal/result_rerank?domain_name=https://gic.delaware.gov&engine_name=wisky&query=erode",
@@ -1869,35 +2026,45 @@
 		{
 			"name": "GET CRAWL INFO",
 			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "user_test_dad17f80a4e2d47b72c42b10a8f3b63071312694",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{server}}/portal/get_crawl_info?engine_name=engine2&skip=2&current_status=completed",
+					"raw": "http://{{server}}/portal/api_engine/engine1/fields",
 					"protocol": "http",
 					"host": [
 						"{{server}}"
 					],
 					"path": [
 						"portal",
-						"get_crawl_info"
+						"api_engine",
+						"engine1",
+						"fields"
 					],
 					"query": [
 						{
-							"key": "engine_name",
-							"value": "engine2"
-						},
-						{
-							"key": "domain_name",
-							"value": "http://kongu.ac.in",
-							"disabled": true
-						},
-						{
 							"key": "skip",
-							"value": "2"
-						},
-						{
-							"key": "current_status",
-							"value": "completed"
+							"value": "2",
+							"disabled": true
 						}
 					]
 				},
@@ -1978,13 +2145,13 @@
 		"type": "apikey",
 		"apikey": [
 			{
-				"key": "key",
-				"value": "X-Api-Key",
+				"key": "value",
+				"value": "user_priya_4ebc56ee523742dabd6b3450e9af9ddfc1899d79",
 				"type": "string"
 			},
 			{
-				"key": "value",
-				"value": "user_priya_aa197950772378e9950183972ed48b26312aa8be",
+				"key": "key",
+				"value": "X-Api-Key",
 				"type": "string"
 			}
 		]
@@ -1993,7 +2160,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "817c0455-7cf1-4765-9dde-c5501aff20c9",
+				"id": "229e84ec-8436-44eb-bcaa-ebba61375994",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -2003,7 +2170,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "4cc6e729-f24f-4213-bc9e-4bb3a150492a",
+				"id": "d2bfced8-4f32-4c38-8aaa-cbbc76b09be3",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -2013,7 +2180,7 @@
 	],
 	"variable": [
 		{
-			"id": "c77a1153-bee1-4068-b596-275c663a6fac",
+			"id": "b311abd3-3996-4c01-be45-16cb62a4397d",
 			"key": "server",
 			"value": "server1.webr-env01.xyz",
 			"type": "string"

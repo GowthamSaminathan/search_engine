@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "a12ab306-fa12-43f3-a714-a467c6cb8d6c",
-		"name": "END USER API",
+		"_postman_id": "90de51f2-201b-4841-aafd-be933e192884",
+		"name": "END USER API copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{server}}/portal/correct_me?q=government&key=7072697961297ed3613a54ab654cdbdc8e7269af095f07f555&type=suggest&suggest.dictionary=mySuggester",
+					"raw": "http://{{server}}/portal/correct_me?q=gove&key=74657374594433adb1e713768c947042fc33efdfb0bb4709&type=suggest&suggest.dictionary=mySuggester",
 					"protocol": "http",
 					"host": [
 						"{{server}}"
@@ -23,11 +23,11 @@
 					"query": [
 						{
 							"key": "q",
-							"value": "government"
+							"value": "gove"
 						},
 						{
 							"key": "key",
-							"value": "7072697961297ed3613a54ab654cdbdc8e7269af095f07f555"
+							"value": "74657374594433adb1e713768c947042fc33efdfb0bb4709"
 						},
 						{
 							"key": "type",
@@ -92,7 +92,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{server}}/portal/search?q=government&key=7072697961e1b353ec85523ac6c93d4d412540bebb1459494a&hl=true&hl.snippets=1&hl.fragsize=100&hl.fl=body",
+					"raw": "http://{{server}}/portal/search?q=government&key=74657374594433adb1e713768c947042fc33efdfb0bb4709&hl=true&hl.snippets=1&hl.fragsize=100&hl.fl=body",
 					"protocol": "http",
 					"host": [
 						"{{server}}"
@@ -108,7 +108,7 @@
 						},
 						{
 							"key": "key",
-							"value": "7072697961e1b353ec85523ac6c93d4d412540bebb1459494a"
+							"value": "74657374594433adb1e713768c947042fc33efdfb0bb4709"
 						},
 						{
 							"key": "hl",
@@ -212,7 +212,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{server}}/portal/search_fields?q=url:\"https://gic.delaware.gov/tag/delaware-gov/\"&key=707269796143cbf221f3ee0221095dc9ad55e432320146511e&fl=title,url,id",
+					"raw": "http://{{server}}/portal/search_fields?q=url:\"https://gic.delaware.gov/tag/delaware-gov/\"&key=74657374594433adb1e713768c947042fc33efdfb0bb4709&fl=title,url,id",
 					"protocol": "http",
 					"host": [
 						"{{server}}"
@@ -228,7 +228,7 @@
 						},
 						{
 							"key": "key",
-							"value": "707269796143cbf221f3ee0221095dc9ad55e432320146511e"
+							"value": "74657374594433adb1e713768c947042fc33efdfb0bb4709"
 						},
 						{
 							"key": "hl",
@@ -340,7 +340,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{server}}/portal/correct_me?q=robotq&key=7072697961297ed3613a54ab654cdbdc8e7269af095f07f555&type=spell",
+					"raw": "http://{{server}}/portal/correct_me?q=governmend&key=74657374594433adb1e713768c947042fc33efdfb0bb4709&type=spell",
 					"protocol": "http",
 					"host": [
 						"{{server}}"
@@ -352,11 +352,11 @@
 					"query": [
 						{
 							"key": "q",
-							"value": "robotq"
+							"value": "governmend"
 						},
 						{
 							"key": "key",
-							"value": "7072697961297ed3613a54ab654cdbdc8e7269af095f07f555"
+							"value": "74657374594433adb1e713768c947042fc33efdfb0bb4709"
 						},
 						{
 							"key": "type",
