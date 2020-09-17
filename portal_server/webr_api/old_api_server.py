@@ -6,6 +6,8 @@ from flask_cors import CORS
 import os
 import time
 import json
+from flask_pymongo import PyMongo
+import pymongo
 import logging
 from logging.handlers import RotatingFileHandler
 from logging.handlers import SysLogHandler
@@ -16,6 +18,7 @@ import urllib.parse
 import datetime
 import base64
 import hashlib
+import redis
 import random
 import cerberus
 import binascii
@@ -24,8 +27,10 @@ import socket
 
 
 # Reading Environment variable
+webr_mongodb = os.environ.get('WEBR_MONGODB')
 webr_logserver = os.environ.get('WEBR_LOGSERVER')
 webr_solr = os.environ.get('WEBR_SOLR')
+webr_redis = os.environ.get('WEBR_REDIS')
 
 #webr_mongodb = "server1.webr-env01.xyz"
 #webr_solr = "server2.webr-env01.xyz"
@@ -48,25 +53,41 @@ logger.setLevel(logging.DEBUG)
 logger.info("Starting Webserver")
 
 
-if webr_solr == None:
+if webr_mongodb == None:
+	logger.error("Environment not set for: WEBR_MONGODB")
+	exit()
+elif webr_solr == None:
 	logger.error("Environment not set for: WEBR_SOLR")
 	exit()
+elif webr_redis == None:
+	logger.error("Environment not set for: WEBR_REDIS")
+	exit()
 else:
+	logger.info("Environment set for WEBR_MONGODB:"+webr_mongodb)
 	logger.info("Environment set for WEBR_SOLR:"+webr_solr)
+	logger.info("Environment set for WEBR_REDIS:"+webr_redis)
+
+
+
+
+
 
 app = Flask(__name__,static_url_path='/static')
 CORS(app)
-# ================= New API starts ==================================#
+#app.config['MONGO_DBNAME'] = 'accounts'
+#app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/'
+
+mongoc = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/accounts')
+mdb = mongoc.db
+mcollection = mdb['users']
+
+mongoc2 = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/Search_history')
+mdb2 = mongoc2.db
+#search_collection = mdb2['users']
+
+red = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
 
 
-
-
-
-
-
-
-
-# ======================== Old API Starts ============================#
 def check_user_session(session_id):
 	# Validate user session with cookie
 	try:

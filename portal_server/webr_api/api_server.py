@@ -6,8 +6,6 @@ from flask_cors import CORS
 import os
 import time
 import json
-from flask_pymongo import PyMongo
-import pymongo
 import logging
 from logging.handlers import RotatingFileHandler
 from logging.handlers import SysLogHandler
@@ -18,19 +16,22 @@ import urllib.parse
 import datetime
 import base64
 import hashlib
-import redis
 import random
 import cerberus
+from cerberus import Validator as cerberus_validator
 import binascii
 import ast
 import socket
+import re
+
+#cd ~/search_engine/portal_server/webr_api/
+#sudo docker cp api_server.py webserver_local:/webr_api/api_server.py && sudo docker restart webserver_local
+#sudo docker restart webserver_local
 
 
 # Reading Environment variable
-webr_mongodb = os.environ.get('WEBR_MONGODB')
 webr_logserver = os.environ.get('WEBR_LOGSERVER')
 webr_solr = os.environ.get('WEBR_SOLR')
-webr_redis = os.environ.get('WEBR_REDIS')
 
 #webr_mongodb = "server1.webr-env01.xyz"
 #webr_solr = "server2.webr-env01.xyz"
@@ -40,6 +41,8 @@ webr_solr_url = webr_solr.split(",")[0]
 if webr_logserver == None:
 	logger.error("Environment not set for: WEBR_LOGSERVER")
 	exit()
+
+
 
 # Syslog configuration
 
@@ -53,41 +56,107 @@ logger.setLevel(logging.DEBUG)
 logger.info("Starting Webserver")
 
 
-if webr_mongodb == None:
-	logger.error("Environment not set for: WEBR_MONGODB")
-	exit()
-elif webr_solr == None:
+if webr_solr == None:
 	logger.error("Environment not set for: WEBR_SOLR")
 	exit()
-elif webr_redis == None:
-	logger.error("Environment not set for: WEBR_REDIS")
-	exit()
 else:
-	logger.info("Environment set for WEBR_MONGODB:"+webr_mongodb)
 	logger.info("Environment set for WEBR_SOLR:"+webr_solr)
-	logger.info("Environment set for WEBR_REDIS:"+webr_redis)
-
-
-
-
-
 
 app = Flask(__name__,static_url_path='/static')
-CORS(app)
-#app.config['MONGO_DBNAME'] = 'accounts'
-#app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017/'
+#CORS(app)
 
-mongoc = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/accounts')
-mdb = mongoc.db
-mcollection = mdb['users']
-
-mongoc2 = PyMongo(app,uri='mongodb://'+webr_mongodb+':27017/Search_history')
-mdb2 = mongoc2.db
-#search_collection = mdb2['users']
-
-red = redis.Redis(host=webr_redis, port=6379, db=0,decode_responses=True)
+# ** Security risk , remove it after development
+CORS(app, supports_credentials=True)
+# ================= New API starts ==================================#
 
 
+class Fvalidator(cerberus_validator):
+	"""
+	Custome Extension of cerberus validator
+	"""
+	def _validate_isemail(self,isemail, field, value):
+		"""
+		Validate the email string
+		"""
+		if isemail and not re.match('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',value):
+			self._error(field, "Email address not valid")
+
+
+@app.route('/portal/api/v2/signup',methods = ['POST'])
+def user_register():
+	if request.method == 'POST':
+		try:
+
+			post_data = request.get_json()
+			form_schema = dict()
+			form_schema.update({'password': {'required': True,'type': 'string','maxlength': 128,'minlength': 8}})
+			form_schema.update({'user_email': {'required': True,'type': 'string','isemail': True}})
+			form_schema.update({'first_last_name': {'required': True,'type': 'string','maxlength': 512,'minlength': 1}})
+
+			form_validate = Fvalidator()
+			form_valid = form_validate.validate(post_data, form_schema)
+			
+			if form_valid == True:
+				res_code = 200
+				email = post_data.get("user_email")
+				password = post_data.get("password")
+				f_l_name = post_data.get("first_last_name")
+
+				# Create unique user ID for new users
+				user_id = base64.b64encode(str.encode(email)).decode('utf-8')
+				_url = urllib.parse.urljoin(webr_solr_url,"solr/_accounts/update/json/docs?overwrite=false&wt=json&commit=true")
+
+				account_cdate = datetime.datetime.utcnow()
+
+				lic_end = account_cdate + datetime.timedelta(days=10000)
+				pass_hash = hashlib.sha1(password.encode()).hexdigest()
+				
+				payload = {"id":user_id,"account_email_s":email,"account_password_s":pass_hash,"account_first_last_name_s":f_l_name}
+				payload.update({"account_max_engines_i":100})
+				payload.update({"account_max_collections_i":1000})
+				payload.update({"account_max_views_i":1000})
+				payload.update({"account_status_s":"active"})
+				payload.update({"account_start_dt":str(account_cdate)})
+				payload.update({"account_end_dt":str(lic_end)})
+				payload.update({"type_s":"account_info"})
+				payload.update({"account_created_ip_s":request.remote_addr})
+				payload.update({"account_created_agent_s":str(request.headers.get('User-Agent'))})
+
+				logger.info(payload)
+				res = requests.post(_url, json=payload)
+				if res.status_code == 200:
+					data = res.json()
+					if data.get("responseHeader").get("status") == 0:
+						logger.info("New User Created: "+str(payload))
+						token = "tempppp"
+						res = {"code": res_code,"message": "New user created","user_email": email,"token": token,"first_last_name": f_l_name}
+						return jsonify(res),res_code
+					else:
+						fail = "Solr user cration failed:"+str(res.status_code)+str(res.text)
+						logger.info(fail)
+						rtn = {"code": 409,"message": "User email already register for signIn"}
+						rtn.update({"email": email,"first_last_name": f_l_name})
+						return jsonify(rtn),409
+				else:
+					error = "Solr user cration error:"+str(res.status_code)+str(res.text)
+					logger.error(error)
+					return jsonify({"code": 500,"message": "Server having internal issue, Please contact support"}),500
+				
+
+			else:
+				# Form not valid
+				res_code = 405
+				error_status = {"message":"Provided field not satisfieds"}
+				error_status.update(form_validate.errors)
+				return jsonify(error_status),res_code
+
+
+		except Exception:
+			logger.exception("user_register")
+			return jsonify({"code": 500,"message": "Server having internal issue, Please contact support"}),500
+
+
+# ======================== Old API Starts ============================#
 def check_user_session(session_id):
 	# Validate user session with cookie
 	try:
@@ -151,7 +220,7 @@ def validate_engine_domain(user_id,engine_name,domain_name):
 
 @app.route('/portal')
 def main():
-	 return "API IS UP :"+str(datetime.datetime.utcnow())
+	 return "API V2 IS UP :"+str(datetime.datetime.utcnow())
 
 @app.route('/portal/search_fields',methods = ['GET'])
 def search_fields():
